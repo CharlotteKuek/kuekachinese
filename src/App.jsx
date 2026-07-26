@@ -202,6 +202,7 @@ const seedFor = (topicId) =>
   }));
 
 /* ---------------- helpers ---------------- */
+const stripHtml = (html) => (html || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 const todayStr = () => new Date().toISOString().slice(0, 10);
 const dayNum = () => Math.floor(Date.now() / 86400000);
 const INTERVALS = [0, 1, 2, 4, 8, 16];
@@ -459,7 +460,7 @@ export default function App() {
   const [screen, setScreen] = useState("home");
   const [state, setState] = useState({
     streak: 0, lastDay: null, todayDate: todayStr(), todayCount: 0,
-    cards: {}, topics: {}, customTopics: [], pool: {}, curriculum: {}, flags: {}, onboarded: false,
+    cards: {}, topics: {}, customTopics: [], pool: {}, curriculum: {}, flags: {}, notes: [], onboarded: false,
     settings: { burst: 10, dark: false, sound: true, goal: 10, szDate: "2027-01-01", fontZh: "ZCOOL XiaoWei", fontEn: "Space Grotesk" },
     recent: [],
   });
@@ -468,6 +469,7 @@ export default function App() {
   const [profiles, setProfiles] = useState([]);
   const profileRef = useRef(null);
   const [activeTopic, setActiveTopic] = useState(null);
+  const [activeNoteId, setActiveNoteId] = useState(null);
   const [mode, setMode] = useState("learn");
   const [queue, setQueue] = useState([]);
   const [qIndex, setQIndex] = useState(0);
@@ -491,7 +493,7 @@ export default function App() {
     if (saved.todayDate !== t) { saved.todayDate = t; saved.todayCount = 0; }
     setState((p) => {
       const base = { streak: 0, lastDay: null, todayDate: t, todayCount: 0, cards: {}, topics: {},
-        customTopics: [], pool: {}, curriculum: {}, flags: {}, hidden: [], onboarded: false, recent: [], settings: p.settings };
+        customTopics: [], pool: {}, curriculum: {}, flags: {}, notes: [], hidden: [], onboarded: false, recent: [], settings: p.settings };
       const merged = { ...base, ...saved, settings: { ...p.settings, ...(saved.settings || {}) } };
       merged.settings.goal = merged.settings.burst;
       stateRef.current = merged;
@@ -871,6 +873,26 @@ Respond with ONLY a JSON array, ordered, no markdown:
     setBanner(`${t.name} removed — your words are safe in the Word bank`);
   };
 
+  const createNote = () => {
+    const id = "n" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    update((prev) => ({ ...prev, notes: [{ id, title: "", html: "", updatedAt: Date.now() }, ...(prev.notes || [])] }));
+    setActiveNoteId(id);
+    setScreen("noteEditor");
+  };
+
+  const saveNote = (id, patch) => {
+    update((prev) => ({
+      ...prev,
+      notes: (prev.notes || []).map((n) => (n.id === id ? { ...n, ...patch, updatedAt: Date.now() } : n)),
+    }));
+  };
+
+  const deleteNote = (id) => {
+    update((prev) => ({ ...prev, notes: (prev.notes || []).filter((n) => n.id !== id) }));
+    setActiveNoteId(null);
+    setScreen("notes");
+  };
+
   const T = dark
     ? { bg: "#0B1526", card: "#152441", text: "#EDF4FF", sub: "#8CA3C7", line: "#26385E", chip: "#1C2E52", hero: "linear-gradient(140deg,#1B54D8,#2E7CFF 60%,#5B9DFF)" }
     : { bg: "#E9F1FF", card: "#FFFFFF", text: "#122447", sub: "#5B7395", line: "#C9D9F2", chip: "#EDF4FF", hero: "linear-gradient(140deg,#2E7CFF,#4A8DFF 60%,#6FA6FF)" };
@@ -1041,6 +1063,15 @@ Respond with ONLY a JSON array, ordered, no markdown:
           <Glossary {...shared} toggleStar={toggleStar} removeCard={removeCard}
             onFlash={(deck, mode) => { setFlash({ deck, mode }); setScreen("flash"); }} />
         )}
+        {screen === "notes" && (
+          <NotesList {...shared} notes={state.notes || []}
+            onOpen={(id) => { setActiveNoteId(id); setScreen("noteEditor"); }}
+            onCreate={createNote} />
+        )}
+        {screen === "noteEditor" && (state.notes || []).some((n) => n.id === activeNoteId) && (
+          <NoteEditor {...shared} note={(state.notes || []).find((n) => n.id === activeNoteId)}
+            onBack={() => setScreen("notes")} onSaveNote={saveNote} onDeleteNote={deleteNote} />
+        )}
         {screen === "settings" && (
           <SettingsScreen {...shared} onHelp={() => setSheet("help")}
             profiles={profiles} profile={profile}
@@ -1057,7 +1088,7 @@ Respond with ONLY a JSON array, ordered, no markdown:
           onAdd={(t) => { addTopic(t); setSheet(null); }} />
       )}
 
-      {["home", "glossary", "settings"].includes(screen) && (
+      {["home", "glossary", "notes", "settings"].includes(screen) && (
         <NavBar screen={screen} setScreen={(v) => { click(s.sound); setScreen(v); }} T={T} />
       )}
     </div>
@@ -1354,7 +1385,7 @@ function SpeakBtn({ text, color, T, label = "Play", size = 16 }) {
 }
 
 function NavBar({ screen, setScreen, T }) {
-  const items = [["home", "home", "Learn"], ["glossary", "book", "Words"], ["settings", "sliders", "Settings"]];
+  const items = [["home", "home", "Learn"], ["glossary", "book", "Words"], ["notes", "pen", "Notes"], ["settings", "sliders", "Settings"]];
   return (
     <div className="fixed bottom-4 left-0 right-0 z-40 px-6">
       <div className="max-w-xs mx-auto flex rounded-3xl px-2 py-1.5"
@@ -2794,6 +2825,125 @@ function Flashcards({ deck, mode, T, s, click, setScreen, topicById, dark }) {
         <SpeakBtn text={c.hanzi} color={t.color} T={T} label="Hear word" />
         {flipped && <SpeakBtn text={c.sZh} color={t.color} T={T} label="Hear sentence" />}
       </div>
+    </div>
+  );
+}
+
+/* ---------------- NOTES ---------------- */
+function NotesList({ T, dark, click, notes, onOpen, onCreate }) {
+  const sorted = [...notes].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+  return (
+    <div className="pt-6">
+      <div className="flex items-center justify-between mb-0.5">
+        <div className="disp font-bold text-[26px]">Notes</div>
+        <button onClick={() => { click(); onCreate(); }} className="bp-btn p-2.5 rounded-xl"
+          style={{ background: "#2E7CFF", boxShadow: "0 4px 0 #1B54D8" }}>
+          <I n="plus" size={19} color="#fff" />
+        </button>
+      </div>
+      <div className="text-[13px] font-bold mb-4" style={{ color: T.sub }}>
+        {sorted.length} note{sorted.length === 1 ? "" : "s"} · 笔记
+      </div>
+
+      {sorted.length === 0 ? (
+        <div className="rounded-[26px] p-8 text-center" style={{ background: T.card, border: `2px solid ${T.line}` }}>
+          <I n="pen" size={30} color={T.sub} />
+          <div className="font-extrabold text-[14px] mt-3" style={{ color: T.text }}>No notes yet</div>
+          <div className="text-[12.5px] font-bold mt-1" style={{ color: T.sub }}>Tap + to write your first note, in Chinese or English</div>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2.5">
+          {sorted.map((n) => (
+            <button key={n.id} onClick={() => { click(); onOpen(n.id); }}
+              className="bp-btn w-full text-left rounded-[22px] p-4"
+              style={{ background: T.card, border: `2px solid ${T.line}` }}>
+              <div className="font-extrabold text-[15px] truncate" style={{ color: T.text }}>
+                {n.title || "Untitled"}
+              </div>
+              <div className="text-[12.5px] font-bold mt-1 truncate" style={{ color: T.sub }}>
+                {stripHtml(n.html) || "No additional text"}
+              </div>
+              <div className="text-[10.5px] font-bold mt-1.5" style={{ color: T.sub, opacity: 0.7 }}>
+                {n.updatedAt ? new Date(n.updatedAt).toLocaleDateString() : ""}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function NoteEditor({ note, T, dark, click, onBack, onSaveNote, onDeleteNote }) {
+  const bodyRef = useRef(null);
+  const saveTimer = useRef(null);
+  const [title, setTitle] = useState(note.title || "");
+
+  useEffect(() => {
+    setTitle(note.title || "");
+    if (bodyRef.current) bodyRef.current.innerHTML = note.html || "";
+  }, [note.id]);
+
+  const scheduleSave = (patch) => {
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => onSaveNote(note.id, patch), 400);
+  };
+
+  const finish = () => {
+    clearTimeout(saveTimer.current);
+    onSaveNote(note.id, { title, html: bodyRef.current ? bodyRef.current.innerHTML : note.html });
+    onBack();
+  };
+
+  const format = (cmd, value) => {
+    if (!bodyRef.current) return;
+    bodyRef.current.focus();
+    document.execCommand(cmd, false, value);
+    scheduleSave({ html: bodyRef.current.innerHTML });
+  };
+
+  const SIZES = [["Small", "2"], ["Normal", "3"], ["Large", "5"], ["Huge", "7"]];
+
+  return (
+    <div className="pt-6 pb-4">
+      <style>{`#bp-note-body:empty:before{content:attr(data-placeholder);color:${T.sub}}`}</style>
+      <div className="flex items-center justify-between mb-4">
+        <button onClick={() => { click(); finish(); }} className="bp-btn p-2.5 rounded-xl"
+          style={{ background: T.card, border: `2px solid ${T.line}`, boxShadow: `0 3px 0 ${T.line}` }}>
+          <I n="back" size={19} color={T.sub} />
+        </button>
+        <button onClick={() => { click(); if (window.confirm("Delete this note?")) onDeleteNote(note.id); }}
+          className="bp-btn p-2.5 rounded-xl"
+          style={{ background: T.card, border: `2px solid ${T.line}`, boxShadow: `0 3px 0 ${T.line}` }}>
+          <I n="trash" size={18} color="#FF5A5F" />
+        </button>
+      </div>
+
+      <input value={title} onChange={(e) => { setTitle(e.target.value); scheduleSave({ title: e.target.value }); }}
+        placeholder="Title" className="disp font-bold text-[22px] w-full bg-transparent outline-none mb-3"
+        style={{ color: T.text }} />
+
+      <div className="flex items-center gap-2 mb-3 flex-wrap rounded-2xl p-2"
+        style={{ background: T.card, border: `2px solid ${T.line}` }}>
+        <button onClick={() => format("bold")} className="bp-btn px-3.5 py-2 rounded-xl font-black text-[14px]"
+          style={{ color: T.text, background: T.chip }}>B</button>
+        <button onClick={() => format("italic")} className="bp-btn px-3.5 py-2 rounded-xl font-black italic text-[14px]"
+          style={{ color: T.text, background: T.chip }}>I</button>
+        <button onClick={() => format("underline")} className="bp-btn px-3.5 py-2 rounded-xl font-black underline text-[14px]"
+          style={{ color: T.text, background: T.chip }}>U</button>
+        <select onChange={(e) => format("fontSize", e.target.value)} defaultValue="3"
+          className="bp-btn px-2.5 py-2 rounded-xl font-bold text-[12px] outline-none"
+          style={{ color: T.text, background: T.chip }}>
+          {SIZES.map(([label, v]) => <option key={v} value={v}>{label}</option>)}
+        </select>
+      </div>
+
+      <div id="bp-note-body" ref={bodyRef} contentEditable suppressContentEditableWarning
+        onInput={() => scheduleSave({ html: bodyRef.current.innerHTML })}
+        onBlur={() => scheduleSave({ html: bodyRef.current.innerHTML })}
+        data-placeholder="Start typing in Chinese or English…"
+        className="rounded-[22px] p-4 outline-none"
+        style={{ background: T.card, border: `2px solid ${T.line}`, color: T.text, lineHeight: 1.7, minHeight: "50vh" }} />
     </div>
   );
 }
