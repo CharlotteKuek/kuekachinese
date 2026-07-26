@@ -504,7 +504,7 @@ export default function App() {
     profileRef.current = name;
     setProfile(name);
     try {
-      const r = await window.storage.get(keyFor(name));
+      const _sv = localStorage.getItem(keyFor(name)); const r = _sv ? { value: _sv } : null;
       if (r && r.value) {
         const saved = applySave(JSON.parse(r.value));
         if (!saved.onboarded) setSheet("help");
@@ -515,12 +515,12 @@ export default function App() {
     } catch (e) { applySave({}); setSheet("help"); }
     setScreen("home");
     try {
-      const meta = await window.storage.get(PROFILES_KEY);
+      const _pm = localStorage.getItem(PROFILES_KEY); const meta = _pm ? { value: _pm } : null;
       const m = meta && meta.value ? JSON.parse(meta.value) : { list: [], active: null };
       m.active = name;
       if (!m.list.includes(name)) m.list.push(name);
       setProfiles(m.list);
-      await window.storage.set(PROFILES_KEY, JSON.stringify(m));
+      localStorage.setItem(PROFILES_KEY, JSON.stringify(m));
     } catch (e) {}
   };
 
@@ -528,7 +528,7 @@ export default function App() {
     (async () => {
       let meta = null;
       try {
-        const r = await window.storage.get(PROFILES_KEY);
+        const _pv = localStorage.getItem(PROFILES_KEY); const r = _pv ? { value: _pv } : null;
         if (r && r.value) meta = JSON.parse(r.value);
       } catch (e) {}
 
@@ -536,13 +536,13 @@ export default function App() {
         // first run on this device — carry over any pre-profiles save
         let legacy = null;
         try {
-          const old = await window.storage.get(LEGACY_KEY);
+          const _lv = localStorage.getItem(LEGACY_KEY); const old = _lv ? { value: _lv } : null;
           if (old && old.value) legacy = JSON.parse(old.value);
         } catch (e) {}
         if (legacy) {
           const name = "Me";
-          await window.storage.set(keyFor(name), JSON.stringify(legacy));
-          await window.storage.set(PROFILES_KEY, JSON.stringify({ list: [name], active: name }));
+          localStorage.setItem(keyFor(name), JSON.stringify(legacy));
+          localStorage.setItem(PROFILES_KEY, JSON.stringify({ list: [name], active: name }));
           setProfiles([name]);
           await loadProfile(name);
         } else {
@@ -563,7 +563,7 @@ export default function App() {
     setState((prev) => {
       const next = fn(prev);
       stateRef.current = next;
-      if (profileRef.current) window.storage.set(keyFor(profileRef.current), JSON.stringify(next)).catch(() => {});
+      if (profileRef.current) { try { localStorage.setItem(keyFor(profileRef.current), JSON.stringify(next)); } catch(e) {} }
       return next;
     });
   }, []);
@@ -896,10 +896,10 @@ Respond with ONLY a JSON array, ordered, no markdown:
 
   const deleteProfile = async (name) => {
     try {
-      await window.storage.delete(keyFor(name));
+      localStorage.removeItem(keyFor(name));
       const rest = profiles.filter((p) => p !== name);
       setProfiles(rest);
-      await window.storage.set(PROFILES_KEY, JSON.stringify({ list: rest, active: rest[0] || null }));
+      localStorage.setItem(PROFILES_KEY, JSON.stringify({ list: rest, active: rest[0] || null }));
       if (rest.length) await loadProfile(rest[0]); else { setProfile(null); profileRef.current = null; setScreen("profile"); }
       setBanner(`${name} deleted`);
     } catch (e) { setBanner("Couldn't delete that profile."); }
