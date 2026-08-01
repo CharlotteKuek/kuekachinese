@@ -3,3 +3,6 @@
 !README.md
 !blue-panda/
 !blue-panda/**
+!src/
+src/*
+!src/firebase.js
