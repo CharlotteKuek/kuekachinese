@@ -1,4 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import {
+  firebaseReady, signInWithGoogle, consumeRedirectResult, watchAuth, signOutUser,
+  fetchCloudSave, writeCloudSave, watchCloudSave,
+} from "./firebase";
 
 /* ============================================================
    kuekachinese · v5
@@ -9,6 +13,26 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 const LEGACY_KEY = "bluepanda_v1";           // pre-profiles save
 const PROFILES_KEY = "bp_profiles";           // { list: [names], active: name }
 const keyFor = (name) => "bp_save__" + name.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+
+/* One-time migration helper: pulls whatever this browser saved before
+   cloud sync existed (named local profile, or the very first pre-profiles
+   save) so a fresh Google sign-in doesn't start empty. */
+function readLocalSeed() {
+  try {
+    const metaRaw = localStorage.getItem(PROFILES_KEY);
+    const meta = metaRaw ? JSON.parse(metaRaw) : null;
+    const name = meta && (meta.active || (meta.list || [])[0]);
+    if (name) {
+      const raw = localStorage.getItem(keyFor(name));
+      if (raw) return JSON.parse(raw);
+    }
+  } catch (e) {}
+  try {
+    const legacyRaw = localStorage.getItem(LEGACY_KEY);
+    if (legacyRaw) return JSON.parse(legacyRaw);
+  } catch (e) {}
+  return null;
+}
 
 /* Charlotte's kuekadoodledoo logo, embedded so it works offline */
 const LOGO = "data:image/png;base64,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";
@@ -465,9 +489,10 @@ export default function App() {
     recent: [],
   });
   const stateRef = useRef(state);
-  const [profile, setProfile] = useState(null);
-  const [profiles, setProfiles] = useState([]);
-  const profileRef = useRef(null);
+  const [authUser, setAuthUser] = useState(null); // { uid, name, email, photo }
+  const profileRef = useRef(null); // holds the Firebase uid once signed in
+  const lastPushedRef = useRef(null); // last payload we pushed, to ignore our own snapshot echo
+  const cloudSaveTimer = useRef(null);
   const [activeTopic, setActiveTopic] = useState(null);
   const [activeNoteId, setActiveNoteId] = useState(null);
   const [mode, setMode] = useState("learn");
@@ -502,62 +527,69 @@ export default function App() {
     return saved;
   };
 
-  const loadProfile = async (name) => {
-    profileRef.current = name;
-    setProfile(name);
-    try {
-      const _sv = localStorage.getItem(keyFor(name)); const r = _sv ? { value: _sv } : null;
-      if (r && r.value) {
-        const saved = applySave(JSON.parse(r.value));
-        if (!saved.onboarded) setSheet("help");
-      } else {
-        applySave({});
-        setSheet("help");
-      }
-    } catch (e) { applySave({}); setSheet("help"); }
-    setScreen("home");
-    try {
-      const _pm = localStorage.getItem(PROFILES_KEY); const meta = _pm ? { value: _pm } : null;
-      const m = meta && meta.value ? JSON.parse(meta.value) : { list: [], active: null };
-      m.active = name;
-      if (!m.list.includes(name)) m.list.push(name);
-      setProfiles(m.list);
-      localStorage.setItem(PROFILES_KEY, JSON.stringify(m));
-    } catch (e) {}
-  };
-
+  /* Auth is the source of truth for "which save file". On sign-in we pull
+     the cloud copy (or migrate a pre-sync local save up on first sign-in),
+     then keep listening for changes pushed from other devices. */
   useEffect(() => {
-    (async () => {
-      let meta = null;
+    let unsubSnap = null;
+    consumeRedirectResult().catch(() => {});
+
+    const unsubAuth = watchAuth(async (user) => {
+      if (unsubSnap) { unsubSnap(); unsubSnap = null; }
+
+      if (!user) {
+        profileRef.current = null;
+        setAuthUser(null);
+        setScreen("signin");
+        setReady(true);
+        return;
+      }
+
+      const uid = user.uid;
+      profileRef.current = uid;
+      setAuthUser({ uid, name: user.displayName, email: user.email, photo: user.photoURL });
+
+      // instant paint from this device's cache while the cloud fetch is in flight
       try {
-        const _pv = localStorage.getItem(PROFILES_KEY); const r = _pv ? { value: _pv } : null;
-        if (r && r.value) meta = JSON.parse(r.value);
+        const cached = localStorage.getItem(keyFor(uid));
+        if (cached) applySave(JSON.parse(cached));
       } catch (e) {}
 
-      if (!meta || !meta.list || meta.list.length === 0) {
-        // first run on this device — carry over any pre-profiles save
-        let legacy = null;
-        try {
-          const _lv = localStorage.getItem(LEGACY_KEY); const old = _lv ? { value: _lv } : null;
-          if (old && old.value) legacy = JSON.parse(old.value);
-        } catch (e) {}
-        if (legacy) {
-          const name = "Me";
-          localStorage.setItem(keyFor(name), JSON.stringify(legacy));
-          localStorage.setItem(PROFILES_KEY, JSON.stringify({ list: [name], active: name }));
-          setProfiles([name]);
-          await loadProfile(name);
-        } else {
-          setProfiles([]);
-          setScreen("profile");   // ask who's using it
-        }
+      let cloud = null;
+      try { cloud = firebaseReady ? await fetchCloudSave(uid) : null; } catch (e) {}
+
+      if (cloud && cloud.save) {
+        const parsed = JSON.parse(cloud.save);
+        lastPushedRef.current = cloud.save;
+        const saved = applySave(parsed);
+        if (!saved.onboarded) setSheet("help");
       } else {
-        setProfiles(meta.list);
-        await loadProfile(meta.active || meta.list[0]);
+        const seed = readLocalSeed();
+        const saved = applySave(seed || {});
+        if (!seed) setSheet("help");
+        if (firebaseReady) {
+          const payload = JSON.stringify(saved);
+          lastPushedRef.current = payload;
+          writeCloudSave(uid, { save: payload, updatedAt: Date.now() }).catch(() => {});
+        }
       }
+
+      setScreen("home");
       setReady(true);
-      pickVoice();
-    })();
+
+      if (firebaseReady) {
+        unsubSnap = watchCloudSave(uid, (data) => {
+          if (!data || !data.save || data.save === lastPushedRef.current) return;
+          try {
+            lastPushedRef.current = data.save;
+            applySave(JSON.parse(data.save));
+          } catch (e) {}
+        });
+      }
+    });
+
+    pickVoice();
+    return () => { unsubAuth && unsubAuth(); if (unsubSnap) unsubSnap(); };
   }, []);
 
   /* functional update — avoids stale-state bugs on rapid taps */
@@ -565,7 +597,18 @@ export default function App() {
     setState((prev) => {
       const next = fn(prev);
       stateRef.current = next;
-      if (profileRef.current) { try { localStorage.setItem(keyFor(profileRef.current), JSON.stringify(next)); } catch(e) {} }
+      if (profileRef.current) {
+        try { localStorage.setItem(keyFor(profileRef.current), JSON.stringify(next)); } catch (e) {}
+        if (firebaseReady) {
+          clearTimeout(cloudSaveTimer.current);
+          const uid = profileRef.current;
+          cloudSaveTimer.current = setTimeout(() => {
+            const payload = JSON.stringify(next);
+            lastPushedRef.current = payload;
+            writeCloudSave(uid, { save: payload, updatedAt: Date.now() }).catch(() => {});
+          }, 800);
+        }
+      }
       return next;
     });
   }, []);
@@ -906,28 +949,17 @@ Respond with ONLY a JSON array, ordered, no markdown:
     );
   }
 
-  const switchProfile = async (name) => { click(s.sound); await loadProfile(name); setBanner(`Switched to ${name}`); };
-
-  const createProfile = async (name) => {
-    const clean = name.trim().slice(0, 20);
-    if (!clean) return;
-    if (profiles.some((p) => p.toLowerCase() === clean.toLowerCase())) { setBanner("That name's taken."); return; }
+  const doSignIn = async () => {
     click(s.sound);
-    await loadProfile(clean);
+    try { await signInWithGoogle(); } catch (e) { setBanner("Couldn't sign in — try again."); }
   };
 
-  const deleteProfile = async (name) => {
-    try {
-      localStorage.removeItem(keyFor(name));
-      const rest = profiles.filter((p) => p !== name);
-      setProfiles(rest);
-      localStorage.setItem(PROFILES_KEY, JSON.stringify({ list: rest, active: rest[0] || null }));
-      if (rest.length) await loadProfile(rest[0]); else { setProfile(null); profileRef.current = null; setScreen("profile"); }
-      setBanner(`${name} deleted`);
-    } catch (e) { setBanner("Couldn't delete that profile."); }
+  const doSignOut = async () => {
+    click(s.sound);
+    try { await signOutUser(); setBanner("Signed out"); } catch (e) { setBanner("Couldn't sign out."); }
   };
 
-  const shared = { state, update, T, dark, s, click: () => click(s.sound), setScreen, setBanner, topicById };
+  const shared = { state, update, T, dark, s, click: () => click(s.sound), setScreen, setBanner, topicById, authUser };
 
   return (
     <div className="min-h-screen w-full" style={{ background: T.bg, color: T.text }}>
@@ -1023,9 +1055,8 @@ Respond with ONLY a JSON array, ordered, no markdown:
 
         {loading && <LoadingOverlay T={T} />}
 
-        {screen === "profile" && (
-          <ProfileGate T={T} dark={dark} profiles={profiles} onPick={switchProfile} onCreate={createProfile}
-            canCancel={!!profile} onCancel={() => setScreen("settings")} />
+        {screen === "signin" && (
+          <SignIn T={T} dark={dark} firebaseReady={firebaseReady} onGoogle={doSignIn} />
         )}
         {screen === "home" && (
           <Home {...shared} allTopics={allTopics} onTopic={openTopic} onQuiz={startDailyQuiz}
@@ -1073,10 +1104,7 @@ Respond with ONLY a JSON array, ordered, no markdown:
             onBack={() => setScreen("notes")} onSaveNote={saveNote} onDeleteNote={deleteNote} />
         )}
         {screen === "settings" && (
-          <SettingsScreen {...shared} onHelp={() => setSheet("help")}
-            profiles={profiles} profile={profile}
-            onSwitchProfile={switchProfile} onDeleteProfile={deleteProfile}
-            onAddProfile={() => setScreen("profile")} />
+          <SettingsScreen {...shared} onHelp={() => setSheet("help")} onSignOut={doSignOut} />
         )}
       </div>
 
@@ -1245,60 +1273,47 @@ function Dictionary({ topic, state, T, dark, s, click, setScreen, toggleStar, on
   );
 }
 
-/* ---------------- WHO'S STUDYING ---------------- */
-function ProfileGate({ T, dark, profiles, onPick, onCreate, canCancel, onCancel }) {
-  const [name, setName] = useState("");
+/* ---------------- SIGN IN ---------------- */
+function GoogleG({ size = 20 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48">
+      <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.5 30.2 0 24 0 14.6 0 6.5 5.4 2.5 13.2l7.8 6.1C12.2 13.2 17.6 9.5 24 9.5z" />
+      <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.6c-.6 3-2.3 5.5-4.9 7.2l7.6 5.9c4.4-4.1 7.2-10.1 7.2-17.6z" />
+      <path fill="#FBBC05" d="M10.3 28.3a14.5 14.5 0 010-8.6l-7.8-6.1a24 24 0 000 20.8l7.8-6.1z" />
+      <path fill="#34A853" d="M24 48c6.2 0 11.6-2 15.4-5.6l-7.6-5.9c-2.1 1.4-4.8 2.3-7.8 2.3-6.4 0-11.8-3.7-13.7-9.5l-7.8 6.1C6.5 42.6 14.6 48 24 48z" />
+    </svg>
+  );
+}
+
+function SignIn({ T, dark, firebaseReady, onGoogle }) {
   return (
     <div className="pt-16 pb-10">
-      <div className="text-center mb-7">
+      <div className="text-center mb-9">
         <img src={LOGO} alt="" className="mx-auto mb-4"
           style={{ width: 84, filter: dark ? "brightness(0) invert(1)" : "none", opacity: 0.9 }} />
         <div className="disp font-bold text-[27px] leading-tight">kuekachinese</div>
         <div className="text-[13px] font-bold mt-2 px-6" style={{ color: T.sub }}>
-          {profiles.length ? "Who's studying?" : "What should I call you? Your words and streak are saved under this name."}
+          Sign in to sync your words, streak and notes across every device.
         </div>
       </div>
 
-      {profiles.length > 0 && (
-        <div className="flex flex-col gap-2.5 mb-6">
-          {profiles.map((p) => (
-            <button key={p} onClick={() => onPick(p)}
-              className="bp-btn rounded-[26px] px-5 py-4 text-left font-extrabold text-[15px] flex items-center gap-3"
-              style={{ background: T.card, color: T.text, border: `2px solid ${T.line}`, boxShadow: `0 5px 0 ${T.line}` }}>
-              <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-                style={{ background: "#EC48991E", color: "#EC4899" }}>
-                <span className="disp font-bold text-[16px]">{p.slice(0, 1).toUpperCase()}</span>
-              </div>
-              {p}
-              <div className="flex-1" />
-              <I n="chevron" size={18} color={T.sub} />
-            </button>
-          ))}
-        </div>
-      )}
-
-      <div className="rounded-[26px] p-4" style={{ background: T.card, border: `2px solid ${T.line}`, boxShadow: `0 5px 0 ${T.line}` }}>
-        <div className="text-[10.5px] font-black tracking-[.12em] mb-2.5" style={{ color: T.sub }}>
-          {profiles.length ? "NEW PERSON" : "YOUR NAME"}
-        </div>
-        <input value={name} onChange={(e) => setName(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") onCreate(name); }}
-          placeholder="e.g. Charlotte" maxLength={20}
-          className="w-full rounded-[22px] px-4 py-3 font-bold outline-none text-[15px] mb-3"
-          style={{ background: T.chip, color: T.text, border: `2px solid ${T.line}` }} />
-        <Chunky full color="#EC4899" disabled={!name.trim()} onClick={() => onCreate(name)}>
-          Start learning
-        </Chunky>
-      </div>
-
-      {canCancel && (
-        <button onClick={onCancel} className="w-full mt-4 font-extrabold text-[13px]" style={{ color: T.sub }}>
-          Cancel
+      {firebaseReady ? (
+        <button onClick={onGoogle}
+          className="bp-btn w-full rounded-[26px] px-5 py-4 flex items-center justify-center gap-3 font-extrabold text-[15px]"
+          style={{ background: T.card, color: T.text, border: `2px solid ${T.line}`, boxShadow: `0 5px 0 ${T.line}` }}>
+          <GoogleG size={20} /> Continue with Google
         </button>
+      ) : (
+        <div className="rounded-[26px] p-4 text-center" style={{ background: T.card, border: `2px solid ${T.line}` }}>
+          <div className="font-extrabold text-[14px]" style={{ color: T.text }}>Cloud sync isn't configured yet</div>
+          <div className="text-[12.5px] font-bold mt-1.5" style={{ color: T.sub }}>
+            Add your Firebase config to a .env file (see .env.example) and restart the dev server.
+          </div>
+        </div>
       )}
 
       <div className="text-[11px] font-bold text-center mt-6 px-6" style={{ color: T.sub }}>
-        Sharing this app? Everyone adds their own name — progress never mixes.
+        Your progress is tied to your Google account — sign in the same way on every device to keep it in sync.
       </div>
     </div>
   );
@@ -2949,7 +2964,7 @@ function NoteEditor({ note, T, dark, click, onBack, onSaveNote, onDeleteNote }) 
 }
 
 /* ---------------- SETTINGS ---------------- */
-function SettingsScreen({ state, update, T, dark, s, click, setBanner, onHelp, profiles, profile, onSwitchProfile, onDeleteProfile, onAddProfile }) {
+function SettingsScreen({ state, update, T, dark, s, click, setBanner, onHelp, authUser, onSignOut }) {
   const set = (patch) => update((prev) => ({ ...prev, settings: { ...prev.settings, ...patch } }));
   const Seg = ({ options, value, onPick }) => (
     <div className="flex gap-2.5">
@@ -3064,37 +3079,26 @@ function SettingsScreen({ state, update, T, dark, s, click, setBanner, onHelp, p
           className="w-full rounded-xl px-4 py-3 font-extrabold text-[14px] outline-none"
           style={{ background: T.chip, color: T.text, border: `2px solid ${T.line}` }} />
       </Row>
-      <Row label="Who's studying" hint="Each name keeps its own words, streak and progress on this device.">
-        <div className="flex flex-col gap-2">
-          {profiles.map((p) => {
-            const on = p === profile;
-            return (
-              <div key={p} className="flex items-center gap-2">
-                <button onClick={() => { if (!on) onSwitchProfile(p); }}
-                  className="bp-btn flex-1 rounded-[22px] px-4 py-3 text-left font-extrabold text-[14px]"
-                  style={{
-                    background: on ? "#EC489914" : T.chip, color: on ? "#EC4899" : T.sub,
-                    border: `2px solid ${on ? "#EC4899" : T.line}`, boxShadow: `0 3px 0 ${on ? "#EC489944" : T.line}`,
-                  }}>
-                  {p} {on && <span className="text-[11px]">· active</span>}
-                </button>
-                {profiles.length > 1 && (
-                  <button onClick={() => {
-                    click();
-                    if (window.confirm(`Delete profile "${p}" and all of its progress? This can't be undone.`)) onDeleteProfile(p);
-                  }} className="p-2.5 rounded-xl" style={{ background: "#FF5A5F14", border: "2px solid #FF5A5F44" }}>
-                    <I n="trash" size={16} color="#FF5A5F" />
-                  </button>
-                )}
-              </div>
-            );
-          })}
-          <button onClick={() => { click(); onAddProfile(); }}
-            className="bp-btn rounded-[22px] px-4 py-3 font-extrabold text-[13px] flex items-center justify-center gap-2"
-            style={{ background: T.card, color: T.sub, border: `2px dashed ${T.sub}66`, boxShadow: `0 3px 0 ${T.line}` }}>
-            <I n="plus" size={16} color={T.sub} sw={2.6} /> Add another person
-          </button>
+      <Row label="Account" hint="Signed in with Google — your words, streak and notes sync automatically to every device you sign into.">
+        <div className="flex items-center gap-3 mb-3">
+          {authUser?.photo ? (
+            <img src={authUser.photo} alt="" className="w-10 h-10 rounded-full" referrerPolicy="no-referrer" />
+          ) : (
+            <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+              style={{ background: "#EC48991E", color: "#EC4899" }}>
+              <span className="disp font-bold text-[16px]">{(authUser?.name || authUser?.email || "?").slice(0, 1).toUpperCase()}</span>
+            </div>
+          )}
+          <div className="min-w-0">
+            <div className="font-extrabold text-[14px] truncate" style={{ color: T.text }}>{authUser?.name || "Signed in"}</div>
+            <div className="text-[12px] font-bold truncate" style={{ color: T.sub }}>{authUser?.email}</div>
+          </div>
         </div>
+        <button onClick={() => { click(); onSignOut(); }}
+          className="bp-btn rounded-xl py-3 px-4 font-extrabold w-full text-[14px]"
+          style={{ background: T.chip, color: T.sub, border: `2px solid ${T.line}`, boxShadow: `0 4px 0 ${T.line}` }}>
+          Sign out
+        </button>
       </Row>
       <Row label="Help">
         <button onClick={() => { click(); onHelp(); }}
