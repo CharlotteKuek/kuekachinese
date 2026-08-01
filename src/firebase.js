@@ -35,15 +35,22 @@ if (firebaseReady) {
 
 export { auth, db };
 
-/* Standalone home-screen apps (iOS "Add to Home Screen") can't reliably open
-   popups, so redirect there; a regular browser tab is fine with a popup. */
-const isStandalone = () =>
-  typeof window !== "undefined" &&
-  (window.navigator.standalone || window.matchMedia?.("(display-mode: standalone)").matches);
-
-export function signInWithGoogle() {
+/* iOS home-screen ("Add to Home Screen") apps notoriously fail to complete
+   signInWithRedirect — the app loses track of the pending sign-in when it
+   gets backgrounded during the trip out to Google and back. A popup avoids
+   that round trip entirely, so try it first everywhere and only fall back
+   to redirect if the environment genuinely can't open one. */
+export async function signInWithGoogle() {
   if (!auth) return Promise.reject(new Error("Firebase not configured"));
-  return isStandalone() ? signInWithRedirect(auth, googleProvider) : signInWithPopup(auth, googleProvider);
+  try {
+    await signInWithPopup(auth, googleProvider);
+  } catch (err) {
+    const code = err && err.code;
+    if (code === "auth/popup-blocked" || code === "auth/operation-not-supported-in-this-environment") {
+      return signInWithRedirect(auth, googleProvider);
+    }
+    throw err;
+  }
 }
 
 export function consumeRedirectResult() {
