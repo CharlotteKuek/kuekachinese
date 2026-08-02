@@ -360,6 +360,29 @@ const ding = (on) => {
   });
 };
 
+/* bright arcade-style "correct answer" chime — punchy square-wave arpeggio
+   with a sparkle overtone, distinct from the softer `ding` and the
+   session-complete `fanfare`. */
+const chime = (on) => {
+  if (!on) return;
+  const c = actx(); if (!c) return;
+  const t = c.currentTime;
+  [784, 988, 1319].forEach((f, i) => {
+    const o = c.createOscillator(); o.type = "square"; o.frequency.value = f;
+    const g = c.createGain();
+    g.gain.setValueAtTime(0, t + i * 0.055);
+    g.gain.linearRampToValueAtTime(0.16, t + i * 0.055 + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.055 + 0.22);
+    o.connect(g).connect(c.destination); o.start(t + i * 0.055); o.stop(t + i * 0.055 + 0.24);
+  });
+  const sp = c.createOscillator(); sp.type = "triangle"; sp.frequency.value = 1976;
+  const gs = c.createGain();
+  gs.gain.setValueAtTime(0, t + 0.11);
+  gs.gain.linearRampToValueAtTime(0.1, t + 0.12);
+  gs.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
+  sp.connect(gs).connect(c.destination); sp.start(t + 0.11); sp.stop(t + 0.34);
+};
+
 const buzz = (on) => {
   if (!on) return;
   const c = actx(); if (!c) return;
@@ -2023,6 +2046,7 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
   const [picked, setPicked] = useState(null);
   const [showTrans, setShowTrans] = useState(false);
   const [answers, setAnswers] = useState({}); // qIndex -> chosen value / "learned"
+  const [revealed, setRevealed] = useState(null); // answerField value of the option currently expanded for inspection
   const item = queue[qIndex];
   const accent = mode === "quiz" ? "#7048E8" : (topic?.color || "#EC4899");
   const wTopic = item ? topicById(item.word.topicId) : null;
@@ -2055,6 +2079,7 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
   useEffect(() => {
     setPicked(answers[qIndex] !== undefined && answers[qIndex] !== "learned" ? answers[qIndex] : null);
     setShowTrans(false);
+    setRevealed(null);
     if (item && item.type === "quiz" && item.variant === "audio" && answers[qIndex] === undefined) {
       const t = setTimeout(() => speak(item.word.hanzi), 350);
       return () => clearTimeout(t);
@@ -2077,7 +2102,9 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
     const correct = opt[answerField] === w[answerField];
     setPicked(opt[answerField]);
     setAnswers((p) => ({ ...p, [qIndex]: opt[answerField] }));
-    correct ? ding(s.sound) : buzz(s.sound);
+    click();
+    correct ? chime(s.sound) : buzz(s.sound);
+    if (opt.hanzi) setTimeout(() => speak(opt.hanzi), 260);
     recordAnswer(w, correct);
     setStats((p) => ({ ...p, right: p.right + (correct ? 1 : 0), wrong: p.wrong + (correct ? 0 : 1) }));
     if (!correct && mode !== "quiz") {
