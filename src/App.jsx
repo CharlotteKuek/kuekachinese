@@ -99,7 +99,7 @@ function I({ n, size = 20, color = "currentColor", sw = 2.1, fill = "none", styl
 
 /* ---------------- topics ---------------- */
 const CORE_TOPICS = [
-  { id: "interview", name: "Interview & recruitment", zh: "面试求职", color: "#EC4899", icon: "briefcase" },
+  { id: "interview", name: "Interview & recruitment", zh: "面试求职", color: "#6FA3D8", icon: "briefcase" },
   { id: "housing",   name: "Housing & setup",         zh: "租房安顿", color: "#FF7A45", icon: "home" },
   { id: "transit",   name: "Getting around",          zh: "交通出行", color: "#16C79A", icon: "train" },
   { id: "pay",       name: "Payments & apps",         zh: "支付软件", color: "#8B5CF6", icon: "qr" },
@@ -127,7 +127,7 @@ const LIBRARY = [
   { id: "renting",     name: "Renting deep-dive",       zh: "租房进阶", color: "#F76707", icon: "key" },
 ];
 
-const PALETTE = ["#EC4899", "#7048E8", "#16C79A", "#FF7A45", "#E64980", "#0CA678", "#845EF7", "#1098AD", "#F0663A", "#3B5BDB"];
+const PALETTE = ["#6FA3D8", "#7048E8", "#16C79A", "#FF7A45", "#E64980", "#0CA678", "#845EF7", "#1098AD", "#F0663A", "#3B5BDB"];
 
 /* ---------------- seed words ---------------- */
 const SEED = {
@@ -252,7 +252,7 @@ const shuffle = (a) => {
 };
 
 function shade(hex, amt) {
-  const n = parseInt((hex || "#EC4899").replace("#", ""), 16);
+  const n = parseInt((hex || "#6FA3D8").replace("#", ""), 16);
   const r = Math.max(0, Math.min(255, (n >> 16) + amt));
   const g = Math.max(0, Math.min(255, ((n >> 8) & 255) + amt));
   const b = Math.max(0, Math.min(255, (n & 255) + amt));
@@ -473,13 +473,13 @@ function Ruby({ zh, pinyin, size = 30, pySize = 12, color, sub, center = true, g
 function Panda({ size = 96, mood = "happy" }) {
   return (
     <svg width={size} height={size} viewBox="0 0 120 120">
-      <ellipse cx="26" cy="30" rx="14" ry="14" fill="#4A1030" />
-      <ellipse cx="94" cy="30" rx="14" ry="14" fill="#4A1030" />
-      <ellipse cx="26" cy="30" rx="7" ry="7" fill="#EC4899" opacity=".5" />
-      <ellipse cx="94" cy="30" rx="7" ry="7" fill="#EC4899" opacity=".5" />
-      <ellipse cx="60" cy="62" rx="42" ry="38" fill="#FDE6F1" />
-      <ellipse cx="38" cy="55" rx="13" ry="15" fill="#EC4899" transform="rotate(-12 38 55)" />
-      <ellipse cx="82" cy="55" rx="13" ry="15" fill="#EC4899" transform="rotate(12 82 55)" />
+      <ellipse cx="26" cy="30" rx="14" ry="14" fill="#33566E" />
+      <ellipse cx="94" cy="30" rx="14" ry="14" fill="#33566E" />
+      <ellipse cx="26" cy="30" rx="7" ry="7" fill="#6FA3D8" opacity=".5" />
+      <ellipse cx="94" cy="30" rx="7" ry="7" fill="#6FA3D8" opacity=".5" />
+      <ellipse cx="60" cy="62" rx="42" ry="38" fill="#E3EEF9" />
+      <ellipse cx="38" cy="55" rx="13" ry="15" fill="#6FA3D8" transform="rotate(-12 38 55)" />
+      <ellipse cx="82" cy="55" rx="13" ry="15" fill="#6FA3D8" transform="rotate(12 82 55)" />
       {mood === "happy" ? (
         <>
           <circle cx="38" cy="56" r="5.5" fill="#0B1B33" />
@@ -655,10 +655,10 @@ Use ONLY Simplified Chinese characters (简体字, zh-CN) everywhere — NEVER t
 
 Respond with ONLY a JSON array:
 [{"hanzi":"实习","pinyin":"shí xí","en":"internship","sZh":"我在深圳实习。","sPy":"Wǒ zài Shēn zhèn shí xí.","sEn":"I'm interning in Shenzhen."}]`;
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch("/api/anthropic", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 4000, messages: [{ role: "user", content: prompt }] }),
+      body: JSON.stringify({ model: "claude-sonnet-5", max_tokens: 4000, messages: [{ role: "user", content: prompt }] }),
     });
     const data = await res.json();
     const text = data.content.filter((b) => b.type === "text").map((b) => b.text).join("");
@@ -735,9 +735,9 @@ Give each word a "why" of at most 8 words saying when they'd use it.
 Respond with ONLY a JSON array, ordered, no markdown:
 [{"hanzi":"面试","pinyin":"miàn shì","en":"job interview","sZh":"我明天有一个面试。","sPy":"Wǒ míng tiān yǒu yí gè miàn shì.","sEn":"I have an interview tomorrow.","why":"Every application starts here"}]`;
 
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch("/api/anthropic", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 6000, messages: [{ role: "user", content: prompt }] }),
+      body: JSON.stringify({ model: "claude-sonnet-5", max_tokens: 6000, messages: [{ role: "user", content: prompt }] }),
     });
     const data = await res.json();
     const text = data.content.filter((b) => b.type === "text").map((b) => b.text).join("");
@@ -960,13 +960,13 @@ Respond with ONLY a JSON array, ordered, no markdown:
   };
 
   const T = dark
-    ? { bg: "#1A0B14", card: "#2B1220", text: "#FDE6F1", sub: "#C88CA6", line: "#4A1F35", chip: "#33132A", hero: "linear-gradient(140deg,#BE185D,#EC4899 60%,#F472B6)" }
-    : { bg: "#FFF0F7", card: "#FFFFFF", text: "#3D1230", sub: "#9C5C79", line: "#F7C6E0", chip: "#FDE6F1", hero: "linear-gradient(140deg,#EC4899,#F472B6 60%,#F9A8D4)" };
+    ? { bg: "#12202E", card: "#1C2E40", text: "#E3EEF9", sub: "#8FA9BE", line: "#2C4258", chip: "#223447", hero: "linear-gradient(140deg,#3E6D9C,#6FA3D8 60%,#96C2E8)" }
+    : { bg: "#EAF3FB", card: "#FFFFFF", text: "#2E4258", sub: "#6E8AA3", line: "#D3E4F2", chip: "#E3EEF9", hero: "linear-gradient(140deg,#6FA3D8,#96C2E8 60%,#C7E0F5)" };
 
   if (!ready) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "#FFF0F7" }}>
-        <div style={{ width: 38, height: 38, border: "4px solid #F7C6E0", borderTopColor: "#EC4899", borderRadius: "50%", animation: "bpSpin .8s linear infinite" }} />
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "#EAF3FB" }}>
+        <div style={{ width: 38, height: 38, border: "4px solid #D3E4F2", borderTopColor: "#6FA3D8", borderRadius: "50%", animation: "bpSpin .8s linear infinite" }} />
         <style>{`@keyframes bpSpin{to{transform:rotate(360deg)}}`}</style>
       </div>
     );
@@ -1161,7 +1161,7 @@ function Dictionary({ topic, state, T, dark, s, click, setScreen, toggleStar, on
     if (c.known) return { label: "known", color: "#0CA678" };
     if (isMastered(c)) return { label: "mastered", color: "#0CA678" };
     if (isLeech(c)) return { label: "trouble", color: "#FF5A5F" };
-    if (c.seen > 0) return { label: "learning", color: "#EC4899" };
+    if (c.seen > 0) return { label: "learning", color: "#6FA3D8" };
     return { label: "queued", color: T.sub };
   };
 
@@ -1370,7 +1370,7 @@ function LoadingOverlay({ T, expected = 18 }) {
       <div className="w-full max-w-xs">
         <div className="h-3 rounded-full overflow-hidden" style={{ background: T.line }}>
           <div className="h-full rounded-full"
-            style={{ width: pct + "%", background: "linear-gradient(90deg,#EC4899,#7048E8)", transition: "width .25s linear" }} />
+            style={{ width: pct + "%", background: "linear-gradient(90deg,#6FA3D8,#7048E8)", transition: "width .25s linear" }} />
         </div>
         <div className="flex justify-between mt-2 text-[11px] font-extrabold" style={{ color: T.sub }}>
           <span>{Math.round(pct)}%</span>
@@ -1385,13 +1385,13 @@ function Banner({ text, onClose }) {
   useEffect(() => { const t = setTimeout(onClose, 3400); return () => clearTimeout(t); }, [onClose]);
   return (
     <div className="bp-rise fixed top-3 left-1/2 -translate-x-1/2 z-[60] px-4 py-3 rounded-2xl font-extrabold text-sm shadow-xl flex items-center gap-2"
-      style={{ background: "#3D1230", color: "#fff", maxWidth: "92vw" }}>
+      style={{ background: "#2E4258", color: "#fff", maxWidth: "92vw" }}>
       <I n="sparkle" size={16} color="#FFB020" fill="#FFB020" /> {text}
     </div>
   );
 }
 
-function Chunky({ children, color = "#EC4899", onClick, full, style, disabled }) {
+function Chunky({ children, color = "#6FA3D8", onClick, full, style, disabled }) {
   return (
     <button onClick={onClick} disabled={disabled}
       className="bp-btn rounded-[22px] font-extrabold text-white px-5 py-4 disabled:opacity-50 text-[15px]"
@@ -1432,9 +1432,9 @@ function NavBar({ screen, setScreen, T }) {
           const on = screen === id;
           return (
             <button key={id} onClick={() => setScreen(id)} className="flex-1 flex flex-col items-center gap-0.5 py-1.5 rounded-2xl"
-              style={{ background: on ? "#EC489916" : "transparent" }}>
-              <I n={icon} size={21} color={on ? "#EC4899" : T.sub} sw={on ? 2.6 : 2} />
-              <span className="text-[10.5px] font-extrabold" style={{ color: on ? "#EC4899" : T.sub }}>{label}</span>
+              style={{ background: on ? "#6FA3D816" : "transparent" }}>
+              <I n={icon} size={21} color={on ? "#6FA3D8" : T.sub} sw={on ? 2.6 : 2} />
+              <span className="text-[10.5px] font-extrabold" style={{ color: on ? "#6FA3D8" : T.sub }}>{label}</span>
             </button>
           );
         })}
@@ -1463,7 +1463,7 @@ function GoalRing({ pct, done, goal, label = "TODAY", size = 86 }) {
 /* ---------------- HELP SHEET ---------------- */
 function HelpSheet({ T, onClose }) {
   const steps = [
-    { icon: "cards", color: "#EC4899", t: "Tap a topic", d: "Meet new words." },
+    { icon: "cards", color: "#6FA3D8", t: "Tap a topic", d: "Meet new words." },
     { icon: "target", color: "#7048E8", t: "It tests you", d: "Each answer = 1 card toward today's goal." },
     { icon: "timer", color: "#16C79A", t: "Mastered = 3 different days", d: "A word only counts as yours after you get it right on 3 separate days." },
     { icon: "flame", color: "#FF7A45", t: "Hit the goal daily", d: "Miss a day and the streak resets to 0." },
@@ -1528,9 +1528,9 @@ Pick each icon from EXACTLY this list: briefcase, home, train, qr, bowl, people,
 Respond with ONLY a JSON array:
 [{"name":"Product roadmap & specs","zh":"产品规划","icon":"chart","level":2,"why":"You know the basics — this is how PMs actually talk."}]`;
 
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("/api/anthropic", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 900, messages: [{ role: "user", content: prompt }] }),
+        body: JSON.stringify({ model: "claude-sonnet-5", max_tokens: 900, messages: [{ role: "user", content: prompt }] }),
       });
       const data = await res.json();
       const text = data.content.filter((b) => b.type === "text").map((b) => b.text).join("");
@@ -1640,7 +1640,7 @@ Respond with ONLY a JSON array:
             placeholder="e.g. talking to my landlord"
             className="flex-1 rounded-2xl px-4 py-3 font-bold outline-none text-[13.5px]"
             style={{ background: T.card, color: T.text, border: `2px solid ${T.line}` }} />
-          <Chunky color="#EC4899" disabled={!custom.trim()}
+          <Chunky color="#6FA3D8" disabled={!custom.trim()}
             onClick={() => {
               const name = custom.trim();
               onAdd({
@@ -1669,10 +1669,14 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onHelp, 
   const dueCount = cards.filter((c) => !c.known && c.due <= d).length;
   const quizLocked = learned < 5;
 
+  /* The progress bar tracks partial credit (how far each word has climbed
+     through its SRS boxes) so it visibly moves as you practice — "mastered"
+     itself stays a strict, 3-separate-days measure and is shown separately. */
   const statsFor = (id) => {
     const c = cards.filter((x) => x.topicId === id);
     const m = c.filter(isMastered).length;
-    return { seen: c.length, mastered: m, pct: Math.min(100, Math.round((m / TOPIC_TARGET) * 100)) };
+    const progress = c.reduce((sum, card) => sum + Math.min(1, (card.box || 0) / MASTER_BOX), 0);
+    return { seen: c.length, mastered: m, pct: Math.min(100, Math.round((progress / TOPIC_TARGET) * 100)) };
   };
 
   const focus = allTopics
@@ -1681,8 +1685,11 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onHelp, 
     .sort((a, b) => b.mastered - a.mastered)[0] || { t: allTopics[0], ...statsFor(allTopics[0].id) };
 
   return (
-    <div className="pt-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="pt-2">
+      {/* Shenzhen countdown — a flat banner flush with the top of the screen, not a card */}
+      <ShenzhenCard T={T} s={s} mastered={mastered} dark={dark} />
+
+      <div className="flex items-center justify-between mb-4 mt-3">
         <div className="flex items-center gap-2.5">
           <Panda size={42} />
           <div className="disp font-bold text-[22px] leading-none tracking-tight">kuekachinese</div>
@@ -1734,9 +1741,6 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onHelp, 
           </div>
         </div>
       </div>
-
-      {/* Shenzhen countdown */}
-      <ShenzhenCard T={T} s={s} mastered={mastered} dark={dark} />
 
       {/* STEP 1 */}
       <div className="flex items-start justify-between gap-2">
@@ -1890,58 +1894,40 @@ function ShenzhenCard({ T, s, mastered, dark }) {
   const Unit = ({ v, l }) => (
     <div className="flex flex-col items-center">
       <div className="disp font-bold rounded-xl px-2.5 py-1 leading-none"
-        style={{ background: "rgba(255,255,255,.14)", color: "#fff", fontSize: 26, minWidth: 46, textAlign: "center" }}>
+        style={{ background: T.chip, color: T.text, fontSize: 19, minWidth: 36, textAlign: "center", border: `2px solid ${T.line}` }}>
         {v}
       </div>
-      <div className="text-[9px] font-black tracking-[.12em] mt-1" style={{ color: "rgba(255,255,255,.6)" }}>{l}</div>
+      <div className="text-[8.5px] font-black tracking-[.12em] mt-1" style={{ color: T.sub }}>{l}</div>
     </div>
   );
 
+  /* No card, no bubble — just sits flush on the page background at the very
+     top of the screen, bleeding past the app's usual side padding. */
   return (
-    <div className="rounded-[32px] p-5 mb-6 relative overflow-hidden"
-      style={{ background: "linear-gradient(140deg,#0E1E3C,#1B3A6B 60%,#245089)", boxShadow: "0 10px 24px rgba(10,27,51,.4)" }}>
-      {/* stars */}
-      {[[12, 18], [58, 12], [88, 30], [30, 8], [72, 46]].map(([x, y], i) => (
-        <div key={i} className="absolute rounded-full" style={{
-          left: x + "%", top: y, width: 3, height: 3, background: "#fff", opacity: 0.35,
-        }} />
-      ))}
-
-      {/* logo + clock, no bouncing */}
-      <div className="relative flex items-center gap-3 mb-4">
-        <img src={LOGO} alt="" style={{ width: 54, filter: "brightness(0) invert(1)", opacity: 0.95 }} />
-        <div className="flex-1">
-          <div className="text-[9.5px] font-black tracking-[.16em]" style={{ color: "#F9A8D4" }}>
+    <div className="-mx-4 px-4 pt-4 pb-3">
+      <div className="flex items-center gap-3">
+        <img src={LOGO} alt="" style={{ width: 34, filter: dark ? "brightness(0) invert(1)" : "none", opacity: 0.9 }} />
+        <div className="flex-1 min-w-0">
+          <div className="text-[9.5px] font-black tracking-[.16em]" style={{ color: "#6FA3D8" }}>
             TOUCHDOWN IN SHENZHEN
           </div>
-          <div className="text-[11.5px] font-bold mt-0.5" style={{ color: "rgba(255,255,255,.6)" }}>
+          <div className="text-[11px] font-bold mt-0.5" style={{ color: T.sub }}>
             {target.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}
           </div>
         </div>
-        <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
-          style={{ background: "rgba(255,255,255,.12)" }}>
-          <I n="clock" size={24} color="#F9A8D4" sw={2} />
+        <div className="flex items-center gap-1.5 shrink-0">
+          <Unit v={days} l="D" />
+          <Unit v={pad(hrs)} l="H" />
+          <Unit v={pad(mins)} l="M" />
         </div>
       </div>
 
-      <div className="relative flex items-end justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <Unit v={days} l="DAYS" />
-            <span className="disp font-bold text-white opacity-40 pb-4">:</span>
-            <Unit v={pad(hrs)} l="HRS" />
-            <span className="disp font-bold text-white opacity-40 pb-4">:</span>
-            <Unit v={pad(mins)} l="MIN" />
-          </div>
-        </div>
-      </div>
-
-      <div className="relative mt-3.5 pt-3 flex items-center gap-2" style={{ borderTop: "1.5px dashed rgba(255,255,255,.2)" }}>
-        <I n="target" size={15} color="#F9A8D4" />
-        <div className="text-[11.5px] font-bold" style={{ color: "rgba(255,255,255,.8)" }}>
+      <div className="flex items-center gap-2 mt-3 pt-2.5" style={{ borderTop: `1.5px dashed ${T.line}` }}>
+        <I n="target" size={13} color="#6FA3D8" />
+        <div className="text-[11px] font-bold" style={{ color: T.sub }}>
           {left === 0
             ? `${GOAL}-word goal smashed — 你准备好了!`
-            : <>Master <b style={{ color: "#fff" }}>~{perDay}/day</b> to land with {GOAL} words ({mastered} done)</>}
+            : <>Master <b style={{ color: T.text }}>~{perDay}/day</b> to land with {GOAL} words ({mastered} done)</>}
         </div>
       </div>
     </div>
@@ -1984,7 +1970,7 @@ function SectionTitle({ n, title, sub, T }) {
   return (
     <div className="flex items-start gap-2.5 mb-3">
       <div className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-        style={{ background: "#EC4899", color: "#fff" }}>
+        style={{ background: "#6FA3D8", color: "#fff" }}>
         <span className="disp font-bold text-[13px]">{n}</span>
       </div>
       <div>
@@ -2048,7 +2034,7 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
   const [answers, setAnswers] = useState({}); // qIndex -> chosen value / "learned"
   const [revealed, setRevealed] = useState(null); // answerField value of the option currently expanded for inspection
   const item = queue[qIndex];
-  const accent = mode === "quiz" ? "#7048E8" : (topic?.color || "#EC4899");
+  const accent = mode === "quiz" ? "#7048E8" : (topic?.color || "#6FA3D8");
   const wTopic = item ? topicById(item.word.topicId) : null;
 
   const options = React.useMemo(() => {
@@ -2258,9 +2244,21 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
             else if (isPicked) { bg = "#FF5A5F1F"; bd = "#FF5A5F"; shadow = "#FF5A5F66"; }
           }
           return (
-            <button key={val} onClick={() => choose(o)}
-              className="bp-btn rounded-[26px] py-3.5 px-3 flex items-center justify-center"
+            <button key={val}
+              onClick={() => {
+                if (picked === null) { choose(o); return; }
+                click();
+                setRevealed((r) => (r === val ? null : val));
+                if (o.hanzi) speak(o.hanzi);
+              }}
+              className="bp-btn rounded-[26px] py-3.5 px-3 flex items-center justify-center relative"
               style={{ background: bg, border: `2px solid ${bd}`, boxShadow: `0 5px 0 ${shadow}`, color: T.text, minHeight: 64 }}>
+              {picked && (
+                <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center"
+                  style={{ background: T.chip }}>
+                  <I n="help" size={10} color={T.sub} sw={2.6} />
+                </div>
+              )}
               {answerField === "hanzi"
                 ? <Ruby zh={o.hanzi} pinyin={o.pinyin} size={24} pySize={10.5} color={T.sub} sub={T.text} gapClass="gap-x-0.5 gap-y-1" />
                 : <div className="font-extrabold text-[14.5px]">{o.en}</div>}
@@ -2268,6 +2266,23 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
           );
         })}
       </div>
+
+      {picked && revealed && (() => {
+        const opt = options.find((o) => o[answerField] === revealed);
+        if (!opt) return null;
+        return (
+          <div className="mt-3 rounded-[24px] p-4 bp-rise" style={{ background: T.chip, border: `2px solid ${T.line}` }}>
+            <Ruby zh={opt.hanzi} pinyin={opt.pinyin} size={22} pySize={10} color={accent} sub={T.text} center={false} />
+            <div className="text-[12.5px] font-bold mt-1" style={{ color: T.sub }}>{opt.en}</div>
+            {opt.sZh && (
+              <div className="mt-2.5 pt-2.5" style={{ borderTop: `2px dashed ${T.line}` }}>
+                <Ruby zh={opt.sZh} pinyin={opt.sPy} size={16} pySize={9} color={accent} sub={T.text} center={false} />
+                {opt.sEn && <div className="text-[11.5px] font-bold mt-1" style={{ color: T.sub }}>{opt.sEn}</div>}
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {picked && (
         <div className="mt-5 rounded-[30px] p-5 bp-rise"
@@ -2354,7 +2369,7 @@ function Match({ state, T, s, click, setScreen, recordAnswer }) {
         <div className="text-[13px] font-bold mb-8 px-6" style={{ color: T.sub }}>
           Learn {pairs.need} more word{pairs.need === 1 ? "" : "s"} and this game unlocks.
         </div>
-        <Chunky color="#EC4899" full onClick={() => { click(); setScreen("home"); }}>Go learn some words</Chunky>
+        <Chunky color="#6FA3D8" full onClick={() => { click(); setScreen("home"); }}>Go learn some words</Chunky>
       </div>
     );
   }
@@ -2371,7 +2386,7 @@ function Match({ state, T, s, click, setScreen, recordAnswer }) {
     let bg = T.card, bd = T.line;
     if (isSolved) { bg = "#16C79A1A"; bd = "#16C79A55"; }
     else if (flashing) { bg = "#FF5A5F1F"; bd = "#FF5A5F"; }
-    else if (isPicked) { bg = "#EC48991F"; bd = "#EC4899"; }
+    else if (isPicked) { bg = "#6FA3D81F"; bd = "#6FA3D8"; }
     const word = side === "left" ? pairs.words.find((w) => w.hanzi === val) : null;
     return (
       <button key={val} disabled={isSolved}
@@ -2416,7 +2431,7 @@ function Match({ state, T, s, click, setScreen, recordAnswer }) {
           <div className="grid grid-cols-2 gap-3 my-7">
             <div className="rounded-[26px] py-4" style={{ background: T.card, border: `2px solid ${T.line}`, boxShadow: `0 4px 0 ${T.line}` }}>
               <div className="disp font-bold text-[22px] flex items-center justify-center gap-1.5">
-                <I n="timer" size={19} color="#EC4899" />{secs}s
+                <I n="timer" size={19} color="#6FA3D8" />{secs}s
               </div>
               <div className="text-[11px] font-extrabold mt-0.5" style={{ color: T.sub }}>time</div>
             </div>
@@ -2445,7 +2460,7 @@ function Done({ stats, state, T, topic, mode, onAgain, setScreen, click, s }) {
   const confetti = React.useMemo(() =>
     Array.from({ length: 26 }, (_, i) => ({
       left: Math.random() * 100, delay: Math.random() * 0.7, dur: 2 + Math.random() * 1.6,
-      color: [isQuiz ? "#7048E8" : (topic?.color || "#EC4899"), "#FFB020", "#16C79A", "#FF5A5F", "#EC4899"][i % 5],
+      color: [isQuiz ? "#7048E8" : (topic?.color || "#6FA3D8"), "#FFB020", "#16C79A", "#FF5A5F", "#6FA3D8"][i % 5],
       size: 6 + Math.random() * 6, round: Math.random() > 0.5,
     })), []);
   const grade = pct >= 90 ? "Brilliant!" : pct >= 70 ? "Solid work!" : pct >= 50 ? "Getting there" : "Tough round";
@@ -2476,7 +2491,7 @@ function Done({ stats, state, T, topic, mode, onAgain, setScreen, click, s }) {
       </div>
       {goalHit && <div className="text-[13px] font-extrabold mb-4" style={{ color: T.sub }}>Goal's done for today. Another round anyway?</div>}
       <div className="flex flex-col gap-3">
-        <Chunky color={isQuiz ? "#7048E8" : (topic?.color || "#EC4899")} full onClick={onAgain}>
+        <Chunky color={isQuiz ? "#7048E8" : (topic?.color || "#6FA3D8")} full onClick={onAgain}>
           {isQuiz ? "Another quiz" : "Keep going"}
         </Chunky>
         <Ghost T={T} onClick={() => { click(); setScreen("home"); }}>Back home</Ghost>
@@ -2532,7 +2547,7 @@ function Glossary({ state, T, dark, s, toggleStar, removeCard, click, topicById,
 
   const VIEWS = [["Everything", "all"], ["汉字", "hanzi"], ["Pīnyīn", "pinyin"], ["English", "en"]];
   const STATUS = [
-    ["All", "all", T.sub], ["Learning", "learning", "#EC4899"], ["Mastered", "mastered", "#0CA678"],
+    ["All", "all", T.sub], ["Learning", "learning", "#6FA3D8"], ["Mastered", "mastered", "#0CA678"],
     ["Trouble", "trouble", "#FF5A5F"], ["Starred", "starred", "#E8890C"],
   ];
 
@@ -2585,8 +2600,8 @@ function Glossary({ state, T, dark, s, toggleStar, removeCard, click, topicById,
             <button key={v} onClick={() => { click(); setView(v); setRevealed({}); }}
               className="bp-btn rounded-xl px-3 py-2 font-extrabold text-[12px]"
               style={{
-                background: on ? "#3D1230" : T.card, color: on ? "#fff" : T.sub,
-                border: `2px solid ${on ? "#3D1230" : T.line}`, boxShadow: `0 3px 0 ${T.line}`,
+                background: on ? "#2E4258" : T.card, color: on ? "#fff" : T.sub,
+                border: `2px solid ${on ? "#2E4258" : T.line}`, boxShadow: `0 3px 0 ${T.line}`,
               }}>{label}</button>
           );
         })}
@@ -2879,7 +2894,7 @@ function NotesList({ T, dark, click, notes, onOpen, onCreate }) {
       <div className="flex items-center justify-between mb-0.5">
         <div className="disp font-bold text-[26px]">Notes</div>
         <button onClick={() => { click(); onCreate(); }} className="bp-btn p-2.5 rounded-xl"
-          style={{ background: "#EC4899", boxShadow: "0 4px 0 #BE185D" }}>
+          style={{ background: "#6FA3D8", boxShadow: "0 4px 0 #3E6D9C" }}>
           <I n="plus" size={19} color="#fff" />
         </button>
       </div>
@@ -3001,8 +3016,8 @@ function SettingsScreen({ state, update, T, dark, s, click, setBanner, onHelp, a
           <button key={String(label)} onClick={() => { click(); onPick(v); }}
             className="bp-btn flex-1 rounded-xl py-3 disp font-bold text-[15px]"
             style={{
-              background: on ? "#EC4899" : T.card, color: on ? "#fff" : T.sub,
-              border: `2px solid ${on ? "#EC4899" : T.line}`, boxShadow: `0 4px 0 ${on ? "#BE185D" : T.line}`,
+              background: on ? "#6FA3D8" : T.card, color: on ? "#fff" : T.sub,
+              border: `2px solid ${on ? "#6FA3D8" : T.line}`, boxShadow: `0 4px 0 ${on ? "#3E6D9C" : T.line}`,
             }}>{label}</button>
         );
       })}
@@ -3025,9 +3040,9 @@ function SettingsScreen({ state, update, T, dark, s, click, setBanner, onHelp, a
             onChange={(e) => { const v = Number(e.target.value); set({ burst: v, goal: v }); }}
             onPointerUp={() => click()}
             className="flex-1"
-            style={{ accentColor: "#EC4899", height: 28 }} />
+            style={{ accentColor: "#6FA3D8", height: 28 }} />
           <div className="disp font-bold text-[24px] w-12 text-center rounded-xl py-1"
-            style={{ background: "#EC489914", color: "#EC4899" }}>{s.burst}</div>
+            style={{ background: "#6FA3D814", color: "#6FA3D8" }}>{s.burst}</div>
         </div>
         <div className="flex justify-between text-[11px] font-extrabold mt-1 px-0.5" style={{ color: T.sub }}>
           <span>3 · quick hop</span><span>15 · deep dive</span>
@@ -3057,13 +3072,13 @@ function SettingsScreen({ state, update, T, dark, s, click, setBanner, onHelp, a
               <button key={f} onClick={() => { click(); set({ fontZh: f }); }}
                 className="bp-btn rounded-[22px] p-3 text-left"
                 style={{
-                  background: on ? "#EC489914" : T.chip,
-                  border: `2px solid ${on ? "#EC4899" : T.line}`,
-                  boxShadow: `0 3px 0 ${on ? "#EC489955" : T.line}`,
+                  background: on ? "#6FA3D814" : T.chip,
+                  border: `2px solid ${on ? "#6FA3D8" : T.line}`,
+                  boxShadow: `0 3px 0 ${on ? "#6FA3D855" : T.line}`,
                 }}>
                 <div style={{ fontFamily: `'${f}'`, fontSize: 26, lineHeight: 1.15, color: T.text }}>学中文</div>
-                <div style={{ fontFamily: `'${f}'`, fontSize: 13, color: on ? "#EC4899" : T.sub }}>面试 实习</div>
-                <div className="text-[10.5px] font-bold mt-1.5" style={{ color: on ? "#EC4899" : T.sub }}>{note}</div>
+                <div style={{ fontFamily: `'${f}'`, fontSize: 13, color: on ? "#6FA3D8" : T.sub }}>面试 实习</div>
+                <div className="text-[10.5px] font-bold mt-1.5" style={{ color: on ? "#6FA3D8" : T.sub }}>{note}</div>
               </button>
             );
           })}
@@ -3089,13 +3104,13 @@ function SettingsScreen({ state, update, T, dark, s, click, setBanner, onHelp, a
               <button key={f} onClick={() => { click(); set({ fontEn: f }); }}
                 className="bp-btn rounded-[22px] p-3 text-left"
                 style={{
-                  background: on ? "#EC489914" : T.chip,
-                  border: `2px solid ${on ? "#EC4899" : T.line}`,
-                  boxShadow: `0 3px 0 ${on ? "#EC489955" : T.line}`,
+                  background: on ? "#6FA3D814" : T.chip,
+                  border: `2px solid ${on ? "#6FA3D8" : T.line}`,
+                  boxShadow: `0 3px 0 ${on ? "#6FA3D855" : T.line}`,
                 }}>
                 <div style={{ fontFamily: `'${f}'`, fontSize: 17, fontWeight: 700, lineHeight: 1.2, color: T.text }}>Learn words</div>
-                <div style={{ fontFamily: `'${f}'`, fontSize: 12, color: on ? "#EC4899" : T.sub }}>intern · mastered 12/30</div>
-                <div className="text-[10.5px] font-bold mt-1.5" style={{ color: on ? "#EC4899" : T.sub }}>{note}</div>
+                <div style={{ fontFamily: `'${f}'`, fontSize: 12, color: on ? "#6FA3D8" : T.sub }}>intern · mastered 12/30</div>
+                <div className="text-[10.5px] font-bold mt-1.5" style={{ color: on ? "#6FA3D8" : T.sub }}>{note}</div>
               </button>
             );
           })}
@@ -3112,7 +3127,7 @@ function SettingsScreen({ state, update, T, dark, s, click, setBanner, onHelp, a
             <img src={authUser.photo} alt="" className="w-10 h-10 rounded-full" referrerPolicy="no-referrer" />
           ) : (
             <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-              style={{ background: "#EC48991E", color: "#EC4899" }}>
+              style={{ background: "#6FA3D81E", color: "#6FA3D8" }}>
               <span className="disp font-bold text-[16px]">{(authUser?.name || authUser?.email || "?").slice(0, 1).toUpperCase()}</span>
             </div>
           )}
