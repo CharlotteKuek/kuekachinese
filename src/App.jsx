@@ -227,8 +227,16 @@ const seedFor = (topicId) =>
 
 /* ---------------- helpers ---------------- */
 const stripHtml = (html) => (html || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
-const todayStr = () => new Date().toISOString().slice(0, 10);
-const dayNum = () => Math.floor(Date.now() / 86400000);
+/* Local-calendar-day helpers. Date.toISOString()/Date.now() are UTC-based,
+   which silently mis-attributes early-morning sessions to the previous day
+   for anyone east of UTC (e.g. Singapore, UTC+8) — that mismatch is what
+   was causing the streak to falsely reset even after practicing daily. */
+const localDayShift = () => {
+  const d = new Date();
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+};
+const todayStr = () => localDayShift().toISOString().slice(0, 10);
+const dayNum = () => Math.floor(localDayShift().getTime() / 86400000);
 const INTERVALS = [0, 1, 2, 4, 8, 16];
 const MASTER_BOX = 4;
 const TOPIC_ROW_CLS = "bp-btn w-full text-left rounded-[22px] p-4 flex items-center gap-3.5";
@@ -326,6 +334,10 @@ const actx = () => {
     const AC = window.AudioContext || window.webkitAudioContext;
     if (AC) audioCtx = new AC();
   }
+  /* Browsers auto-suspend an idle AudioContext to save power, and a
+     suspended context adds an audible wake-up lag the next time it's used —
+     resuming here on every play call keeps that gap from creeping back in. */
+  if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
   return audioCtx;
 };
 
@@ -820,7 +832,12 @@ Respond with ONLY a JSON array, ordered, no markdown:
       fresh.forEach((w) => items.push({ type: "learn", word: w }));
     }
 
-    if (!items.length) { setBanner("All caught up here! Try the Daily Quiz or another topic."); setActiveTopic(null); return; }
+    if (!items.length) {
+      setBanner("All caught up here! Try the Daily Quiz or another topic.");
+      setActiveTopic(null);
+      setScreen("home"); // otherwise the button just silently does nothing on the Done screen
+      return;
+    }
     setMode("learn");
     setQueue(shuffle(items));
     setQIndex(0);
@@ -2086,10 +2103,11 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
     if (picked !== null || answers[qIndex] !== undefined) return;
     const answerField = (variant === "zh2en" || variant === "audio") ? "en" : "hanzi";
     const correct = opt[answerField] === w[answerField];
+    /* Play the result sound before anything else — no state update or
+       render work in front of it — so it fires the instant you tap. */
+    correct ? chime(s.sound) : buzz(s.sound);
     setPicked(opt[answerField]);
     setAnswers((p) => ({ ...p, [qIndex]: opt[answerField] }));
-    click();
-    correct ? chime(s.sound) : buzz(s.sound);
     if (opt.hanzi) setTimeout(() => speak(opt.hanzi), 260);
     recordAnswer(w, correct);
     setStats((p) => ({ ...p, right: p.right + (correct ? 1 : 0), wrong: p.wrong + (correct ? 0 : 1) }));
@@ -2491,7 +2509,7 @@ function Done({ stats, state, T, topic, mode, onAgain, setScreen, click, s }) {
       </div>
       {goalHit && <div className="text-[13px] font-extrabold mb-4" style={{ color: T.sub }}>Goal's done for today. Another round anyway?</div>}
       <div className="flex flex-col gap-3">
-        <Chunky color={isQuiz ? "#7048E8" : (topic?.color || "#6FA3D8")} full onClick={onAgain}>
+        <Chunky color={isQuiz ? "#7048E8" : (topic?.color || "#6FA3D8")} full onClick={() => { click(); onAgain(); }}>
           {isQuiz ? "Another quiz" : "Keep going"}
         </Chunky>
         <Ghost T={T} onClick={() => { click(); setScreen("home"); }}>Back home</Ghost>
