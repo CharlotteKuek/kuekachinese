@@ -6,6 +6,3 @@
 !src/
 src/*
 !src/firebase.js
-!api/
-api/*
-!api/anthropic.js

@@ -146,6 +146,37 @@ const SEED = {
     ["入职","rùzhí","to start a job / onboard","我一月份入职。","Wǒ yī yuèfèn rùzhí.","I start the job in January."],
     ["经验","jīngyàn","experience","我没有相关经验。","Wǒ méiyǒu xiāngguān jīngyàn.","I don't have relevant experience."],
     ["实习生","shíxíshēng","intern (person)","他是今年的实习生。","Tā shì jīnnián de shíxíshēng.","He's this year's intern."],
+    ["岗位描述","gǎngwèi miáoshù","job description","这份岗位描述写得很详细。","Zhè fèn gǎngwèi miáoshù xiě de hěn xiángxì.","This job description is very detailed."],
+    ["招聘启事","zhāopìn qǐshì","job posting","我在网上看到一条招聘启事。","Wǒ zài wǎngshàng kàndào yì tiáo zhāopìn qǐshì.","I saw a job posting online."],
+    ["内推","nèituī","internal referral","我朋友帮我内推了这家公司。","Wǒ péngyou bāng wǒ nèituī le zhè jiā gōngsī.","My friend referred me internally at this company."],
+    ["人力资源","rénlì zīyuán","human resources","人力资源部会联系你。","Rénlì zīyuán bù huì liánxì nǐ.","HR will contact you."],
+    ["面试官","miànshìguān","interviewer","面试官问了很多技术问题。","Miànshìguān wèn le hěn duō jìshù wèntí.","The interviewer asked a lot of technical questions."],
+    ["群面","qúnmiàn","group interview","群面有六个候选人一起讨论。","Qúnmiàn yǒu liù gè hòuxuǎnrén yìqǐ tǎolùn.","The group interview has six candidates discussing together."],
+    ["视频面试","shìpín miànshì","video interview","这轮是视频面试。","Zhè lún shì shìpín miànshì.","This round is a video interview."],
+    ["终面","zhōngmiàn","final-round interview","我下周要参加终面。","Wǒ xià zhōu yào cānjiā zhōngmiàn.","I have my final interview next week."],
+    ["录用通知","lùyòng tōngzhī","offer letter","我收到录用通知了！","Wǒ shōudào lùyòng tōngzhī le!","I got the offer letter!"],
+    ["试用期","shìyòngqī","probation period","试用期是三个月。","Shìyòngqī shì sān gè yuè.","The probation period is three months."],
+    ["转正","zhuǎnzhèng","to become a full employee","我下个月就转正了。","Wǒ xià gè yuè jiù zhuǎnzhèng le.","I become a full employee next month."],
+    ["背景调查","bèijǐng diàochá","background check","公司在做背景调查。","Gōngsī zài zuò bèijǐng diàochá.","The company is doing a background check."],
+    ["求职信","qiúzhíxìn","cover letter","请附上你的求职信。","Qǐng fùshàng nǐ de qiúzhíxìn.","Please attach your cover letter."],
+    ["应届生","yīngjièshēng","fresh graduate","很多应届生都在投这家公司。","Hěn duō yīngjièshēng dōu zài tóu zhè jiā gōngsī.","Lots of fresh graduates are applying to this company."],
+    ["校招","xiàozhāo","campus recruitment","校招一般在秋天开始。","Xiàozhāo yìbān zài qiūtiān kāishǐ.","Campus recruitment usually starts in autumn."],
+    ["社招","shèzhāo","experienced-hire recruitment","社招要求至少两年经验。","Shèzhāo yāoqiú zhìshǎo liǎng nián jīngyàn.","Experienced-hire recruitment requires at least two years' experience."],
+    ["谈薪","tánxīn","to negotiate salary","我们可以谈薪吗？","Wǒmen kěyǐ tánxīn ma?","Can we negotiate the salary?"],
+    ["婉拒","wǎnjù","to politely decline","我婉拒了另一份offer。","Wǒ wǎnjù le lìng yí fèn offer.","I politely declined the other offer."],
+    ["三方协议","sānfāng xiéyì","tripartite agreement","签三方协议前要仔细看条款。","Qiān sānfāng xiéyì qián yào zǐxì kàn tiáokuǎn.","Read the terms carefully before signing the tripartite agreement."],
+    ["入职培训","rùzhí péixùn","onboarding training","入职培训会持续一周。","Rùzhí péixùn huì chíxù yì zhōu.","Onboarding training will last a week."],
+    ["工作证","gōngzuòzhèng","work badge","别忘了带工作证。","Bié wàngle dài gōngzuòzhèng.","Don't forget to bring your work badge."],
+    ["直属领导","zhíshǔ lǐngdǎo","direct supervisor","这是我的直属领导。","Zhè shì wǒ de zhíshǔ lǐngdǎo.","This is my direct supervisor."],
+    ["猎头","liètóu","headhunter","一个猎头联系了我。","Yí gè liètóu liánxì le wǒ.","A headhunter reached out to me."],
+    ["竞争力","jìngzhēnglì","competitiveness","你的简历很有竞争力。","Nǐ de jiǎnlì hěn yǒu jìngzhēnglì.","Your resume is very competitive."],
+    ["优势","yōushì","strength / advantage","你的优势是什么？","Nǐ de yōushì shì shénme?","What's your strength?"],
+    ["劣势","lièshì","weakness","每个人都有劣势。","Měi gè rén dōu yǒu lièshì.","Everyone has weaknesses."],
+    ["职业规划","zhíyè guīhuà","career plan","面试官问了我的职业规划。","Miànshìguān wèn le wǒ de zhíyè guīhuà.","The interviewer asked about my career plan."],
+    ["跳槽","tiàocáo","to switch jobs","他刚跳槽到一家新公司。","Tā gāng tiàocáo dào yì jiā xīn gōngsī.","He just switched to a new company."],
+    ["裸辞","luǒcí","to quit without a new job lined up","我不建议裸辞。","Wǒ bú jiànyì luǒcí.","I don't recommend quitting without a new job lined up."],
+    ["offer比较","offer bǐjiào","comparing offers","我在做offer比较。","Wǒ zài zuò offer bǐjiào.","I'm comparing my offers."],
+    ["笔试题","bǐshìtí","written test question","这道笔试题很难。","Zhè dào bǐshìtí hěn nán.","This written test question is hard."],
   ],
   tech: [
     ["开发","kāifā","to develop","我们在开发一个新功能。","Wǒmen zài kāifā yí gè xīn gōngnéng.","We're developing a new feature."],
@@ -156,6 +187,53 @@ const SEED = {
     ["数据库","shùjùkù","database","数据库连不上。","Shùjùkù lián bu shàng.","Can't connect to the database."],
     ["前端","qiánduān","frontend","我负责前端。","Wǒ fùzé qiánduān.","I'm responsible for the frontend."],
     ["产品经理","chǎnpǐn jīnglǐ","product manager","产品经理改需求了。","Chǎnpǐn jīnglǐ gǎi xūqiú le.","The PM changed the requirements."],
+    ["版本","bǎnběn","version","这是最新版本。","Zhè shì zuìxīn bǎnběn.","This is the latest version."],
+    ["迭代","diédài","iteration","我们每两周迭代一次。","Wǒmen měi liǎng zhōu diédài yí cì.","We iterate once every two weeks."],
+    ["需求文档","xūqiú wéndàng","requirements document","请先看一下需求文档。","Qǐng xiān kàn yíxià xūqiú wéndàng.","Please read the requirements document first."],
+    ["原型","yuánxíng","prototype","设计师做了一个原型。","Shèjìshī zuò le yí gè yuánxíng.","The designer made a prototype."],
+    ["用户体验","yònghù tǐyàn","user experience","这个流程的用户体验不好。","Zhège liúchéng de yònghù tǐyàn bù hǎo.","This flow's user experience isn't good."],
+    ["界面","jièmiàn","interface / UI","界面需要重新设计。","Jièmiàn xūyào chóngxīn shèjì.","The interface needs to be redesigned."],
+    ["后端","hòuduān","backend","后端接口还没写好。","Hòuduān jiēkǒu hái méi xiěhǎo.","The backend API isn't written yet."],
+    ["服务器","fúwùqì","server","服务器又宕机了。","Fúwùqì yòu dàngjī le.","The server is down again."],
+    ["云","yún","cloud","数据存在云上。","Shùjù cún zài yún shàng.","The data is stored in the cloud."],
+    ["接口","jiēkǒu","API / interface","这个接口调用失败了。","Zhège jiēkǒu diàoyòng shībài le.","This API call failed."],
+    ["算法","suànfǎ","algorithm","推荐算法需要优化。","Tuījiàn suànfǎ xūyào yōuhuà.","The recommendation algorithm needs optimizing."],
+    ["人工智能","réngōng zhìnéng","artificial intelligence","这个功能用了人工智能。","Zhège gōngnéng yòng le réngōng zhìnéng.","This feature uses artificial intelligence."],
+    ["大数据","dàshùjù","big data","公司很重视大数据。","Gōngsī hěn zhòngshì dàshùjù.","The company values big data a lot."],
+    ["崩溃","bēngkuì","to crash","App又崩溃了。","App yòu bēngkuì le.","The app crashed again."],
+    ["兼容","jiānróng","compatible","新版本不兼容旧数据。","Xīn bǎnběn bù jiānróng jiù shùjù.","The new version isn't compatible with old data."],
+    ["优化","yōuhuà","to optimize","我们在优化加载速度。","Wǒmen zài yōuhuà jiāzài sùdù.","We're optimizing the loading speed."],
+    ["部署","bùshǔ","to deploy","代码已经部署到线上。","Dàimǎ yǐjīng bùshǔ dào xiànshàng.","The code has been deployed to production."],
+    ["敏捷开发","mǐnjié kāifā","agile development","我们团队用敏捷开发。","Wǒmen tuánduì yòng mǐnjié kāifā.","Our team uses agile development."],
+    ["代码","dàimǎ","code","这段代码有问题。","Zhè duàn dàimǎ yǒu wèntí.","This piece of code has a problem."],
+    ["开源","kāiyuán","open source","这是一个开源项目。","Zhè shì yí gè kāiyuán xiàngmù.","This is an open source project."],
+    ["补丁","bǔdīng","patch","我们马上发一个补丁。","Wǒmen mǎshàng fā yí gè bǔdīng.","We'll release a patch right away."],
+    ["漏洞","lòudòng","vulnerability / bug","安全团队发现了一个漏洞。","Ānquán tuánduì fāxiàn le yí gè lòudòng.","The security team found a vulnerability."],
+    ["修复","xiūfù","to fix","这个问题已经修复了。","Zhège wèntí yǐjīng xiūfù le.","This issue has already been fixed."],
+    ["权限","quánxiàn","permissions","你没有编辑权限。","Nǐ méiyǒu biānjí quánxiàn.","You don't have edit permissions."],
+    ["登录","dēnglù","to log in","请用工作账号登录。","Qǐng yòng gōngzuò zhànghào dēnglù.","Please log in with your work account."],
+    ["注册","zhùcè","to register","用户需要先注册。","Yònghù xūyào xiān zhùcè.","Users need to register first."],
+    ["用户","yònghù","user","这个功能是给新用户看的。","Zhège gōngnéng shì gěi xīn yònghù kàn de.","This feature is for new users."],
+    ["流量","liúliàng","(web) traffic","这个页面流量很大。","Zhège yèmiàn liúliàng hěn dà.","This page gets a lot of traffic."],
+    ["转化率","zhuǎnhuàlǜ","conversion rate","这个活动的转化率很高。","Zhège huódòng de zhuǎnhuàlǜ hěn gāo.","This campaign's conversion rate is very high."],
+    ["灰度发布","huīdù fābù","staged rollout","新功能先灰度发布。","Xīn gōngnéng xiān huīdù fābù.","The new feature will be rolled out in stages first."],
+    ["回滚","huígǔn","to roll back","出问题了，赶紧回滚。","Chū wèntí le, gǎnjǐn huígǔn.","There's a problem, roll it back quickly."],
+    ["埋点","máidiǎn","tracking point","这里需要加一个埋点。","Zhèlǐ xūyào jiā yí gè máidiǎn.","We need to add a tracking point here."],
+    ["日志","rìzhì","log","去看看服务器日志。","Qù kànkan fúwùqì rìzhì.","Go check the server logs."],
+    ["排查","páichá","to troubleshoot","工程师在排查问题。","Gōngchéngshī zài páichá wèntí.","The engineer is troubleshooting the issue."],
+    ["复现","fùxiàn","to reproduce (a bug)","这个bug很难复现。","Zhège bug hěn nán fùxiàn.","This bug is hard to reproduce."],
+    ["用户反馈","yònghù fǎnkuì","user feedback","用户反馈说加载太慢。","Yònghù fǎnkuì shuō jiāzài tài màn.","User feedback says loading is too slow."],
+    ["技术栈","jìshù zhàn","tech stack","我们的技术栈用的是这个框架。","Wǒmen de jìshù zhàn yòng de shì zhège kuàngjià.","Our tech stack uses this framework."],
+    ["数据分析","shùjù fēnxī","data analysis","我们靠数据分析做决定。","Wǒmen kào shùjù fēnxī zuò juédìng.","We make decisions based on data analysis."],
+    ["私有化部署","sīyǒuhuà bùshǔ","on-premise deployment","有些客户要求私有化部署。","Yǒuxiē kèhù yāoqiú sīyǒuhuà bùshǔ.","Some clients require on-premise deployment."],
+    ["中台","zhōngtái","middle platform","这个能力由中台统一提供。","Zhège nénglì yóu zhōngtái tǒngyī tígōng.","This capability is provided uniformly by the middle platform."],
+    ["研发","yánfā","R&D","研发团队在加班。","Yánfā tuánduì zài jiābān.","The R&D team is working overtime."],
+    ["排期","páiqī","schedule / timeline","这个功能的排期是下个月。","Zhège gōngnéng de páiqī shì xià gè yuè.","This feature's schedule is next month."],
+    ["需求变更","xūqiú biàngēng","requirement change","又有需求变更了。","Yòu yǒu xūqiú biàngēng le.","There's another requirement change."],
+    ["技术债","jìshù zhài","technical debt","这里积累了不少技术债。","Zhèlǐ jīlěi le bùshǎo jìshù zhài.","We've accumulated quite a bit of technical debt here."],
+    ["单元测试","dānyuán cèshì","unit test","记得写单元测试。","Jìde xiě dānyuán cèshì.","Remember to write unit tests."],
+    ["需求评审","xūqiú píngshěn","requirements review","下午三点开需求评审。","Xiàwǔ sān diǎn kāi xūqiú píngshěn.","Requirements review starts at 3pm."],
+    ["数据可视化","shùjù kěshìhuà","data visualization","这个报表做了数据可视化。","Zhège bàobiǎo zuò le shùjù kěshìhuà.","This report includes data visualization."],
   ],
   work: [
     ["开会","kāihuì","to have a meeting","我们十点开会。","Wǒmen shí diǎn kāihuì.","We have a meeting at ten."],
@@ -225,6 +303,10 @@ const seedFor = (topicId) =>
     hanzi: w[0], pinyin: w[1], en: w[2], sZh: w[3], sPy: w[4], sEn: w[5], topicId,
   }));
 
+/* Each topic's "mastered" target is its actual bank size (they range from
+   ~30 to ~80 words/phrases/idioms depending on topic), not a flat number. */
+const targetFor = (topicId) => (SEED[topicId] || []).length || 30;
+
 /* ---------------- helpers ---------------- */
 const stripHtml = (html) => (html || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 /* Local-calendar-day helpers. Date.toISOString()/Date.now() are UTC-based,
@@ -240,7 +322,7 @@ const dayNum = () => Math.floor(localDayShift().getTime() / 86400000);
 const INTERVALS = [0, 1, 2, 4, 8, 16];
 const MASTER_BOX = 4;
 const TOPIC_ROW_CLS = "bp-btn w-full text-left rounded-[22px] p-4 flex items-center gap-3.5";
-const TOPIC_TARGET = 30; // words mastered before a topic counts as done
+const TOPIC_TARGET = 30; // fallback "mastered" target for a topic with no static bank (see targetFor)
 
 /* "Mastered" is strict: the box must be high AND the word answered
    correctly on 3 separate days. Same-day cramming can't fake it —
@@ -654,159 +736,40 @@ export default function App() {
   ];
   const topicById = (id) => allTopics.find((t) => t.id === id) || [...LIBRARY, ...CORE_TOPICS].find((t) => t.id === id) || CORE_TOPICS[0];
 
-  const generateWords = async (topic, count, known, level) => {
-    const prompt = `Generate ${count} Mandarin Chinese vocabulary items for this learner.
-
-LEARNER: Singaporean NUS year-3 BUSINESS student. Speaks fluent conversational Mandarin but has weak vocabulary and struggles to hold a conversation past a minute. Starts a 6-month internship in Shenzhen in January at a technology company (software or hardware), likely in product management, product specialist, business development or marketing. So prioritise commercial, client-facing and cross-functional language; include the technical terms a non-engineer genuinely needs to follow engineers and talk about a product, but do NOT go deep into coding jargon. Wants to reach polished business Chinese.
-
-Topic: "${topic.name}" (${topic.zh || ""})
-Difficulty level: ${level} (1 = everyday basic, 5 = polished business register).
-Do NOT include: ${known.slice(0, 60).join(", ") || "(none)"}
-
-Use ONLY Simplified Chinese characters (简体字, zh-CN) everywhere — NEVER traditional (繁体字). The example sentence MUST contain the word exactly as written. Pinyin must use tone marks and have exactly one syllable per Chinese character, syllables separated by spaces where words break.
-
-Respond with ONLY a JSON array:
-[{"hanzi":"实习","pinyin":"shí xí","en":"internship","sZh":"我在深圳实习。","sPy":"Wǒ zài Shēn zhèn shí xí.","sEn":"I'm interning in Shenzhen."}]`;
-    const res = await fetch("/api/anthropic", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "claude-sonnet-5", max_tokens: 4000, messages: [{ role: "user", content: prompt }] }),
-    });
-    const data = await res.json();
-    const text = data.content.filter((b) => b.type === "text").map((b) => b.text).join("");
-    return JSON.parse(text.replace(/```json|```/g, "").trim()).map((w) => ({ ...w, topicId: topic.id }));
-  };
-
-  /* ---------- word pool ----------
-     One big AI call stocks ~24 words for a topic, cached to storage.
-     Sessions then start instantly; the pool tops itself up in the
-     background while you study, so you rarely see a loading screen. */
-  const POOL_SIZE = 24;
-  const fetching = useRef({});
-
+  /* Every topic's full word list ships baked into the app (see seedFor) —
+     no network call needed to teach or browse a topic. */
   const availableWords = (topicId) => {
     const st = stateRef.current;
     const seen = new Set(Object.values(st.cards).filter((c) => c.topicId === topicId).map((c) => c.hanzi));
-    const seeds = seedFor(topicId).filter((w) => !seen.has(w.hanzi));
-    const pooled = ((st.pool || {})[topicId] || []).filter((w) => !seen.has(w.hanzi));
-    return [...seeds, ...pooled];
+    return seedFor(topicId).filter((w) => !seen.has(w.hanzi));
   };
 
-  const fetchIntoPool = async (topic, count) => {
-    const st = stateRef.current;
-    const exclude = [
-      ...Object.values(st.cards).filter((c) => c.topicId === topic.id).map((c) => c.hanzi),
-      ...((st.pool || {})[topic.id] || []).map((w) => w.hanzi),
-      ...seedFor(topic.id).map((w) => w.hanzi),
-    ];
-    const mastered = Object.values(st.cards).filter((c) => c.topicId === topic.id && c.box >= MASTER_BOX).length;
-    const level = Math.min(5, (topic.level || 1) + Math.floor(mastered / 12));
-    const gen = await generateWords(topic, count, exclude, level);
-    const fresh = gen.filter((g) => g && g.hanzi && !exclude.includes(g.hanzi));
-    update((prev) => ({
-      ...prev,
-      pool: { ...(prev.pool || {}), [topic.id]: [...((prev.pool || {})[topic.id] || []), ...fresh] },
-    }));
-    return fresh;
-  };
-
-  /* background top-up — never blocks the UI */
-  const prefetch = (topic) => {
-    if (fetching.current[topic.id]) return;
-    if (availableWords(topic.id).length >= 12) return;
-    fetching.current[topic.id] = true;
-    fetchIntoPool(topic, POOL_SIZE)
-      .catch(() => {})
-      .finally(() => { fetching.current[topic.id] = false; });
-  };
-
-  /* The full syllabus for a topic: exactly TOPIC_TARGET words, ranked by
-     how much they'd help in a Shenzhen software internship. Cached per
-     topic; new words also feed the teaching pool so the app teaches
-     exactly what the dictionary promises. */
-  const fetchCurriculum = async (topic) => {
-    const st = stateRef.current;
-    const existing = [
-      ...seedFor(topic.id).map((w) => w.hanzi),
-      ...Object.values(st.cards).filter((c) => c.topicId === topic.id).map((c) => c.hanzi),
-      ...((st.pool || {})[topic.id] || []).map((w) => w.hanzi),
-    ];
-    const prompt = `Build the definitive ${TOPIC_TARGET}-word vocabulary syllabus for one topic, for this learner:
-
-LEARNER: Singaporean NUS year-3 BUSINESS student. Speaks fluent conversational Mandarin but has weak vocabulary and struggles to hold a conversation past a minute. Starts a 6-month internship in Shenzhen in January at a technology company (software or hardware), likely in product management, product specialist, business development or marketing. So prioritise commercial, client-facing and cross-functional language; include the technical terms a non-engineer genuinely needs to follow engineers and talk about a product, but do NOT go deep into coding jargon. Wants to reach polished business Chinese.
-
-TOPIC: "${topic.name}" (${topic.zh || ""})
-Already in their materials (include these in the ${TOPIC_TARGET} and rank them properly, do not invent duplicates): ${existing.slice(0, 40).join(", ") || "(none)"}
-
-Return EXACTLY ${TOPIC_TARGET} words ordered from MOST important to least important for this learner. Every word must be genuinely useful — "least important" still means worth knowing. Rank by: how often they'd hear or need it in meetings, client calls and day-to-day office life at a Shenzhen tech company in a business-side role; how badly they'd struggle without it; and how much it unlocks other language.
-
-Use ONLY Simplified Chinese (简体字), never traditional. Pinyin uses tone marks, one syllable per character, syllables space-separated. The example sentence must contain the word exactly as written.
-
-Give each word a "why" of at most 8 words saying when they'd use it.
-
-Respond with ONLY a JSON array, ordered, no markdown:
-[{"hanzi":"面试","pinyin":"miàn shì","en":"job interview","sZh":"我明天有一个面试。","sPy":"Wǒ míng tiān yǒu yí gè miàn shì.","sEn":"I have an interview tomorrow.","why":"Every application starts here"}]`;
-
-    const res = await fetch("/api/anthropic", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "claude-sonnet-5", max_tokens: 6000, messages: [{ role: "user", content: prompt }] }),
-    });
-    const data = await res.json();
-    const text = data.content.filter((b) => b.type === "text").map((b) => b.text).join("");
-    const list = JSON.parse(text.replace(/```json|```/g, "").trim())
-      .filter((w) => w && w.hanzi)
-      .map((w) => ({ ...w, topicId: topic.id }));
-
-    update((prev) => {
-      const known = new Set(Object.values(prev.cards).filter((c) => c.topicId === topic.id).map((c) => c.hanzi));
-      const pooled = (prev.pool || {})[topic.id] || [];
-      const pooledSet = new Set([...pooled.map((w) => w.hanzi), ...seedFor(topic.id).map((w) => w.hanzi)]);
-      const additions = list.filter((w) => !known.has(w.hanzi) && !pooledSet.has(w.hanzi));
-      return {
-        ...prev,
-        curriculum: { ...(prev.curriculum || {}), [topic.id]: list },
-        pool: { ...(prev.pool || {}), [topic.id]: [...pooled, ...additions] },
-      };
-    });
-    return list;
-  };
-
-  const openDict = async (topic) => {
+  const openDict = (topic) => {
     click(s.sound);
     setActiveTopic(topic);
     setScreen("dict");
     if (!((stateRef.current.curriculum || {})[topic.id] || []).length) {
-      setLoading(true);
-      try { await fetchCurriculum(topic); }
-      catch (e) { setBanner("Couldn't build the word list — check your connection."); }
-      setLoading(false);
+      update((prev) => ({ ...prev, curriculum: { ...(prev.curriculum || {}), [topic.id]: seedFor(topic.id) } }));
     }
   };
 
-  const openTopic = async (topic) => {
+  const openTopic = (topic) => {
     click(s.sound);
     setActiveTopic(topic);
     setMode("learn");
     const tState = stateRef.current.topics[topic.id] || {};
     if (!tState.triaged) {
-      let words = availableWords(topic.id).slice(0, 10);
-      if (words.length < 6) {
-        setLoading(true);
-        try { await fetchIntoPool(topic, POOL_SIZE); } catch (e) {}
-        setLoading(false);
-        words = availableWords(topic.id).slice(0, 10);
-      }
-      if (!words.length) { setBanner("Couldn't load words. Check your connection and retry."); setActiveTopic(null); return; }
+      const words = availableWords(topic.id).slice(0, 10);
+      if (!words.length) { setBanner("You've already met every word in this topic! Check back once review words are due."); setActiveTopic(null); return; }
       setQueue(words.map((w) => ({ type: "triage", word: w })));
       setQIndex(0);
       setScreen("triage");
-      prefetch(topic);
     } else {
       buildSession(topic);
     }
   };
 
-  const buildSession = async (topic) => {
+  const buildSession = (topic) => {
     const burst = stateRef.current.settings.burst;
     const d = dayNum();
     const all = Object.values(stateRef.current.cards).filter((c) => !c.known);
@@ -822,18 +785,11 @@ Respond with ONLY a JSON array, ordered, no markdown:
 
     const newNeeded = Math.max(0, burst - items.length);
     if (newNeeded > 0) {
-      let fresh = availableWords(topic.id).slice(0, newNeeded);
-      if (fresh.length === 0) {
-        setLoading(true);
-        try { await fetchIntoPool(topic, POOL_SIZE); } catch (e) {}
-        setLoading(false);
-        fresh = availableWords(topic.id).slice(0, newNeeded);
-      }
-      fresh.forEach((w) => items.push({ type: "learn", word: w }));
+      availableWords(topic.id).slice(0, newNeeded).forEach((w) => items.push({ type: "learn", word: w }));
     }
 
     if (!items.length) {
-      setBanner("All caught up here! Try the Daily Quiz or another topic.");
+      setBanner("Nothing due right now — you've learned every word in this topic! Try another topic or the Daily Quiz.");
       setActiveTopic(null);
       setScreen("home"); // otherwise the button just silently does nothing on the Done screen
       return;
@@ -843,7 +799,6 @@ Respond with ONLY a JSON array, ordered, no markdown:
     setQIndex(0);
     setSessionStats({ right: 0, wrong: 0, learned: 0 });
     setScreen("session");
-    prefetch(topic);
   };
 
   /* Daily Quiz — 5 questions, only words you've actually learned,
@@ -1515,57 +1470,7 @@ function HelpSheet({ T, onClose }) {
 }
 
 /* ---------------- ADD TOPIC SHEET ---------------- */
-function AddTopicSheet({ T, s, state, allTopics, onClose, onAdd }) {
-  const [ideas, setIdeas] = useState(null);
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState(null);
-  const [custom, setCustom] = useState("");
-
-  const existing = allTopics.map((t) => t.name);
-  const cards = Object.values(state.cards);
-
-  const suggest = async () => {
-    setBusy(true); setErr(null);
-    try {
-      const mastered = allTopics.map((t) => {
-        const c = cards.filter((x) => x.topicId === t.id);
-        const m = c.filter(isMastered).length;
-        return `${t.name}: ${c.length} words, ${c.length ? Math.round((m / c.length) * 100) : 0}% mastered`;
-      }).join("; ");
-
-      const prompt = `Singaporean NUS year-3 BUSINESS student. Speaks fluent conversational Mandarin but has weak vocabulary and struggles to hold a conversation past a minute. Starts a 6-month internship in Shenzhen in January at a technology company (software or hardware), likely in product management, product specialist, business development or marketing. So prioritise commercial, client-facing and cross-functional language; include the technical terms a non-engineer genuinely needs to follow engineers and talk about a product, but do NOT go deep into coding jargon. Wants to reach polished business Chinese.
-
-Their current topics and progress: ${mastered || "none yet"}
-Topics already on their list (do NOT repeat): ${existing.join(", ")}
-
-Suggest 4 NEW vocabulary topics to study next. All Chinese text must be Simplified Chinese (简体字), never traditional. Include at least one "level 2" deeper version of a topic they've largely mastered (e.g. "Product & tech · advanced" covering specs, roadmaps and talking with engineers). Order them by what would help them most, soonest.
-
-Pick each icon from EXACTLY this list: briefcase, home, train, qr, bowl, people, clipboard, code, chat, calendar, chart, martini, pen, bank, mail, med, bottle, cart, plane, trend, hash, key, book, globe, target, sparkle.
-
-Respond with ONLY a JSON array:
-[{"name":"Product roadmap & specs","zh":"产品规划","icon":"chart","level":2,"why":"You know the basics — this is how PMs actually talk."}]`;
-
-      const res = await fetch("/api/anthropic", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "claude-sonnet-5", max_tokens: 900, messages: [{ role: "user", content: prompt }] }),
-      });
-      const data = await res.json();
-      const text = data.content.filter((b) => b.type === "text").map((b) => b.text).join("");
-      const arr = JSON.parse(text.replace(/```json|```/g, "").trim());
-      setIdeas(arr.map((t, i) => ({
-        ...t,
-        id: "ai_" + t.name.toLowerCase().replace(/[^a-z0-9]+/g, "_").slice(0, 24),
-        color: PALETTE[(allTopics.length + i) % PALETTE.length],
-        icon: PATHS[t.icon] ? t.icon : "sparkle",
-      })));
-    } catch (e) {
-      setErr("Couldn't reach the AI just now. Pick from the library below, or try again.");
-    }
-    setBusy(false);
-  };
-
-  useEffect(() => { suggest(); }, []);
-
+function AddTopicSheet({ T, s, allTopics, onClose, onAdd }) {
   const library = [...CORE_TOPICS, ...LIBRARY].filter((t) => !allTopics.some((x) => x.id === t.id));
 
   return (
@@ -1575,98 +1480,25 @@ Respond with ONLY a JSON array:
         <div className="w-12 h-1.5 rounded-full mx-auto mb-4" style={{ background: T.line }} />
         <div className="disp font-bold text-[22px]">Add a topic</div>
         <div className="text-[12.5px] font-bold mb-5" style={{ color: T.sub }}>
-          Picked for your Shenzhen internship and where you're at now
+          {library.length ? "Pick a topic to add to your list" : "You've added every topic in the library!"}
         </div>
 
-        <div className="flex items-center gap-2 mb-3">
-          <I n="sparkle" size={16} color="#7048E8" />
-          <span className="font-extrabold text-[13px]" style={{ color: "#7048E8" }}>Suggested for you</span>
-        </div>
-
-        {busy && (
-          <div className="rounded-[26px] p-6 flex flex-col items-center gap-3 mb-5" style={{ background: T.card, border: `2px solid ${T.line}` }}>
-            <div style={{ width: 28, height: 28, border: `3px solid ${T.line}`, borderTopColor: "#7048E8", borderRadius: "50%", animation: "bpSpin .8s linear infinite" }} />
-            <div className="font-extrabold text-[12.5px]" style={{ color: T.sub }}>Thinking about what you need next…</div>
-          </div>
-        )}
-
-        {err && <div className="rounded-2xl p-3 mb-4 font-bold text-[12.5px]" style={{ background: "#FF5A5F14", color: "#FF5A5F" }}>{err}</div>}
-
-        {ideas && (
-          <div className="flex flex-col gap-2.5 mb-5 stagger">
-            {ideas.map((t) => (
+        {library.length > 0 && (
+          <div className="grid grid-cols-2 gap-2.5 mb-5">
+            {library.map((t) => (
               <button key={t.id} onClick={() => { click(s.sound); onAdd(t); }}
-                className="bp-btn rounded-[26px] p-4 text-left flex gap-3 items-start"
-                style={{ background: T.card, border: `2px solid ${T.line}`, boxShadow: `0 4px 0 ${t.color}40` }}>
-                <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style={{ background: t.color + "1E" }}>
-                  <I n={t.icon} size={22} color={t.color} />
+                className="bp-btn rounded-[24px] p-3 text-left"
+                style={{ background: T.card, border: `2px solid ${T.line}`, boxShadow: `0 4px 0 ${T.line}` }}>
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-2" style={{ background: t.color + "1E" }}>
+                  <I n={t.icon} size={17} color={t.color} />
                 </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-extrabold text-[14px]">{t.name}</span>
-                    {t.level > 1 && (
-                      <span className="px-1.5 py-0.5 rounded-md text-[9.5px] font-black" style={{ background: t.color + "22", color: t.color }}>
-                        LEVEL {t.level}
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-[11.5px] font-bold" style={{ color: t.color }}>{t.zh}</div>
-                  <div className="text-[12px] font-bold mt-1 leading-relaxed" style={{ color: T.sub }}>{t.why}</div>
-                </div>
-                <I n="plus" size={18} color={t.color} sw={2.6} />
+                <div className="font-extrabold text-[12.5px] leading-tight">{t.name}</div>
+                <div className="text-[10.5px] font-bold mt-0.5" style={{ color: t.color }}>{t.zh}</div>
               </button>
             ))}
           </div>
         )}
 
-        {!busy && (
-          <button onClick={() => { click(s.sound); suggest(); }}
-            className="bp-btn w-full rounded-2xl py-3 font-extrabold text-[13px] mb-6"
-            style={{ background: T.card, color: T.sub, border: `2px solid ${T.line}`, boxShadow: `0 4px 0 ${T.line}` }}>
-            Suggest different topics
-          </button>
-        )}
-
-        {library.length > 0 && (
-          <>
-            <div className="flex items-center gap-2 mb-3">
-              <I n="book" size={16} color={T.sub} />
-              <span className="font-extrabold text-[13px]" style={{ color: T.sub }}>From the library</span>
-            </div>
-            <div className="grid grid-cols-2 gap-2.5 mb-5">
-              {library.map((t) => (
-                <button key={t.id} onClick={() => { click(s.sound); onAdd(t); }}
-                  className="bp-btn rounded-[24px] p-3 text-left"
-                  style={{ background: T.card, border: `2px solid ${T.line}`, boxShadow: `0 4px 0 ${T.line}` }}>
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-2" style={{ background: t.color + "1E" }}>
-                    <I n={t.icon} size={17} color={t.color} />
-                  </div>
-                  <div className="font-extrabold text-[12.5px] leading-tight">{t.name}</div>
-                </button>
-              ))}
-            </div>
-          </>
-        )}
-
-        <div className="flex items-center gap-2 mb-2">
-          <I n="pen" size={15} color={T.sub} />
-          <span className="font-extrabold text-[13px]" style={{ color: T.sub }}>Or name your own</span>
-        </div>
-        <div className="flex gap-2.5 mb-4">
-          <input value={custom} onChange={(e) => setCustom(e.target.value)}
-            placeholder="e.g. talking to my landlord"
-            className="flex-1 rounded-2xl px-4 py-3 font-bold outline-none text-[13.5px]"
-            style={{ background: T.card, color: T.text, border: `2px solid ${T.line}` }} />
-          <Chunky color="#6FA3D8" disabled={!custom.trim()}
-            onClick={() => {
-              const name = custom.trim();
-              onAdd({
-                id: "my_" + name.toLowerCase().replace(/[^a-z0-9]+/g, "_").slice(0, 20),
-                name, zh: "", icon: "sparkle", level: 1,
-                color: PALETTE[allTopics.length % PALETTE.length],
-              });
-            }}>Add</Chunky>
-        </div>
         <Ghost T={T} onClick={onClose} style={{ width: "100%" }}>Close</Ghost>
       </div>
     </div>
@@ -1693,7 +1525,7 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onHelp, 
     const c = cards.filter((x) => x.topicId === id);
     const m = c.filter(isMastered).length;
     const progress = c.reduce((sum, card) => sum + Math.min(1, (card.box || 0) / MASTER_BOX), 0);
-    return { seen: c.length, mastered: m, pct: Math.min(100, Math.round((progress / TOPIC_TARGET) * 100)) };
+    return { seen: c.length, mastered: m, target: targetFor(id), pct: Math.min(100, Math.round((progress / targetFor(id)) * 100)) };
   };
 
   const focus = allTopics
@@ -1729,14 +1561,14 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onHelp, 
         style={{ background: T.hero, boxShadow: "0 12px 28px rgba(46,124,255,.4)" }}>
         <div className="disp absolute -right-3 -top-7 font-bold select-none" style={{ fontSize: 110, color: "rgba(255,255,255,.1)" }}>学</div>
         <div className="flex items-center gap-4 relative">
-          <GoalRing pct={focus.pct} done={focus.mastered} goal={TOPIC_TARGET} label="MASTERED" />
+          <GoalRing pct={focus.pct} done={focus.mastered} goal={focus.target} label="MASTERED" />
           <div className="text-white min-w-0">
             <div className="text-[10px] font-black tracking-[.14em] opacity-80">CURRENTLY ON</div>
             <div className="disp font-bold text-[18px] leading-tight truncate">{focus.t.name}</div>
             <div className="text-[12.5px] font-bold opacity-90">
               {focus.pct >= 100 ? "Topic complete!"
-                : focus.pct >= 75 ? `Almost there — ${TOPIC_TARGET - focus.mastered} words left`
-                : `${TOPIC_TARGET - focus.mastered} more words to finish this topic`}
+                : focus.pct >= 75 ? `Almost there — ${focus.target - focus.mastered} words left`
+                : `${focus.target - focus.mastered} more words to finish this topic`}
             </div>
             <div className="flex gap-4 mt-2.5">
               <div><div className="disp font-bold text-[17px] leading-none">{learned}</div><div className="text-[10px] font-bold opacity-85">words</div></div>
@@ -1800,8 +1632,8 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onHelp, 
                   </div>
                   <div className="text-[11.5px] font-bold mt-0.5" style={{ color: T.sub }}>
                     {st.seen === 0 ? "Not started yet"
-                      : st.pct >= 100 ? "Complete — all 30 mastered"
-                      : `${st.mastered} / ${TOPIC_TARGET} mastered · ${st.seen} seen`}
+                      : st.pct >= 100 ? `Complete — all ${st.target} mastered`
+                      : `${st.mastered} / ${st.target} mastered · ${st.seen} seen`}
                   </div>
                   <div className="h-[7px] rounded-full mt-2 overflow-hidden" style={{ background: T.chip }}>
                     <div className="h-full rounded-full" style={{ width: st.pct + "%", background: t.color, transition: "width .4s" }} />
