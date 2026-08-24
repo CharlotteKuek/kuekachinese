@@ -241,6 +241,55 @@ const SEED = {
     ["项目","xiàngmù","project","这个项目很赶。","Zhège xiàngmù hěn gǎn.","This project is rushed."],
     ["截止","jiézhǐ","deadline / to be due","截止时间是周五。","Jiézhǐ shíjiān shì zhōuwǔ.","The deadline is Friday."],
     ["加班","jiābān","to work overtime","今天要加班。","Jīntiān yào jiābān.","I have to work overtime today."],
+    ["处理","chǔlǐ","to handle / deal with","我正在处理这个问题。","Wǒ zhèngzài chǔlǐ zhège wèntí.","I'm handling this issue."],
+    ["完成","wánchéng","to complete","任务已经完成了。","Rènwù yǐjīng wánchéng le.","The task is already complete."],
+    ["负责","fùzé","to be responsible for","这块由我负责。","Zhè kuài yóu wǒ fùzé.","I'm responsible for this part."],
+    ["安排","ānpái","to arrange","会议已经安排好了。","Huìyì yǐjīng ānpái hǎo le.","The meeting has been arranged."],
+    ["提交","tíjiāo","to submit","请在周五前提交。","Qǐng zài zhōuwǔ qián tíjiāo.","Please submit it before Friday."],
+    ["审核","shěnhé","to review / approve","这份文件还在审核。","Zhè fèn wénjiàn hái zài shěnhé.","This document is still under review."],
+    ["批准","pīzhǔn","to approve","预算已经批准了。","Yùsuàn yǐjīng pīzhǔn le.","The budget has been approved."],
+    ["拒绝","jùjué","to reject","领导拒绝了这个方案。","Lǐngdǎo jùjué le zhège fāng'àn.","The boss rejected this proposal."],
+    ["修改","xiūgǎi","to revise","请再修改一下这份报告。","Qǐng zài xiūgǎi yíxià zhè fèn bàogào.","Please revise this report again."],
+    ["更新","gēngxīn","to update","数据每天更新一次。","Shùjù měitiān gēngxīn yí cì.","The data updates once a day."],
+    ["进度","jìndù","progress","项目进度怎么样了？","Xiàngmù jìndù zěnmeyàng le?","How's the project progress going?"],
+    ["优先级","yōuxiānjí","priority","这个任务的优先级最高。","Zhège rènwù de yōuxiānjí zuì gāo.","This task has the highest priority."],
+    ["紧急","jǐnjí","urgent","这是一个紧急情况。","Zhè shì yí gè jǐnjí qíngkuàng.","This is an urgent situation."],
+    ["拖延","tuōyán","to procrastinate / delay","别再拖延了。","Bié zài tuōyán le.","Stop procrastinating."],
+    ["效率","xiàolǜ","efficiency","这样做效率更高。","Zhèyàng zuò xiàolǜ gèng gāo.","Doing it this way is more efficient."],
+    ["任务","rènwù","task","今天有三个任务要完成。","Jīntiān yǒu sān gè rènwù yào wánchéng.","There are three tasks to complete today."],
+    ["分配","fēnpèi","to assign / allocate","领导把任务分配给了我。","Lǐngdǎo bǎ rènwù fēnpèi gěi le wǒ.","The boss assigned the task to me."],
+    ["协作","xiézuò","to collaborate","这需要跨部门协作。","Zhè xūyào kuà bùmén xiézuò.","This requires cross-department collaboration."],
+    ["推进","tuījìn","to push forward / advance","我们需要推进这个项目。","Wǒmen xūyào tuījìn zhège xiàngmù.","We need to push this project forward."],
+    ["汇总","huìzǒng","to compile / summarize","请把数据汇总一下。","Qǐng bǎ shùjù huìzǒng yíxià.","Please compile the data."],
+    ["提醒","tíxǐng","to remind","谢谢提醒。","Xièxie tíxǐng.","Thanks for the reminder."],
+    ["请假","qǐngjià","to take leave","我明天要请假。","Wǒ míngtiān yào qǐngjià.","I need to take leave tomorrow."],
+    ["打卡","dǎkǎ","to clock in/out","别忘了打卡。","Bié wàngle dǎkǎ.","Don't forget to clock in."],
+    ["出差","chūchāi","to go on a business trip","我下周要出差。","Wǒ xià zhōu yào chūchāi.","I have a business trip next week."],
+    ["加急","jiājí","to expedite / rush","这份订单需要加急处理。","Zhè fèn dìngdān xūyào jiājí chǔlǐ.","This order needs to be expedited."],
+    ["延期","yánqī","to postpone","会议延期到下周了。","Huìyì yánqī dào xià zhōu le.","The meeting has been postponed to next week."],
+    ["提前","tíqián","in advance / ahead of schedule","项目提前完成了。","Xiàngmù tíqián wánchéng le.","The project finished ahead of schedule."],
+    ["落实","luòshí","to implement / follow through","这个计划要尽快落实。","Zhège jìhuà yào jǐnkuài luòshí.","This plan needs to be implemented soon."],
+    ["执行","zhíxíng","to execute","方案已经开始执行了。","Fāng'àn yǐjīng kāishǐ zhíxíng le.","The plan has started being executed."],
+    ["复盘","fùpán","to do a retrospective","我们复盘一下这次的失误。","Wǒmen fùpán yíxià zhè cì de shīwù.","Let's do a retrospective on this mistake."],
+    ["交付","jiāofù","to deliver","项目下周交付。","Xiàngmù xià zhōu jiāofù.","The project will be delivered next week."],
+    ["里程碑","lǐchéngbēi","milestone","我们达成了一个重要里程碑。","Wǒmen dáchéng le yí gè zhòngyào lǐchéngbēi.","We've reached an important milestone."],
+    ["待办事项","dàibàn shìxiàng","to-do item","我的待办事项还有很多。","Wǒ de dàibàn shìxiàng hái yǒu hěn duō.","I still have a lot of to-do items."],
+    ["排班","páibān","shift schedule","这周的排班表出来了。","Zhè zhōu de páibānbiǎo chūlái le.","This week's shift schedule is out."],
+    ["值班","zhíbān","to be on duty","今天谁值班？","Jīntiān shéi zhíbān?","Who's on duty today?"],
+    ["请示","qǐngshì","to ask for approval","这件事要先请示领导。","Zhè jiàn shì yào xiān qǐngshì lǐngdǎo.","We need to ask the boss for approval on this first."],
+    ["授权","shòuquán","to authorize","这个操作需要授权。","Zhège cāozuò xūyào shòuquán.","This action needs authorization."],
+    ["归档","guīdàng","to archive","文件用完记得归档。","Wénjiàn yòngwán jìde guīdàng.","Remember to archive the file when you're done."],
+    ["备份","bèifèn","to back up","记得定期备份数据。","Jìde dìngqī bèifèn shùjù.","Remember to back up the data regularly."],
+    ["流程","liúchéng","process / workflow","申请流程有点复杂。","Shēnqǐng liúchéng yǒudiǎn fùzá.","The application process is a bit complicated."],
+    ["规范","guīfàn","standard / norm","请按照公司规范操作。","Qǐng ànzhào gōngsī guīfàn cāozuò.","Please follow the company's standards."],
+    ["考核","kǎohé","performance evaluation","年底有一次考核。","Niándǐ yǒu yí cì kǎohé.","There's a performance evaluation at year end."],
+    ["绩效","jìxiào","performance (KPI)","我的绩效还不错。","Wǒ de jìxiào hái búcuò.","My performance is pretty good."],
+    ["述职","shùzhí","performance review presentation","下周要述职。","Xià zhōu yào shùzhí.","I have a performance review presentation next week."],
+    ["交接","jiāojiē","to hand over (work)","我在做工作交接。","Wǒ zài zuò gōngzuò jiāojiē.","I'm handing over my work."],
+    ["顶班","dǐngbān","to cover someone's shift","我今天帮同事顶班。","Wǒ jīntiān bāng tóngshì dǐngbān.","I'm covering my colleague's shift today."],
+    ["兼顾","jiāngù","to balance / juggle","很难兼顾工作和生活。","Hěn nán jiāngù gōngzuò hé shēnghuó.","It's hard to balance work and life."],
+    ["忙不过来","mángbuguòlái","too busy to manage","这周事情太多，忙不过来。","Zhè zhōu shìqing tài duō, mángbuguòlái.","There's too much this week, I can't keep up."],
+    ["顺手","shùnshǒu","while at it / conveniently","你顺手把这个也发一下。","Nǐ shùnshǒu bǎ zhège yě fā yíxià.","While you're at it, please send this too."],
   ],
   pay: [
     ["扫码","sǎomǎ","to scan a QR code","扫码支付就行。","Sǎomǎ zhīfù jiù xíng.","Just scan the code to pay."],
@@ -277,18 +326,147 @@ const SEED = {
     ["反馈","fǎnkuì","feedback","谢谢你的反馈。","Xièxie nǐ de fǎnkuì.","Thanks for your feedback."],
     ["确认","quèrèn","to confirm","请确认一下时间。","Qǐng quèrèn yíxià shíjiān.","Please confirm the time."],
     ["跟进","gēnjìn","to follow up","这件事我来跟进。","Zhè jiàn shì wǒ lái gēnjìn.","I'll follow up on this."],
+    ["消息","xiāoxi","message","我收到你的消息了。","Wǒ shōudào nǐ de xiāoxi le.","I got your message."],
+    ["已读","yǐdú","read (message status)","他已读但没回。","Tā yǐdú dàn méi huí.","He read it but didn't reply."],
+    ["秒回","miǎohuí","to reply instantly","领导消息一般都秒回。","Lǐngdǎo xiāoxi yìbān dōu miǎohuí.","I always reply instantly to the boss's messages."],
+    ["群","qún","group chat","把这个发到群里。","Bǎ zhège fā dào qún lǐ.","Send this in the group chat."],
+    ["拉群","lāqún","to create a group chat","我先拉个群。","Wǒ xiān lā gè qún.","Let me create a group chat first."],
+    ["艾特","àitè","to @ someone","记得艾特一下负责人。","Jìde àitè yíxià fùzérén.","Remember to @ the person in charge."],
+    ["私聊","sīliáo","to DM privately","我们私聊说吧。","Wǒmen sīliáo shuō ba.","Let's talk in a private message."],
+    ["抄送","chāosòng","to CC","邮件记得抄送给我。","Yóujiàn jìde chāosòng gěi wǒ.","Remember to CC me on the email."],
+    ["转发","zhuǎnfā","to forward","帮我把这条消息转发一下。","Bāng wǒ bǎ zhè tiáo xiāoxi zhuǎnfā yíxià.","Please forward this message for me."],
+    ["语音消息","yǔyīn xiāoxi","voice message","他发了一条语音消息。","Tā fā le yì tiáo yǔyīn xiāoxi.","He sent a voice message."],
+    ["通知","tōngzhī","notification / to notify","请通知大家开会时间改了。","Qǐng tōngzhī dàjiā kāihuì shíjiān gǎi le.","Please notify everyone the meeting time changed."],
+    ["提出","tíchū","to raise / propose","他提出了一个新想法。","Tā tíchū le yí gè xīn xiǎngfǎ.","He raised a new idea."],
+    ["澄清","chéngqīng","to clarify","我想澄清一下这件事。","Wǒ xiǎng chéngqīng yíxià zhè jiàn shì.","I'd like to clarify this."],
+    ["误会","wùhuì","misunderstanding","这是一个误会。","Zhè shì yí gè wùhuì.","This is a misunderstanding."],
+    ["委婉","wěiwǎn","tactful / euphemistic","他委婉地拒绝了。","Tā wěiwǎn de jùjué le.","He declined tactfully."],
+    ["直接","zhíjiē","direct / straightforward","有什么问题可以直接说。","Yǒu shénme wèntí kěyǐ zhíjiē shuō.","If there's a problem, just say it directly."],
+    ["客套","kètào","polite formalities","不用跟我客套。","Búyòng gēn wǒ kètào.","No need for formalities with me."],
+    ["升级","shēngjí","to escalate","这个问题需要升级处理。","Zhège wèntí xūyào shēngjí chǔlǐ.","This issue needs to be escalated."],
+    ["汇报工作","huìbào gōngzuò","to report on work","我每周一汇报工作。","Wǒ měi zhōuyī huìbào gōngzuò.","I report on my work every Monday."],
+    ["口头","kǒutóu","verbal","先口头同意，之后补合同。","Xiān kǒutóu tóngyì, zhīhòu bǔ hétong.","Verbal agreement first, contract to follow."],
+    ["书面","shūmiàn","in writing","请给我一份书面说明。","Qǐng gěi wǒ yí fèn shūmiàn shuōmíng.","Please give me a written explanation."],
+    ["邮件","yóujiàn","email","我已经把邮件发给你了。","Wǒ yǐjīng bǎ yóujiàn fā gěi nǐ le.","I've already sent you the email."],
+    ["附件","fùjiàn","attachment","请查收附件。","Qǐng cháshōu fùjiàn.","Please check the attachment."],
+    ["回复","huífù","to reply","请尽快回复。","Qǐng jǐnkuài huífù.","Please reply as soon as possible."],
+    ["收到","shōudào","received (acknowledged)","收到，谢谢。","Shōudào, xièxie.","Received, thanks."],
+    ["麻烦您","máfan nín","sorry to trouble you","麻烦您帮我看一下。","Máfan nín bāng wǒ kàn yíxià.","Sorry to trouble you, could you take a look for me?"],
+    ["打扰","dǎrǎo","to disturb / interrupt","不好意思打扰一下。","Bù hǎoyìsi dǎrǎo yíxià.","Sorry to disturb you."],
+    ["插话","chāhuà","to interrupt / cut in","抱歉插话一下。","Bàoqiàn chāhuà yíxià.","Sorry to interrupt for a moment."],
+    ["语气","yǔqì","tone (of speech)","他说话的语气很急。","Tā shuōhuà de yǔqì hěn jí.","His tone was very urgent."],
+    ["态度","tàidu","attitude","他工作态度很认真。","Tā gōngzuò tàidu hěn rènzhēn.","His work attitude is very serious."],
+    ["表达","biǎodá","to express","我想表达一下我的看法。","Wǒ xiǎng biǎodá yíxià wǒ de kànfǎ.","I'd like to express my view."],
+    ["意见","yìjiàn","opinion","你对这个有什么意见？","Nǐ duì zhège yǒu shénme yìjiàn?","What's your opinion on this?"],
+    ["建议","jiànyì","suggestion","我有一个建议。","Wǒ yǒu yí gè jiànyì.","I have a suggestion."],
+    ["达成共识","dáchéng gòngshí","to reach consensus","我们最终达成了共识。","Wǒmen zuìzhōng dáchéng le gòngshí.","We finally reached consensus."],
+    ["分歧","fēnqí","disagreement","我们在这一点上有分歧。","Wǒmen zài zhè yìdiǎn shàng yǒu fēnqí.","We have a disagreement on this point."],
+    ["妥协","tuǒxié","to compromise","双方都做了一些妥协。","Shuāngfāng dōu zuò le yìxiē tuǒxié.","Both sides made some compromises."],
+    ["背锅","bēiguō","to take the blame","我不想替别人背锅。","Wǒ bùxiǎng tì biéren bēiguō.","I don't want to take the blame for someone else."],
+    ["甩锅","shuǎiguō","to shift blame","他老是甩锅给别人。","Tā lǎoshì shuǎiguō gěi biéren.","He always shifts the blame onto others."],
+    ["站队","zhànduì","to take sides","我不想在这件事上站队。","Wǒ bùxiǎng zài zhè jiàn shì shàng zhànduì.","I don't want to take sides on this."],
+    ["敬请","jìngqǐng","please kindly","敬请留意邮件通知。","Jìngqǐng liúyì yóujiàn tōngzhī.","Please kindly pay attention to the email notification."],
+    ["随时联系","suíshí liánxì","feel free to contact anytime","有问题随时联系我。","Yǒu wèntí suíshí liánxì wǒ.","Feel free to contact me anytime if there's a problem."],
   ],
   meetings: [
     ["讨论","tǎolùn","to discuss","这个我们再讨论。","Zhège wǒmen zài tǎolùn.","Let's discuss this further."],
     ["方案","fāng'àn","proposal / plan","我准备了两个方案。","Wǒ zhǔnbèi le liǎng gè fāng'àn.","I prepared two proposals."],
     ["目标","mùbiāo","goal","这个季度的目标是什么？","Zhège jìdù de mùbiāo shì shénme?","What's this quarter's goal?"],
     ["决定","juédìng","to decide","还没决定。","Hái méi juédìng.","It hasn't been decided yet."],
+    ["会议室","huìyìshì","meeting room","会议在三号会议室。","Huìyì zài sān hào huìyìshì.","The meeting is in meeting room 3."],
+    ["议程","yìchéng","agenda","请先看一下今天的议程。","Qǐng xiān kàn yíxià jīntiān de yìchéng.","Please look at today's agenda first."],
+    ["主持","zhǔchí","to chair / host","今天由我主持会议。","Jīntiān yóu wǒ zhǔchí huìyì.","I'll be chairing the meeting today."],
+    ["记录","jìlù","to record / take notes","谁来做会议记录？","Shéi lái zuò huìyì jìlù?","Who's taking the meeting notes?"],
+    ["纪要","jìyào","meeting minutes","请把会议纪要发给大家。","Qǐng bǎ huìyì jìyào fā gěi dàjiā.","Please send the meeting minutes to everyone."],
+    ["出席","chūxí","to attend","领导也会出席这次会议。","Lǐngdǎo yě huì chūxí zhè cì huìyì.","The boss will also attend this meeting."],
+    ["缺席","quēxí","to be absent","他今天缺席了。","Tā jīntiān quēxí le.","He was absent today."],
+    ["迟到","chídào","to be late","抱歉，我迟到了。","Bàoqiàn, wǒ chídào le.","Sorry, I'm late."],
+    ["改期","gǎiqī","to reschedule","这个会议要改期。","Zhège huìyì yào gǎiqī.","This meeting needs to be rescheduled."],
+    ["视频会议","shìpín huìyì","video conference","下午三点有个视频会议。","Xiàwǔ sān diǎn yǒu gè shìpín huìyì.","There's a video conference at 3pm."],
+    ["连麦","liánmài","to connect on a call","我们连麦讨论一下。","Wǒmen liánmài tǎolùn yíxià.","Let's hop on a call to discuss."],
+    ["静音","jìngyīn","mute","请把麦克风静音。","Qǐng bǎ màikèfēng jìngyīn.","Please mute your microphone."],
+    ["共享屏幕","gòngxiǎng píngmù","to share your screen","我先共享一下屏幕。","Wǒ xiān gòngxiǎng yíxià píngmù.","Let me share my screen first."],
+    ["议题","yìtí","agenda item","今天有三个议题。","Jīntiān yǒu sān gè yìtí.","There are three agenda items today."],
+    ["结论","jiélùn","conclusion","我们得出了一个结论。","Wǒmen déchū le yí gè jiélùn.","We reached a conclusion."],
+    ["总结","zǒngjié","to summarize","我来总结一下今天的重点。","Wǒ lái zǒngjié yíxià jīntiān de zhòngdiǎn.","Let me summarize today's key points."],
+    ["补充","bǔchōng","to add / supplement","我想补充一点。","Wǒ xiǎng bǔchōng yìdiǎn.","I'd like to add one point."],
+    ["提问","tíwèn","to ask a question","欢迎大家提问。","Huānyíng dàjiā tíwèn.","Everyone's welcome to ask questions."],
+    ["举手","jǔshǒu","to raise a hand","有问题的话请举手。","Yǒu wèntí dehuà qǐng jǔshǒu.","Please raise your hand if you have a question."],
+    ["投票","tóupiào","to vote","我们投票决定吧。","Wǒmen tóupiào juédìng ba.","Let's decide by voting."],
+    ["一致同意","yízhì tóngyì","unanimous agreement","大家一致同意这个方案。","Dàjiā yízhì tóngyì zhège fāng'àn.","Everyone unanimously agreed to this plan."],
+    ["反对","fǎnduì","to oppose","我反对这个决定。","Wǒ fǎnduì zhège juédìng.","I oppose this decision."],
+    ["弃权","qìquán","to abstain","他选择弃权。","Tā xuǎnzé qìquán.","He chose to abstain."],
+    ["休会","xiūhuì","to adjourn","我们先休会十分钟。","Wǒmen xiān xiūhuì shí fēnzhōng.","Let's adjourn for ten minutes."],
+    ["延长","yáncháng","to extend","会议延长了半小时。","Huìyì yáncháng le bàn xiǎoshí.","The meeting was extended by half an hour."],
+    ["简短","jiǎnduǎn","brief / short","请尽量简短一点。","Qǐng jǐnliàng jiǎnduǎn yìdiǎn.","Please try to keep it brief."],
+    ["跑题","pǎotí","to go off-topic","我们好像跑题了。","Wǒmen hǎoxiàng pǎotí le.","We seem to have gone off-topic."],
+    ["切入正题","qiērù zhèngtí","to get to the point","我们直接切入正题吧。","Wǒmen zhíjiē qiērù zhèngtí ba.","Let's get straight to the point."],
+    ["站会","zhànhuì","stand-up meeting","我们每天早上开站会。","Wǒmen měitiān zǎoshang kāi zhànhuì.","We have a stand-up meeting every morning."],
+    ["周会","zhōuhuì","weekly meeting","周会改到周三了。","Zhōuhuì gǎi dào zhōusān le.","The weekly meeting has been moved to Wednesday."],
+    ["复盘会","fùpánhuì","retrospective meeting","项目结束后要开复盘会。","Xiàngmù jiéshù hòu yào kāi fùpánhuì.","We need a retrospective meeting after the project ends."],
+    ["头脑风暴","tóunǎo fēngbào","brainstorm","我们先头脑风暴一下。","Wǒmen xiān tóunǎo fēngbào yíxià.","Let's brainstorm first."],
+    ["白板","báibǎn","whiteboard","把想法写在白板上。","Bǎ xiǎngfǎ xiě zài báibǎn shàng.","Write the ideas on the whiteboard."],
+    ["会前","huìqián","before the meeting","会前请先看一下资料。","Huìqián qǐng xiān kàn yíxià zīliào.","Please review the materials before the meeting."],
+    ["会后","huìhòu","after the meeting","会后我们再聊。","Huìhòu wǒmen zài liáo.","Let's talk after the meeting."],
+    ["待定","dàidìng","to be determined","时间还待定。","Shíjiān hái dàidìng.","The time is still to be determined."],
+    ["确认参会","quèrèn cānhuì","to confirm attendance","请回复确认参会。","Qǐng huífù quèrèn cānhuì.","Please reply to confirm your attendance."],
   ],
   commercial: [
     ["客户","kèhù","client / customer","客户很满意。","Kèhù hěn mǎnyì.","The client is satisfied."],
     ["市场","shìchǎng","market","中国市场很大。","Zhōngguó shìchǎng hěn dà.","The Chinese market is huge."],
     ["合作","hézuò","to cooperate","期待和你们合作。","Qīdài hé nǐmen hézuò.","Looking forward to working with you."],
     ["合同","hétong","contract","合同还没签。","Hétong hái méi qiān.","The contract isn't signed yet."],
+    ["供应商","gōngyìngshāng","supplier","我们换了一个供应商。","Wǒmen huàn le yí gè gōngyìngshāng.","We switched suppliers."],
+    ["采购","cǎigòu","to procure / purchase","采购部在比价。","Cǎigòu bù zài bǐjià.","The procurement department is comparing prices."],
+    ["报价","bàojià","to quote a price","请给我们报个价。","Qǐng gěi wǒmen bào gè jià.","Please give us a quote."],
+    ["定价","dìngjià","pricing","这个产品的定价偏高。","Zhège chǎnpǐn de dìngjià piān gāo.","This product's pricing is a bit high."],
+    ["折扣","zhékòu","discount","批量订购有折扣。","Pīliàng dìnggòu yǒu zhékòu.","There's a discount for bulk orders."],
+    ["利润","lìrùn","profit","这个季度利润不错。","Zhège jìdù lìrùn búcuò.","Profit this quarter is pretty good."],
+    ["成本","chéngběn","cost","我们要控制成本。","Wǒmen yào kòngzhì chéngběn.","We need to control costs."],
+    ["营收","yíngshōu","revenue","公司营收增长了。","Gōngsī yíngshōu zēngzhǎng le.","The company's revenue has grown."],
+    ["业绩","yèjì","business performance","这个月业绩很好。","Zhège yuè yèjì hěn hǎo.","This month's performance was very good."],
+    ["增长","zēngzhǎng","growth","用户数量在快速增长。","Yònghù shùliàng zài kuàisù zēngzhǎng.","The number of users is growing rapidly."],
+    ["份额","fèn'é","market share","我们的市场份额在扩大。","Wǒmen de shìchǎng fèn'é zài kuòdà.","Our market share is expanding."],
+    ["竞争对手","jìngzhēng duìshǒu","competitor","这是我们的主要竞争对手。","Zhè shì wǒmen de zhǔyào jìngzhēng duìshǒu.","This is our main competitor."],
+    ["战略","zhànlüè","strategy","这是公司的长期战略。","Zhè shì gōngsī de chángqī zhànlüè.","This is the company's long-term strategy."],
+    ["拓展","tuòzhǎn","to expand","我们在拓展新市场。","Wǒmen zài tuòzhǎn xīn shìchǎng.","We're expanding into new markets."],
+    ["渠道","qúdào","channel","这是一个新的销售渠道。","Zhè shì yí gè xīn de xiāoshòu qúdào.","This is a new sales channel."],
+    ["代理商","dàilǐshāng","agent / distributor","他们是我们的代理商。","Tāmen shì wǒmen de dàilǐshāng.","They're our distributor."],
+    ["供应链","gōngyìngliàn","supply chain","供应链出了点问题。","Gōngyìngliàn chū le diǎn wèntí.","There's an issue in the supply chain."],
+    ["库存","kùcún","inventory","库存不多了。","Kùcún bù duō le.","Inventory is running low."],
+    ["订单","dìngdān","order","我们收到了一个大订单。","Wǒmen shōudào le yí gè dà dìngdān.","We received a big order."],
+    ["发票","fāpiào","invoice","请开一张发票。","Qǐng kāi yì zhāng fāpiào.","Please issue an invoice."],
+    ["付款","fùkuǎn","to pay / payment","请在月底前付款。","Qǐng zài yuèdǐ qián fùkuǎn.","Please make the payment before the end of the month."],
+    ["结算","jiésuàn","to settle (payment)","我们按月结算。","Wǒmen àn yuè jiésuàn.","We settle payments monthly."],
+    ["佣金","yōngjīn","commission","中介收取佣金。","Zhōngjiè shōuqǔ yōngjīn.","The agent charges a commission."],
+    ["提成","tíchéng","sales commission","销售有提成。","Xiāoshòu yǒu tíchéng.","Sales staff get commission."],
+    ["融资","róngzī","to raise funding","公司刚完成一轮融资。","Gōngsī gāng wánchéng yì lún róngzī.","The company just completed a round of funding."],
+    ["投资","tóuzī","to invest","他们投资了这家公司。","Tāmen tóuzī le zhè jiā gōngsī.","They invested in this company."],
+    ["股东","gǔdōng","shareholder","股东们今天开会。","Gǔdōngmen jīntiān kāihuì.","The shareholders are meeting today."],
+    ["估值","gūzhí","valuation","这家公司的估值很高。","Zhè jiā gōngsī de gūzhí hěn gāo.","This company's valuation is very high."],
+    ["盈利","yínglì","to be profitable","公司终于盈利了。","Gōngsī zhōngyú yínglì le.","The company is finally profitable."],
+    ["亏损","kuīsǔn","to lose money","这个季度出现了亏损。","Zhège jìdù chūxiàn le kuīsǔn.","There was a loss this quarter."],
+    ["风险","fēngxiǎn","risk","这个决定有一定风险。","Zhège juédìng yǒu yídìng fēngxiǎn.","This decision carries some risk."],
+    ["商机","shāngjī","business opportunity","这是一个不错的商机。","Zhè shì yí gè búcuò de shāngjī.","This is a good business opportunity."],
+    ["洽谈","qiàtán","to discuss business terms","双方正在洽谈合作细节。","Shuāngfāng zhèngzài qiàtán hézuò xìjié.","Both sides are discussing the cooperation details."],
+    ["意向","yìxiàng","intent","客户表达了合作意向。","Kèhù biǎodá le hézuò yìxiàng.","The client expressed intent to cooperate."],
+    ["签约","qiānyuē","to sign a contract","我们下周签约。","Wǒmen xià zhōu qiānyuē.","We're signing the contract next week."],
+    ["违约","wéiyuē","to breach a contract","对方违约了。","Duìfāng wéiyuē le.","The other party breached the contract."],
+    ["续约","xùyuē","to renew a contract","客户决定续约。","Kèhù juédìng xùyuē.","The client decided to renew the contract."],
+    ["报表","bàobiǎo","report / statement","请准备一份财务报表。","Qǐng zhǔnbèi yí fèn cáiwù bàobiǎo.","Please prepare a financial statement."],
+    ["季度","jìdù","quarter","这是第三季度的数据。","Zhè shì dì sān jìdù de shùjù.","This is the third quarter's data."],
+    ["财年","cáinián","fiscal year","新财年从四月开始。","Xīn cáinián cóng sìyuè kāishǐ.","The new fiscal year starts in April."],
+    ["预算","yùsuàn","budget","这个项目的预算有限。","Zhège xiàngmù de yùsuàn yǒuxiàn.","This project's budget is limited."],
+    ["客户关系","kèhù guānxi","customer relations","维护客户关系很重要。","Wéihù kèhù guānxi hěn zhòngyào.","Maintaining customer relations is important."],
+    ["售后","shòuhòu","after-sales service","他们的售后服务很好。","Tāmen de shòuhòu fúwù hěn hǎo.","Their after-sales service is very good."],
+    ["服务费","fúwùfèi","service fee","还需要支付服务费。","Hái xūyào zhīfù fúwùfèi.","A service fee also needs to be paid."],
+    ["定金","dìngjīn","deposit","请先付定金。","Qǐng xiān fù dìngjīn.","Please pay a deposit first."],
+    ["尾款","wěikuǎn","final payment","交货后付尾款。","Jiāohuò hòu fù wěikuǎn.","The final payment is due after delivery."],
+    ["招标","zhāobiāo","to put out a tender","政府项目在招标。","Zhèngfǔ xiàngmù zài zhāobiāo.","The government project is out for tender."],
+    ["投标","tóubiāo","to bid","我们决定参与投标。","Wǒmen juédìng cānyù tóubiāo.","We decided to submit a bid."],
+    ["中标","zhòngbiāo","to win a bid","我们中标了！","Wǒmen zhòngbiāo le!","We won the bid!"],
+    ["商业模式","shāngyè móshì","business model","他们的商业模式很创新。","Tāmen de shāngyè móshì hěn chuàngxīn.","Their business model is very innovative."],
+    ["客单价","kèdānjià","average order value","这个季度客单价上升了。","Zhège jìdù kèdānjià shàngshēng le.","Average order value went up this quarter."],
   ],
   social: [
     ["请客","qǐngkè","to treat someone","今天我请客。","Jīntiān wǒ qǐngkè.","It's on me today."],
@@ -610,6 +788,7 @@ export default function App() {
   const profileRef = useRef(null); // holds the Firebase uid once signed in
   const lastPushedRef = useRef(null); // last payload we pushed, to ignore our own snapshot echo
   const cloudSaveTimer = useRef(null);
+  const pendingWriteRef = useRef(null); // { uid, payload } waiting on the debounce timer
   const [activeTopic, setActiveTopic] = useState(null);
   const [activeNoteId, setActiveNoteId] = useState(null);
   const [mode, setMode] = useState("learn");
@@ -709,6 +888,30 @@ export default function App() {
     return () => { unsubAuth && unsubAuth(); if (unsubSnap) unsubSnap(); };
   }, []);
 
+  /* Sends whatever cloud write is currently waiting on the debounce timer,
+     right now, instead of waiting out the delay. Used when the app is about
+     to be backgrounded/closed — otherwise a session finished right before
+     switching away could lose its last few seconds of progress (streak
+     included) because the debounce timer never gets to fire. */
+  const flushCloudSave = useCallback(() => {
+    if (!pendingWriteRef.current) return;
+    clearTimeout(cloudSaveTimer.current);
+    const { uid, payload } = pendingWriteRef.current;
+    pendingWriteRef.current = null;
+    lastPushedRef.current = payload;
+    writeCloudSave(uid, { save: payload, updatedAt: Date.now() }).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const onHide = () => { if (document.visibilityState === "hidden") flushCloudSave(); };
+    document.addEventListener("visibilitychange", onHide);
+    window.addEventListener("pagehide", flushCloudSave);
+    return () => {
+      document.removeEventListener("visibilitychange", onHide);
+      window.removeEventListener("pagehide", flushCloudSave);
+    };
+  }, [flushCloudSave]);
+
   /* functional update — avoids stale-state bugs on rapid taps */
   const update = useCallback((fn) => {
     setState((prev) => {
@@ -719,11 +922,13 @@ export default function App() {
         if (firebaseReady) {
           clearTimeout(cloudSaveTimer.current);
           const uid = profileRef.current;
+          const payload = JSON.stringify(next);
+          pendingWriteRef.current = { uid, payload };
           cloudSaveTimer.current = setTimeout(() => {
-            const payload = JSON.stringify(next);
+            pendingWriteRef.current = null;
             lastPushedRef.current = payload;
             writeCloudSave(uid, { save: payload, updatedAt: Date.now() }).catch(() => {});
-          }, 800);
+          }, 400);
         }
       }
       return next;
@@ -1631,7 +1836,7 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onHelp, 
                     )}
                   </div>
                   <div className="text-[11.5px] font-bold mt-0.5" style={{ color: T.sub }}>
-                    {st.seen === 0 ? "Not started yet"
+                    {st.seen === 0 ? `${st.target} words loaded · not started yet`
                       : st.pct >= 100 ? `Complete — all ${st.target} mastered`
                       : `${st.mastered} / ${st.target} mastered · ${st.seen} seen`}
                   </div>
