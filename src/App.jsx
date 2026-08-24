@@ -84,6 +84,7 @@ const PATHS = {
   help: ["M12 21a9 9 0 100-18 9 9 0 000 18z", "M9.3 9.3a2.8 2.8 0 015.4 1c0 1.9-2.7 2.4-2.7 4", "M12 17.2h.01"],
   cards: ["M7 7h11a2 2 0 012 2v9a2 2 0 01-2 2H7a2 2 0 01-2-2V9a2 2 0 012-2z", "M9 4h9a3 3 0 013 3"],
   globe: ["M12 21a9 9 0 100-18 9 9 0 000 18z", "M3 12h18", "M12 3a15 15 0 010 18", "M12 3a15 15 0 000 18"],
+  shuffle: ["M4 6h3.5l9 12H20", "M16.5 6H20v3.5", "M20 6l-4.5 4.5", "M4 18h3.5l3-4", "M16.5 18H20v-3.5", "M20 18l-3-3"],
 };
 
 function I({ n, size = 20, color = "currentColor", sw = 2.1, fill = "none", style }) {
@@ -1006,6 +1007,38 @@ export default function App() {
     setScreen("session");
   };
 
+  /* A full burst-sized session, same shape as buildSession, but not tied
+     to any one topic: due reviews from everywhere, new words pulled from
+     whichever topics you've already started. Lets you hit today's goal
+     without deciding which topic to open. */
+  const buildDailyMix = () => {
+    click(s.sound);
+    const burst = stateRef.current.settings.burst;
+    const d = dayNum();
+    const all = Object.values(stateRef.current.cards).filter((c) => !c.known);
+    const due = shuffle(all.filter((c) => c.due <= d));
+
+    const items = due.slice(0, burst).map((c) => ({ type: "quiz", word: c, variant: variantFor(c) }));
+
+    const newNeeded = Math.max(0, burst - items.length);
+    if (newNeeded > 0) {
+      const startedTopics = allTopics.filter((t) => (stateRef.current.topics[t.id] || {}).triaged);
+      const fresh = shuffle(startedTopics.flatMap((t) => availableWords(t.id)));
+      fresh.slice(0, newNeeded).forEach((w) => items.push({ type: "learn", word: w }));
+    }
+
+    if (!items.length) {
+      setBanner("Nothing to review right now — start a topic first, then come back here.");
+      return;
+    }
+    setMode("mixed");
+    setActiveTopic(null);
+    setQueue(shuffle(items));
+    setQIndex(0);
+    setSessionStats({ right: 0, wrong: 0, learned: 0 });
+    setScreen("session");
+  };
+
   /* Daily Quiz — 5 questions, only words you've actually learned,
      weighted to what's due but happy to revisit anything older. */
   const startDailyQuiz = () => {
@@ -1259,7 +1292,7 @@ export default function App() {
           <SignIn T={T} dark={dark} firebaseReady={firebaseReady} onGoogle={doSignIn} />
         )}
         {screen === "home" && (
-          <Home {...shared} allTopics={allTopics} onTopic={openTopic} onQuiz={startDailyQuiz}
+          <Home {...shared} allTopics={allTopics} onTopic={openTopic} onQuiz={startDailyQuiz} onDailyMix={buildDailyMix}
             onDeleteTopic={deleteTopic} onDict={openDict}
             onMatch={() => { click(s.sound); setScreen("match"); }}
             onHelp={() => { click(s.sound); setSheet("help"); }}
@@ -1280,7 +1313,7 @@ export default function App() {
         )}
         {screen === "done" && (
           <Done {...shared} topic={activeTopic} mode={mode} stats={sessionStats}
-            onAgain={() => (mode === "quiz" ? startDailyQuiz() : buildSession(activeTopic))} />
+            onAgain={() => (mode === "quiz" ? startDailyQuiz() : mode === "mixed" ? buildDailyMix() : buildSession(activeTopic))} />
         )}
         {screen === "dict" && activeTopic && (
           <Dictionary {...shared} topic={activeTopic} toggleStar={toggleStar}
@@ -1711,7 +1744,7 @@ function AddTopicSheet({ T, s, allTopics, onClose, onAdd }) {
 }
 
 /* ---------------- HOME ---------------- */
-function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onHelp, onAdd, onDeleteTopic, onDict, click }) {
+function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyMix, onHelp, onAdd, onDeleteTopic, onDict, click }) {
   const [editing, setEditing] = useState(false);
   const cards = Object.values(state.cards);
   const learned = cards.filter((c) => !c.known && c.seen > 0).length;
@@ -1795,6 +1828,22 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onHelp, 
           </div>
         </div>
       </div>
+
+      {/* quick path to today's goal — mixes every topic you've started so you don't have to pick one */}
+      <button onClick={onDailyMix}
+        className="bp-btn w-full rounded-[26px] p-4 mb-6 text-left flex items-center gap-3.5"
+        style={{ background: T.card, border: `2px solid ${T.line}`, boxShadow: "0 5px 0 #3E6D9C" }}>
+        <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style={{ background: "#6FA3D81E" }}>
+          <I n="shuffle" size={22} color="#6FA3D8" sw={2.2} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="font-extrabold text-[15px]" style={{ color: T.text }}>Practice a mixed set</div>
+          <div className="text-[11.5px] font-bold mt-0.5" style={{ color: T.sub }}>
+            {dueCount > 0 ? `${dueCount} due · every topic you've started` : "New + due words · every topic you've started"}
+          </div>
+        </div>
+        <I n="chevron" size={18} color={T.sub} />
+      </button>
 
       {/* STEP 1 */}
       <div className="flex items-start justify-between gap-2">
@@ -2183,9 +2232,15 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
     return (
       <div>
         {header}
-        <div className="text-center mb-3">
+        <div className="text-center mb-3 flex items-center justify-center gap-2 flex-wrap">
           <span className="px-3 py-1 rounded-full text-[11px] font-black tracking-widest inline-block"
             style={{ background: accent + "1E", color: accent, transform: "rotate(-1.5deg)" }}>NEW WORD</span>
+          {mode === "mixed" && wTopic && (
+            <span className="px-2.5 py-1 rounded-full text-[10.5px] font-black inline-flex items-center gap-1.5"
+              style={{ background: wTopic.color + "1E", color: wTopic.color }}>
+              <I n={wTopic.icon} size={12} color={wTopic.color} /> {wTopic.name}
+            </span>
+          )}
         </div>
         <div className="rounded-[34px] p-6 bp-pop relative overflow-hidden"
           style={{ background: T.card, border: `2px solid ${T.line}`, boxShadow: `0 7px 0 ${accent}40` }}>
@@ -2218,6 +2273,7 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
             <>
               <Ghost T={T} onClick={() => { click(); setAnswers((p) => ({ ...p, [qIndex]: "learned" })); markKnown(w); next(); }} style={{ flexShrink: 0 }}>Skip, I know it</Ghost>
               <Chunky color={accent} full onClick={() => {
+                chime(s.sound);
                 setAnswers((p) => ({ ...p, [qIndex]: "learned" }));
                 addCard(w);
                 setStats((p) => ({ ...p, learned: p.learned + 1 }));
@@ -2274,7 +2330,7 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
   return (
     <div>
       {header}
-      {mode === "quiz" && wTopic && (
+      {(mode === "quiz" || mode === "mixed") && wTopic && (
         <div className="flex justify-center mb-3">
           <span className="px-2.5 py-1 rounded-full text-[10.5px] font-black inline-flex items-center gap-1.5"
             style={{ background: wTopic.color + "1E", color: wTopic.color }}>
@@ -2399,7 +2455,7 @@ function Match({ state, T, s, click, setScreen, recordAnswer }) {
     if (!leftPick || !rightPick || !pairs) return;
     const word = pairs.words.find((c) => c.hanzi === leftPick);
     if (word && word.en === rightPick) {
-      ding(s.sound);
+      chime(s.sound);
       speak(word.hanzi);
       const newSolved = [...solved, leftPick];
       setSolved(newSolved);
@@ -2532,7 +2588,7 @@ function Done({ stats, state, T, topic, mode, onAgain, setScreen, click, s }) {
       <div className="flex justify-center mb-5"><Panda size={118} /></div>
       <div className="disp font-bold text-[28px] mb-1">{isQuiz ? grade : goalHit ? "Goal cleared!" : "Session complete"}</div>
       <div className="font-bold text-[13.5px] mb-7" style={{ color: T.sub }}>
-        {isQuiz ? "Daily Quiz · topics mixed" : topic?.name}
+        {isQuiz ? "Daily Quiz · topics mixed" : mode === "mixed" ? "Mixed practice · every topic" : topic?.name}
       </div>
       <div className="grid grid-cols-3 gap-3 mb-8">
         {[["Score", pct + "%", null], [isQuiz ? "Correct" : "New words", isQuiz ? `${stats.right}/${total}` : stats.learned, null], ["Streak", state.streak, "flame"]].map(([l, v, ic]) => (
