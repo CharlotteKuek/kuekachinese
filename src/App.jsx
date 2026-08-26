@@ -1957,68 +1957,118 @@ function HelpSheet({ T, onClose }) {
 }
 
 /* ---------------- TECH STACK SHEET ---------------- */
+/* color-coding key for every tech term across all 3 tiers — kept consistent
+   with each card's own icon color, so the highlight scheme reads the same
+   whether you're inside a card or cross-referencing it from elsewhere */
+const TC = {
+  lang: "#6FA3D8",    // languages / frameworks / build tool: React, JavaScript, JSX, TypeScript, Vite
+  style: "#7048E8",   // Tailwind CSS
+  content: "#16C79A", // Claude, the word bank
+  api: "#FF7A45",     // Web Audio API, Web Speech API
+  backend: "#E64980", // Firebase, Firebase Auth, Cloud Firestore, OAuth
+  host: "#1098AD",    // GitHub, Vercel, CI/CD
+  sync: "#0CA678",    // localStorage, onSnapshot, debouncing
+};
+const Hi = ({ c, children }) => <b style={{ color: c }}>{children}</b>;
+const Bul = ({ items }) => (
+  <ul className="mt-1.5 pl-4 space-y-1 list-disc">
+    {items.map((it, i) => <li key={i}>{it}</li>)}
+  </ul>
+);
+const Num = ({ items }) => (
+  <ol className="mt-1.5 pl-4 space-y-1 list-decimal">
+    {items.map((it, i) => <li key={i}>{it}</li>)}
+  </ol>
+);
+
 const SIMPLE_CARDS = [
-  { icon: "code", color: "#6FA3D8", t: "Frontend — what you see and tap",
-    d: "The part of the app you interact with (screens, buttons, word cards) is called the frontend. It's written in JavaScript, using a tool called React that lets the app be built out of small, reusable pieces instead of one giant file for each screen." },
-  { icon: "sparkle", color: "#7048E8", t: "Styling",
-    d: "The colors, spacing, and rounded shapes come from Tailwind CSS, a styling toolkit with a large set of ready-made design rules, so I don't have to generate custom styling code for every single element." },
-  { icon: "book", color: "#16C79A", t: "The Chinese content",
-    d: "The vocabulary, pinyin, and example sentences were generated with Claude's help during development. The app itself doesn't call any AI while you're using it, though — that content is now permanently built into the app's code, so it works instantly without ever contacting an AI service." },
-  { icon: "volume", color: "#FF7A45", t: "Sound & voice",
-    d: "The correct/wrong sound effects are generated live by your browser itself — there are no actual sound files. The Chinese pronunciation you hear uses your phone or laptop's own built-in voice, the same system other apps on your device already use for text-to-speech." },
-  { icon: "lock", color: "#E64980", t: "Backend — sign-in and storing your data",
-    d: "Instead of a custom server, the app uses Firebase, a backend service from Google. It handles two jobs: 1. Letting you sign in with your Google account. 2. Storing your streak, words, and notes in a cloud database called Firestore, tied to your account. That's what lets your phone and laptop show the same progress." },
-  { icon: "globe", color: "#1098AD", t: "Where the code lives and how updates reach you",
-    d: "The code is stored on GitHub, a platform for storing and tracking changes to code. A separate service called Vercel is connected to it — every time the code changes, Vercel automatically rebuilds and publishes the live website, which is why updates show up without you doing anything." },
+  { icon: "code", color: TC.lang, t: "Frontend — what you see and tap",
+    d: <>The part of the app you interact with (screens, buttons, word cards) is called the frontend. It's written in <Hi c={TC.lang}>JavaScript</Hi>, using a tool called <Hi c={TC.lang}>React</Hi> that lets the app be built out of small, reusable pieces instead of one giant file for each screen.</> },
+  { icon: "sparkle", color: TC.style, t: "Styling",
+    d: <>The colors, spacing, and rounded shapes come from <Hi c={TC.style}>Tailwind CSS</Hi>, a styling toolkit with a large set of ready-made design rules, so I don't have to generate custom styling code for every single element.</> },
+  { icon: "book", color: TC.content, t: "The Chinese content",
+    d: <>The vocabulary, pinyin, and example sentences were generated with <Hi c={TC.content}>Claude's</Hi> help during development. The app itself doesn't call any AI while you're using it, though — that content is now permanently built into the app's code, so it works instantly without ever contacting an AI service.</> },
+  { icon: "volume", color: TC.api, t: "Sound & voice",
+    d: <>The correct/wrong sound effects are generated live by your browser itself — there are no actual sound files. The Chinese pronunciation you hear uses your phone or laptop's own built-in voice, the same system other apps on your device already use for text-to-speech.</> },
+  { icon: "lock", color: TC.backend, t: "Backend — sign-in and storing your data",
+    d: <>Instead of a custom server, the app uses <Hi c={TC.backend}>Firebase</Hi>, a backend service from Google. It handles two jobs:
+      <Num items={["Letting you sign in with your Google account.", <>Storing your streak, words, and notes in a cloud database called <Hi c={TC.backend}>Firestore</Hi>, tied to your account.</>]} />
+      <div className="mt-1.5">That's what lets your phone and laptop show the same progress.</div>
+    </> },
+  { icon: "globe", color: TC.host, t: "Where the code lives and how updates reach you",
+    d: <>The code is stored on <Hi c={TC.host}>GitHub</Hi>, a platform for storing and tracking changes to code. A separate service called <Hi c={TC.host}>Vercel</Hi> is connected to it — every time the code changes, Vercel automatically rebuilds and publishes the live website, which is why updates show up without you doing anything.</> },
 ];
 
 const STUDENT_CARDS = [
-  { icon: "code", color: "#6FA3D8", t: "Frontend",
-    d: "Built with React 18 — function components and hooks only (useState, useEffect, useRef, useCallback), no class components. Written in JavaScript with JSX syntax, no TypeScript, so no static type-checking. Vite handles the dev server and build, via @vitejs/plugin-react." },
-  { icon: "sparkle", color: "#7048E8", t: "Styling",
-    d: "Tailwind CSS, loaded via a CDN <script> tag rather than a build-time PostCSS pipeline — it compiles utility classes at runtime in the browser (JIT), instead of being pre-generated and purged like a typical production Tailwind setup." },
-  { icon: "book", color: "#16C79A", t: "Word bank",
-    d: "Every word, pinyin, and example sentence is hardcoded into a JS object (SEED), authored with Claude's help — no external content API, no runtime AI calls. Spaced repetition uses a simple custom box/interval system, not a library." },
-  { icon: "volume", color: "#FF7A45", t: "Audio & speech",
-    d: "Sound effects are synthesized live with the Web Audio API (oscillators + gain envelopes) — no audio files. Pronunciation uses the browser's native Web Speech API (speechSynthesis), picking the best available Mandarin voice on the device." },
-  { icon: "lock", color: "#E64980", t: "Backend & database",
-    d: "Firebase Authentication (Google OAuth) handles sign-in. Cloud Firestore, a NoSQL document database, stores one document per user holding their entire app state as a JSON blob — not split across relational tables." },
-  { icon: "shuffle", color: "#0CA678", t: "Sync across devices",
-    d: "localStorage caches state locally for instant load. Firestore's onSnapshot listener pushes real-time updates to every signed-in device, with writes debounced (400ms) to avoid excessive network calls." },
-  { icon: "globe", color: "#1098AD", t: "Hosting & deployment",
-    d: "Code lives on GitHub; Vercel auto-builds and deploys on every push to main (a simple CI/CD setup) as a static site — no custom always-on server." },
+  { icon: "code", color: TC.lang, t: "Frontend",
+    d: <>Built with <Hi c={TC.lang}>React 18</Hi> — function components and hooks only, no class components:
+      <Bul items={[<Hi c={TC.lang}>useState</Hi>, <Hi c={TC.lang}>useEffect</Hi>, <Hi c={TC.lang}>useRef</Hi>, <Hi c={TC.lang}>useCallback</Hi>]} />
+      <div className="mt-1.5">Written in JavaScript with <Hi c={TC.lang}>JSX</Hi> syntax, no <Hi c={TC.lang}>TypeScript</Hi>, so no static type-checking. <Hi c={TC.lang}>Vite</Hi> handles the dev server and build, via @vitejs/plugin-react.</div>
+    </> },
+  { icon: "sparkle", color: TC.style, t: "Styling",
+    d: <><Hi c={TC.style}>Tailwind CSS</Hi>, loaded via a CDN &lt;script&gt; tag rather than a build-time PostCSS pipeline — it compiles utility classes at runtime in the browser (JIT), instead of being pre-generated and purged like a typical production Tailwind setup.</> },
+  { icon: "book", color: TC.content, t: "Word bank",
+    d: <>Every word, pinyin, and example sentence is hardcoded into a JS object (SEED), authored with <Hi c={TC.content}>Claude's</Hi> help — no external content API, no runtime AI calls. Spaced repetition uses a simple custom box/interval system, not a library.</> },
+  { icon: "volume", color: TC.api, t: "Audio & speech",
+    d: <>Sound effects are synthesized live with the <Hi c={TC.api}>Web Audio API</Hi> (oscillators + gain envelopes) — no audio files. Pronunciation uses the browser's native <Hi c={TC.api}>Web Speech API</Hi> (speechSynthesis), picking the best available Mandarin voice on the device.</> },
+  { icon: "lock", color: TC.backend, t: "Backend & database",
+    d: <><Hi c={TC.backend}>Firebase Authentication</Hi> (Google OAuth) handles sign-in. <Hi c={TC.backend}>Cloud Firestore</Hi>, a NoSQL document database, stores one document per user holding their entire app state as a JSON blob — not split across relational tables.</> },
+  { icon: "shuffle", color: TC.sync, t: "Sync across devices",
+    d: <><Hi c={TC.sync}>localStorage</Hi> caches state locally for instant load. Firestore's <Hi c={TC.sync}>onSnapshot</Hi> listener pushes real-time updates to every signed-in device, with writes debounced (400ms) to avoid excessive network calls.</> },
+  { icon: "globe", color: TC.host, t: "Hosting & deployment",
+    d: <>Code lives on <Hi c={TC.host}>GitHub</Hi>; <Hi c={TC.host}>Vercel</Hi> auto-builds and deploys on every push to main (a simple <Hi c={TC.host}>CI/CD</Hi> setup) as a static site — no custom always-on server.</> },
 ];
 
 const STUDENT_FAQ = [
   { q: "What APIs does the app call?",
-    a: "Web Audio API, Web Speech API, Firebase Authentication API, and Cloud Firestore API — all client-side, no custom backend API of its own." },
+    a: <>
+      <Num items={[<Hi c={TC.api}>Web Audio API</Hi>, <Hi c={TC.api}>Web Speech API</Hi>, <Hi c={TC.backend}>Firebase Authentication API</Hi>, <Hi c={TC.backend}>Cloud Firestore API</Hi>]} />
+      <div className="mt-1.5">All client-side, no custom backend API of its own.</div>
+    </> },
   { q: "How is app state managed?",
-    a: "No external state library (no Redux/Zustand/Context layers) — one state object at the top of the component tree, flowing down through props, updated through a single update() function that handles local state, localStorage, and the debounced Firestore write together." },
+    a: <>No external state library (no Redux/Zustand/Context layers) — one state object at the top of the component tree, flowing down through props, updated through a single <Hi c={TC.lang}>update()</Hi> function that handles local state, <Hi c={TC.sync}>localStorage</Hi>, and the debounced Firestore write together.</> },
   { q: "How does the cross-device sync actually stay consistent?",
-    a: "Last-write-wins — the whole state blob gets overwritten on every save, no merge logic. A ref tracks the last payload this device pushed, so incoming snapshot updates matching it are ignored (avoiding reacting to your own writes)." },
+    a: <>Last-write-wins — the whole state blob gets overwritten on every save, no merge logic. A ref tracks the last payload this device pushed, so incoming snapshot updates matching it are ignored (avoiding reacting to your own writes).</> },
 ];
 
 const DEV_SECTIONS = [
   { t: "The honest structural overview",
-    d: "This is intentionally a ~3,000-line single-file React app (src/App.jsx) — every screen, component, and helper function in one file, plus a small src/firebase.js for the Firebase SDK wiring. No folder-per-feature structure, no component library. That's a real trade-off (navigation within the file is heavier than it'd be split up), made because this app grew iteratively through many small conversational changes rather than an upfront architecture decision." },
+    d: <>This is intentionally a ~3,000-line single-file <Hi c={TC.lang}>React</Hi> app (src/App.jsx) — every screen, component, and helper function in one file, plus a small src/firebase.js for the <Hi c={TC.backend}>Firebase</Hi> SDK wiring. No folder-per-feature structure, no component library. That's a real trade-off (navigation within the file is heavier than it'd be split up), made because this app grew iteratively through many small conversational changes rather than an upfront architecture decision.</> },
   { t: "State management",
-    d: "No library. One state object in the root App component, mutated through a single update(fn) callback that does three things on every call: setState, localStorage.setItem, and a debounced Firestore write. Screen navigation is a plain string state machine (screen === \"home\" | \"session\" | \"dict\" | ...), no router." },
+    d: <>No library. One state object in the root App component, mutated through a single update(fn) callback that does three things on every call:
+      <Num items={["setState", <>localStorage.setItem</>, <>a debounced <Hi c={TC.backend}>Firestore</Hi> write</>]} />
+      <div className="mt-1.5">Screen navigation is a plain string state machine (screen === "home" | "session" | "dict" | ...), no router.</div>
+    </> },
   { t: "Styling",
-    d: "Tailwind CSS via the CDN runtime build (cdn.tailwindcss.com), not the CLI/PostCSS pipeline — so there's no purge/tree-shaking step; the full JIT compiler ships to the client and compiles on the fly. A handful of arbitrary-value utility classes are hand-written in a <style> block because they weren't reliably picked up by the CDN's class scanner." },
+    d: <><Hi c={TC.style}>Tailwind CSS</Hi> via the CDN runtime build (cdn.tailwindcss.com), not the CLI/PostCSS pipeline — so there's no purge/tree-shaking step; the full JIT compiler ships to the client and compiles on the fly. A handful of arbitrary-value utility classes are hand-written in a &lt;style&gt; block because they weren't reliably picked up by the CDN's class scanner.</> },
   { t: "Icons",
-    d: "A hand-rolled SVG path system — a PATHS object mapping name → array of SVG <path d> strings, rendered by a generic <I n=\"...\" /> component. No icon library (Lucide/Heroicons/etc.) — kept dependency-free and small." },
+    d: <>A hand-rolled SVG path system — a PATHS object mapping name → array of SVG &lt;path d&gt; strings, rendered by a generic &lt;I n="..." /&gt; component. No icon library (Lucide/Heroicons/etc.) — kept dependency-free and small.</> },
   { t: "Audio",
-    d: "Fully synthesized, zero audio assets. Each sound effect (click, chime, buzz, fanfare) is a small function building an oscillator/gain-envelope graph on a shared lazily-created AudioContext. AudioContext.resume() is called defensively on every play, since browsers auto-suspend idle contexts. Also notable — and unfixable from web code — iOS's hardware silent switch mutes all Web Audio/HTML5 audio from any web content, including installed home-screen apps; there's no AVAudioSession-equivalent API exposed to the web." },
+    d: <>Fully synthesized, zero audio assets. Each sound effect is a small function building an oscillator/gain-envelope graph on a shared lazily-created AudioContext:
+      <Bul items={["click", "chime", "buzz", "fanfare"]} />
+      <div className="mt-1.5">AudioContext.resume() is called defensively on every play, since browsers auto-suspend idle contexts. Also notable — and unfixable from web code — iOS's hardware silent switch mutes all <Hi c={TC.api}>Web Audio</Hi>/HTML5 audio from any web content, including installed home-screen apps; there's no AVAudioSession-equivalent API exposed to the web.</div>
+    </> },
   { t: "Persistence/sync model",
-    d: "Firestore holds one document per user, users/{uid}, with a single field save containing the entire app state JSON-stringified — not normalized into subcollections. Last-write-wins, no conflict resolution. Echo suppression is done client-side by comparing the incoming snapshot's payload string against the last string this client itself pushed (stored in a ref). Debounce is 400ms, with an explicit flush on visibilitychange/pagehide to avoid losing state if the tab/app closes before the debounce fires — this was a real bug (streak increments silently lost) fixed mid-session." },
+    d: <><Hi c={TC.backend}>Firestore</Hi> holds one document per user, users/{"{uid}"}, with a single field save containing the entire app state JSON-stringified — not normalized into subcollections. How it stays (roughly) consistent:
+      <Num items={[
+        "Last-write-wins — the whole state blob gets overwritten on every save, no merge logic.",
+        <>Echo suppression: a ref tracks the last payload this device pushed, so incoming <Hi c={TC.sync}>onSnapshot</Hi> updates matching it are ignored.</>,
+        <>Debounced 400ms, with an explicit flush on visibilitychange/pagehide so a quick app-close doesn't drop the last write — this was a real bug (streak increments silently lost) fixed mid-session.</>,
+      ]} />
+    </> },
   { t: "Auth",
-    d: "Firebase Auth, Google provider only. Sign-in tries signInWithPopup first and falls back to signInWithRedirect only on popup-blocked/operation-not-supported errors — flipped from redirect-first after discovering signInWithRedirect doesn't reliably complete in iOS \"Add to Home Screen\" standalone contexts (a known WebKit quirk)." },
+    d: <><Hi c={TC.backend}>Firebase Auth</Hi>, Google provider only. Sign-in flow:
+      <Num items={["Tries signInWithPopup first.", "Falls back to signInWithRedirect only on popup-blocked/operation-not-supported errors."]} />
+      <div className="mt-1.5">Flipped from redirect-first after discovering signInWithRedirect doesn't reliably complete in iOS "Add to Home Screen" standalone contexts (a known WebKit quirk).</div>
+    </> },
   { t: "Build/deploy",
-    d: "Vite 5 + @vitejs/plugin-react, zero custom config beyond the React plugin. Vercel's Git integration auto-detects the Vite preset and deploys on push to main — no vercel.json, no CI YAML." },
+    d: <><Hi c={TC.lang}>Vite 5</Hi> + @vitejs/plugin-react, zero custom config beyond the React plugin. <Hi c={TC.host}>Vercel's</Hi> Git integration auto-detects the Vite preset and deploys on push to main — no vercel.json, no CI YAML.</> },
   { t: "Dependencies",
-    d: "Deliberately minimal — package.json only lists react, react-dom, and firebase as runtime deps. No date library, no animation library (CSS keyframes only), no form library, no testing framework currently set up." },
+    d: <>Deliberately minimal — package.json only lists <Hi c={TC.lang}>react</Hi>, <Hi c={TC.lang}>react-dom</Hi>, and <Hi c={TC.backend}>firebase</Hi> as runtime deps. Not included:
+      <Bul items={["No date library", "No animation library (CSS keyframes only)", "No form library", "No testing framework currently set up"]} />
+    </> },
   { t: "Notable removed piece",
-    d: "There used to be a /api/anthropic Vercel serverless function proxying Claude API calls for AI-generated vocabulary. It's gone — the word bank is now fully static by design, a deliberate pivot away from AI-backed generation." },
+    d: <>There used to be a /api/anthropic Vercel serverless function proxying <Hi c={TC.content}>Claude</Hi> API calls for AI-generated vocabulary. It's gone — the word bank is now fully static by design, a deliberate pivot away from AI-backed generation.</> },
 ];
 
 function TechStackSheet({ T, dark, click, onClose }) {
@@ -3412,10 +3462,10 @@ function NotesList({ T, dark, click, notes, onOpen, onCreate, onTechStack }) {
       <div className="flex items-center justify-between mb-0.5">
         <div className="disp font-bold text-[26px]">Notes</div>
         <div className="flex items-center gap-2">
-          <button onClick={() => { click(); onTechStack(); }} className="bp-btn p-2.5 rounded-xl"
-            style={{ background: T.card, border: `2px solid ${T.line}`, boxShadow: `0 4px 0 ${T.line}` }}
-            title="How this app is built">
-            <I n="code" size={19} color={T.sub} />
+          <button onClick={() => { click(); onTechStack(); }} className="bp-btn px-3 py-2.5 rounded-xl flex items-center gap-1.5"
+            style={{ background: T.card, border: `2px solid ${T.line}`, boxShadow: `0 4px 0 ${T.line}` }}>
+            <I n="code" size={15} color={T.sub} />
+            <span className="font-extrabold text-[11.5px]" style={{ color: T.sub }}>How's this built?</span>
           </button>
           <button onClick={() => { click(); onCreate(); }} className="bp-btn p-2.5 rounded-xl"
             style={{ background: "#6FA3D8", boxShadow: "0 4px 0 #3E6D9C" }}>
