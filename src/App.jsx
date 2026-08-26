@@ -1576,7 +1576,7 @@ export default function App() {
         {screen === "notes" && (
           <NotesList {...shared} notes={state.notes || []}
             onOpen={(id) => { setActiveNoteId(id); setScreen("noteEditor"); }}
-            onCreate={createNote} />
+            onCreate={createNote} onTechStack={() => setSheet("techstack")} />
         )}
         {screen === "noteEditor" && (state.notes || []).some((n) => n.id === activeNoteId) && (
           <NoteEditor {...shared} note={(state.notes || []).find((n) => n.id === activeNoteId)}
@@ -1593,6 +1593,9 @@ export default function App() {
       {sheet === "add" && (
         <AddTopicSheet T={T} s={s} state={state} allTopics={allTopics} onClose={() => { click(s.sound); setSheet(null); }}
           onAdd={(t) => { addTopic(t); setSheet(null); }} />
+      )}
+      {sheet === "techstack" && (
+        <TechStackSheet T={T} dark={dark} click={() => click(s.sound)} onClose={() => { click(s.sound); setSheet(null); }} />
       )}
 
       {["home", "glossary", "notes", "settings"].includes(screen) && (
@@ -1948,6 +1951,164 @@ function HelpSheet({ T, onClose }) {
           ))}
         </div>
         <Chunky full onClick={onClose}>Let's go</Chunky>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- TECH STACK SHEET ---------------- */
+const SIMPLE_CARDS = [
+  { icon: "code", color: "#6FA3D8", t: "Frontend — what you see and tap",
+    d: "The part of the app you interact with (screens, buttons, word cards) is called the frontend. It's written in JavaScript, using a tool called React that lets the app be built out of small, reusable pieces instead of one giant file for each screen." },
+  { icon: "sparkle", color: "#7048E8", t: "Styling",
+    d: "The colors, spacing, and rounded shapes come from Tailwind CSS, a styling toolkit with a large set of ready-made design rules, so I don't have to generate custom styling code for every single element." },
+  { icon: "book", color: "#16C79A", t: "The Chinese content",
+    d: "The vocabulary, pinyin, and example sentences were generated with Claude's help during development. The app itself doesn't call any AI while you're using it, though — that content is now permanently built into the app's code, so it works instantly without ever contacting an AI service." },
+  { icon: "volume", color: "#FF7A45", t: "Sound & voice",
+    d: "The correct/wrong sound effects are generated live by your browser itself — there are no actual sound files. The Chinese pronunciation you hear uses your phone or laptop's own built-in voice, the same system other apps on your device already use for text-to-speech." },
+  { icon: "lock", color: "#E64980", t: "Backend — sign-in and storing your data",
+    d: "Instead of a custom server, the app uses Firebase, a backend service from Google. It handles two jobs: 1. Letting you sign in with your Google account. 2. Storing your streak, words, and notes in a cloud database called Firestore, tied to your account. That's what lets your phone and laptop show the same progress." },
+  { icon: "globe", color: "#1098AD", t: "Where the code lives and how updates reach you",
+    d: "The code is stored on GitHub, a platform for storing and tracking changes to code. A separate service called Vercel is connected to it — every time the code changes, Vercel automatically rebuilds and publishes the live website, which is why updates show up without you doing anything." },
+];
+
+const STUDENT_CARDS = [
+  { icon: "code", color: "#6FA3D8", t: "Frontend",
+    d: "Built with React 18 — function components and hooks only (useState, useEffect, useRef, useCallback), no class components. Written in JavaScript with JSX syntax, no TypeScript, so no static type-checking. Vite handles the dev server and build, via @vitejs/plugin-react." },
+  { icon: "sparkle", color: "#7048E8", t: "Styling",
+    d: "Tailwind CSS, loaded via a CDN <script> tag rather than a build-time PostCSS pipeline — it compiles utility classes at runtime in the browser (JIT), instead of being pre-generated and purged like a typical production Tailwind setup." },
+  { icon: "book", color: "#16C79A", t: "Word bank",
+    d: "Every word, pinyin, and example sentence is hardcoded into a JS object (SEED), authored with Claude's help — no external content API, no runtime AI calls. Spaced repetition uses a simple custom box/interval system, not a library." },
+  { icon: "volume", color: "#FF7A45", t: "Audio & speech",
+    d: "Sound effects are synthesized live with the Web Audio API (oscillators + gain envelopes) — no audio files. Pronunciation uses the browser's native Web Speech API (speechSynthesis), picking the best available Mandarin voice on the device." },
+  { icon: "lock", color: "#E64980", t: "Backend & database",
+    d: "Firebase Authentication (Google OAuth) handles sign-in. Cloud Firestore, a NoSQL document database, stores one document per user holding their entire app state as a JSON blob — not split across relational tables." },
+  { icon: "shuffle", color: "#0CA678", t: "Sync across devices",
+    d: "localStorage caches state locally for instant load. Firestore's onSnapshot listener pushes real-time updates to every signed-in device, with writes debounced (400ms) to avoid excessive network calls." },
+  { icon: "globe", color: "#1098AD", t: "Hosting & deployment",
+    d: "Code lives on GitHub; Vercel auto-builds and deploys on every push to main (a simple CI/CD setup) as a static site — no custom always-on server." },
+];
+
+const STUDENT_FAQ = [
+  { q: "What APIs does the app call?",
+    a: "Web Audio API, Web Speech API, Firebase Authentication API, and Cloud Firestore API — all client-side, no custom backend API of its own." },
+  { q: "How is app state managed?",
+    a: "No external state library (no Redux/Zustand/Context layers) — one state object at the top of the component tree, flowing down through props, updated through a single update() function that handles local state, localStorage, and the debounced Firestore write together." },
+  { q: "How does the cross-device sync actually stay consistent?",
+    a: "Last-write-wins — the whole state blob gets overwritten on every save, no merge logic. A ref tracks the last payload this device pushed, so incoming snapshot updates matching it are ignored (avoiding reacting to your own writes)." },
+];
+
+const DEV_SECTIONS = [
+  { t: "The honest structural overview",
+    d: "This is intentionally a ~3,000-line single-file React app (src/App.jsx) — every screen, component, and helper function in one file, plus a small src/firebase.js for the Firebase SDK wiring. No folder-per-feature structure, no component library. That's a real trade-off (navigation within the file is heavier than it'd be split up), made because this app grew iteratively through many small conversational changes rather than an upfront architecture decision." },
+  { t: "State management",
+    d: "No library. One state object in the root App component, mutated through a single update(fn) callback that does three things on every call: setState, localStorage.setItem, and a debounced Firestore write. Screen navigation is a plain string state machine (screen === \"home\" | \"session\" | \"dict\" | ...), no router." },
+  { t: "Styling",
+    d: "Tailwind CSS via the CDN runtime build (cdn.tailwindcss.com), not the CLI/PostCSS pipeline — so there's no purge/tree-shaking step; the full JIT compiler ships to the client and compiles on the fly. A handful of arbitrary-value utility classes are hand-written in a <style> block because they weren't reliably picked up by the CDN's class scanner." },
+  { t: "Icons",
+    d: "A hand-rolled SVG path system — a PATHS object mapping name → array of SVG <path d> strings, rendered by a generic <I n=\"...\" /> component. No icon library (Lucide/Heroicons/etc.) — kept dependency-free and small." },
+  { t: "Audio",
+    d: "Fully synthesized, zero audio assets. Each sound effect (click, chime, buzz, fanfare) is a small function building an oscillator/gain-envelope graph on a shared lazily-created AudioContext. AudioContext.resume() is called defensively on every play, since browsers auto-suspend idle contexts. Also notable — and unfixable from web code — iOS's hardware silent switch mutes all Web Audio/HTML5 audio from any web content, including installed home-screen apps; there's no AVAudioSession-equivalent API exposed to the web." },
+  { t: "Persistence/sync model",
+    d: "Firestore holds one document per user, users/{uid}, with a single field save containing the entire app state JSON-stringified — not normalized into subcollections. Last-write-wins, no conflict resolution. Echo suppression is done client-side by comparing the incoming snapshot's payload string against the last string this client itself pushed (stored in a ref). Debounce is 400ms, with an explicit flush on visibilitychange/pagehide to avoid losing state if the tab/app closes before the debounce fires — this was a real bug (streak increments silently lost) fixed mid-session." },
+  { t: "Auth",
+    d: "Firebase Auth, Google provider only. Sign-in tries signInWithPopup first and falls back to signInWithRedirect only on popup-blocked/operation-not-supported errors — flipped from redirect-first after discovering signInWithRedirect doesn't reliably complete in iOS \"Add to Home Screen\" standalone contexts (a known WebKit quirk)." },
+  { t: "Build/deploy",
+    d: "Vite 5 + @vitejs/plugin-react, zero custom config beyond the React plugin. Vercel's Git integration auto-detects the Vite preset and deploys on push to main — no vercel.json, no CI YAML." },
+  { t: "Dependencies",
+    d: "Deliberately minimal — package.json only lists react, react-dom, and firebase as runtime deps. No date library, no animation library (CSS keyframes only), no form library, no testing framework currently set up." },
+  { t: "Notable removed piece",
+    d: "There used to be a /api/anthropic Vercel serverless function proxying Claude API calls for AI-generated vocabulary. It's gone — the word bank is now fully static by design, a deliberate pivot away from AI-backed generation." },
+];
+
+function TechStackSheet({ T, dark, click, onClose }) {
+  const [tab, setTab] = useState("simple"); // simple | student | dev
+  const [openFaq, setOpenFaq] = useState({});
+
+  const Cards = ({ items }) => (
+    <div className="flex flex-col gap-2.5">
+      {items.map((c) => (
+        <div key={c.t} className="rounded-2xl p-3.5 flex gap-3 items-start"
+          style={{ background: T.card, border: `2px solid ${T.line}` }}>
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: c.color + "1E" }}>
+            <I n={c.icon} size={18} color={c.color} />
+          </div>
+          <div className="min-w-0">
+            <div className="font-extrabold text-[13.5px] leading-tight mb-1">{c.t}</div>
+            <div className="text-[12px] font-bold leading-relaxed" style={{ color: T.sub }}>{c.d}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="fixed inset-0 z-[55] flex items-end justify-center" style={{ background: "rgba(6,16,34,.5)" }} onClick={onClose}>
+      <div className="bp-up w-full max-w-md rounded-t-[30px] p-5 pb-8 max-h-[88vh] overflow-y-auto"
+        style={{ background: T.bg }} onClick={(e) => e.stopPropagation()}>
+        <div className="w-12 h-1.5 rounded-full mx-auto mb-4" style={{ background: T.line }} />
+        <div className="flex items-center gap-3 mb-3">
+          <Panda size={40} />
+          <div className="disp font-bold text-[20px] leading-none">How this app is built</div>
+        </div>
+        <div className="rounded-2xl p-3 mb-4 text-[12px] font-bold leading-relaxed" style={{ background: T.chip, color: T.sub }}>
+          Hi! Charlotte here. I can't code, so I built this webapp using Claude. Kept getting questions about its tech stack, so I decided to let the app speak for itself!
+        </div>
+
+        <div className="flex gap-2 mb-4">
+          {[["simple", "Simple"], ["student", "CS Student"], ["dev", "Developer"]].map(([v, label]) => {
+            const on = tab === v;
+            return (
+              <button key={v} onClick={() => { click(); setTab(v); }}
+                className="bp-btn flex-1 rounded-xl py-2.5 font-extrabold text-[12.5px]"
+                style={{
+                  background: on ? "#6FA3D8" : T.card, color: on ? "#fff" : T.sub,
+                  border: `2px solid ${on ? "#6FA3D8" : T.line}`, boxShadow: `0 3px 0 ${on ? "#3E6D9C" : T.line}`,
+                }}>{label}</button>
+            );
+          })}
+        </div>
+
+        {tab === "simple" && <Cards items={SIMPLE_CARDS} />}
+
+        {tab === "student" && (
+          <>
+            <Cards items={STUDENT_CARDS} />
+            <div className="text-[10.5px] font-black tracking-[.12em] mt-5 mb-2.5" style={{ color: T.sub }}>
+              A FEW MORE SPECIFICS
+            </div>
+            <div className="flex flex-col gap-2">
+              {STUDENT_FAQ.map((f, i) => {
+                const shown = openFaq[i];
+                return (
+                  <div key={f.q} className="rounded-2xl overflow-hidden" style={{ background: T.card, border: `2px solid ${T.line}` }}>
+                    <button onClick={() => { click(); setOpenFaq((p) => ({ ...p, [i]: !p[i] })); }}
+                      className="w-full flex items-center gap-2.5 p-3 text-left">
+                      <div className="flex-1 min-w-0 font-extrabold text-[12.5px]" style={{ color: T.text }}>{f.q}</div>
+                      <I n="chevron" size={16} color={T.sub} style={{ transform: shown ? "rotate(90deg)" : "none", transition: "transform .18s" }} />
+                    </button>
+                    {shown && (
+                      <div className="px-3 pb-3 text-[12px] font-bold leading-relaxed" style={{ color: T.sub }}>{f.a}</div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        {tab === "dev" && (
+          <div className="flex flex-col gap-4">
+            {DEV_SECTIONS.map((s) => (
+              <div key={s.t}>
+                <div className="font-extrabold text-[13px] mb-1" style={{ color: T.text }}>{s.t}</div>
+                <div className="text-[12px] font-bold leading-relaxed" style={{ color: T.sub }}>{s.d}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-5"><Chunky full onClick={onClose}>Got it</Chunky></div>
       </div>
     </div>
   );
@@ -3244,16 +3405,23 @@ function Flashcards({ deck, mode, T, s, click, setScreen, topicById, dark }) {
 }
 
 /* ---------------- NOTES ---------------- */
-function NotesList({ T, dark, click, notes, onOpen, onCreate }) {
+function NotesList({ T, dark, click, notes, onOpen, onCreate, onTechStack }) {
   const sorted = [...notes].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
   return (
     <div className="pt-6">
       <div className="flex items-center justify-between mb-0.5">
         <div className="disp font-bold text-[26px]">Notes</div>
-        <button onClick={() => { click(); onCreate(); }} className="bp-btn p-2.5 rounded-xl"
-          style={{ background: "#6FA3D8", boxShadow: "0 4px 0 #3E6D9C" }}>
-          <I n="plus" size={19} color="#fff" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => { click(); onTechStack(); }} className="bp-btn p-2.5 rounded-xl"
+            style={{ background: T.card, border: `2px solid ${T.line}`, boxShadow: `0 4px 0 ${T.line}` }}
+            title="How this app is built">
+            <I n="code" size={19} color={T.sub} />
+          </button>
+          <button onClick={() => { click(); onCreate(); }} className="bp-btn p-2.5 rounded-xl"
+            style={{ background: "#6FA3D8", boxShadow: "0 4px 0 #3E6D9C" }}>
+            <I n="plus" size={19} color="#fff" />
+          </button>
+        </div>
       </div>
       <div className="text-[13px] font-bold mb-4" style={{ color: T.sub }}>
         {sorted.length} note{sorted.length === 1 ? "" : "s"} · 笔记
