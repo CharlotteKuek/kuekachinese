@@ -2393,6 +2393,7 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
   const startPress = (id, e) => {
     if (!editing) return;
     if (e.target.closest && e.target.closest("[data-no-drag]")) return;
+    e.preventDefault(); // stop native text-selection/callout from starting on long-press
     const y = e.clientY;
     const timer = setTimeout(() => {
       pressRef.current.timer = null;
@@ -2543,9 +2544,13 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
               ref={(el) => { if (el) rowRefs.current.set(t.id, el); else rowRefs.current.delete(t.id); }}
               onPointerDown={(e) => startPress(t.id, e)}
               className="relative pb-3.5"
-              style={isDragging
-                ? { position: "absolute", top: drag.top, left: 0, right: 0, height: drag.height, zIndex: 30 }
-                : undefined}>
+              style={{
+                ...(isDragging ? { position: "absolute", top: drag.top, left: 0, right: 0, height: drag.height, zIndex: 30 } : null),
+                /* Long-pressing to start a drag otherwise triggers the browser's native
+                   text-selection (and, on iOS, a copy/lookup callout) on the row's
+                   labels — this suppresses both while in edit mode. */
+                ...(editing ? { WebkitUserSelect: "none", userSelect: "none", WebkitTouchCallout: "none" } : null),
+              }}>
               {i > 0 && (
                 <div className="absolute left-[-15px] w-[6px] rounded-full"
                   style={{ top: -18, height: 46, background: `linear-gradient(${prevColor}, ${t.color})` }} />
