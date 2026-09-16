@@ -85,6 +85,8 @@ const PATHS = {
   cards: ["M7 7h11a2 2 0 012 2v9a2 2 0 01-2 2H7a2 2 0 01-2-2V9a2 2 0 012-2z", "M9 4h9a3 3 0 013 3"],
   globe: ["M12 21a9 9 0 100-18 9 9 0 000 18z", "M3 12h18", "M12 3a15 15 0 010 18", "M12 3a15 15 0 000 18"],
   shuffle: ["M4 6h3.5l9 12H20", "M16.5 6H20v3.5", "M20 6l-4.5 4.5", "M4 18h3.5l3-4", "M16.5 18H20v-3.5", "M20 18l-3-3"],
+  compass: ["M12 21a9 9 0 100-18 9 9 0 000 18z", "M14.5 9.5l-2 5-5 2 2-5 5-2z"],
+  noodle: ["M4 13h16a8 8 0 01-16 0z", "M8 13c0-3.2 1-5.2 1-5.2", "M12 13c0-4.2 1.5-6.2 1.5-6.2", "M16 13c0-3.2 1-5.2 1-5.2"],
 };
 
 function I({ n, size = 20, color = "currentColor", sw = 2.1, fill = "none", style }) {
@@ -112,6 +114,8 @@ const CORE_TOPICS = [
   { id: "meetings",  name: "Meetings",                zh: "开会讨论", color: "#12B886", icon: "calendar" },
   { id: "commercial",name: "Commercial & business",   zh: "商务合作", color: "#845EF7", icon: "chart" },
   { id: "social",    name: "Networking & social",     zh: "人际应酬", color: "#FF922B", icon: "martini" },
+  { id: "directions",name: "Directions & travel signage", zh: "出行导览", color: "#F59F00", icon: "compass" },
+  { id: "cuisine",   name: "Chinese cuisine & ordering",  zh: "中华美食", color: "#D6336C", icon: "noodle" },
 ];
 
 /* offered by the Add-topic sheet alongside AI ideas */
@@ -721,6 +725,92 @@ const SEED = {
     ["打招呼","dǎ zhāohu","to greet","记得跟大家打招呼。","Jìde gēn dàjiā dǎ zhāohu.","Remember to greet everyone."],
     ["告辞","gàocí","to take one's leave","我先告辞了。","Wǒ xiān gàocí le.","I'll take my leave now."],
   ],
+  directions: [
+    ["车厢","chēxiāng","train carriage / coach","请问这是几号车厢？","Qǐngwèn zhè shì jǐ hào chēxiāng?","Excuse me, which carriage is this?"],
+    ["车次","chēcì","train number / service","请核对车次和时间。","Qǐng héduì chēcì hé shíjiān.","Please check the train number and time."],
+    ["座位号","zuòwèihào","seat number","请看一下你的座位号。","Qǐng kàn yíxià nǐ de zuòwèihào.","Please check your seat number."],
+    ["检票口","jiǎnpiàokǒu","ticket gate","检票口在二楼。","Jiǎnpiàokǒu zài èr lóu.","The ticket gate is on the second floor."],
+    ["安检","ānjiǎn","security check","过安检大概要十分钟。","Guò ānjiǎn dàgài yào shí fēnzhōng.","Going through security takes about ten minutes."],
+    ["候车室","hòuchēshì","waiting room","我们在候车室等吧。","Wǒmen zài hòuchēshì děng ba.","Let's wait in the waiting room."],
+    ["检票员","jiǎnpiàoyuán","ticket inspector","检票员会检查你的票。","Jiǎnpiàoyuán huì jiǎnchá nǐ de piào.","The ticket inspector will check your ticket."],
+    ["乘务员","chéngwùyuán","train / flight attendant","有问题可以问乘务员。","Yǒu wèntí kěyǐ wèn chéngwùyuán.","You can ask the attendant if you have questions."],
+    ["站务员","zhànwùyuán","station staff","可以问站务员。","Kěyǐ wèn zhànwùyuán.","You can ask the station staff."],
+    ["安检员","ānjiǎnyuán","security staff","安检员会检查你的包。","Ānjiǎnyuán huì jiǎnchá nǐ de bāo.","The security staff will check your bag."],
+    ["登机口","dēngjīkǒu","boarding gate","登机口是三十五号。","Dēngjīkǒu shì sānshíwǔ hào.","The boarding gate is number 35."],
+    ["登机牌","dēngjīpái","boarding pass","请出示登机牌和护照。","Qǐng chūshì dēngjīpái hé hùzhào.","Please show your boarding pass and passport."],
+    ["托运","tuōyùn","to check (luggage)","这个箱子需要托运。","Zhège xiāngzi xūyào tuōyùn.","This suitcase needs to be checked."],
+    ["行李提取","xínglǐ tíqǔ","baggage claim","行李提取处在一楼。","Xínglǐ tíqǔ chù zài yī lóu.","Baggage claim is on the first floor."],
+    ["值机","zhíjī","to check in (for a flight)","我们先去值机。","Wǒmen xiān qù zhíjī.","Let's go check in first."],
+    ["中转","zhōngzhuǎn","transit / layover","我要在上海中转。","Wǒ yào zài Shànghǎi zhōngzhuǎn.","I have a layover in Shanghai."],
+    ["出站","chūzhàn","to exit the station","从这个口出站。","Cóng zhège kǒu chūzhàn.","Exit the station through this gate."],
+    ["进站","jìnzhàn","to enter the station","火车马上要进站了。","Huǒchē mǎshàng yào jìnzhàn le.","The train is about to enter the station."],
+    ["验票","yànpiào","to check / verify tickets","请在这里验票。","Qǐng zài zhèlǐ yànpiào.","Please have your ticket checked here."],
+    ["卧铺","wòpù","sleeper berth","我订了一张卧铺票。","Wǒ dìng le yì zhāng wòpù piào.","I booked a sleeper berth ticket."],
+    ["硬座","yìngzuò","hard seat (train class)","硬座票比较便宜。","Yìngzuò piào bǐjiào piányi.","Hard-seat tickets are cheaper."],
+    ["补票","bǔpiào","to buy a supplementary ticket","坐过站了要补票。","Zuò guò zhàn le yào bǔpiào.","If you miss your stop, you have to buy a supplementary ticket."],
+    ["晚点","wǎndiǎn","delayed","航班晚点了两个小时。","Hángbān wǎndiǎn le liǎng gè xiǎoshí.","The flight was delayed by two hours."],
+    ["问路","wènlù","to ask for directions","我们去问路吧。","Wǒmen qù wènlù ba.","Let's go ask for directions."],
+    ["指路牌","zhǐlùpái","directional sign","看一下指路牌。","Kàn yíxià zhǐlùpái.","Take a look at the directional sign."],
+    ["地图","dìtú","map","这里有地图吗？","Zhèlǐ yǒu dìtú ma?","Is there a map here?"],
+    ["前方","qiánfāng","ahead","出口就在前方。","Chūkǒu jiù zài qiánfāng.","The exit is just ahead."],
+    ["对面","duìmiàn","opposite side","洗手间在对面。","Xǐshǒujiān zài duìmiàn.","The restroom is on the opposite side."],
+    ["拐弯","guǎiwān","to turn / bend","往前拐弯就是了。","Wǎng qián guǎiwān jiù shì le.","Just turn up ahead and you're there."],
+    ["下一站","xià yí zhàn","next stop","下一站是哪里？","Xià yí zhàn shì nǎlǐ?","What's the next stop?"],
+    ["终点站","zhōngdiǎnzhàn","terminal / last stop","这是终点站，请下车。","Zhè shì zhōngdiǎnzhàn, qǐng xiàchē.","This is the terminal stop, please get off."],
+    ["出租车站","chūzūchēzhàn","taxi stand","出租车站在东门。","Chūzūchēzhàn zài dōngmén.","The taxi stand is at the east gate."],
+    ["问询处","wènxúnchù","information desk","可以去问询处问问。","Kěyǐ qù wènxúnchù wènwen.","You can ask at the information desk."],
+    ["洗手间","xǐshǒujiān","restroom","请问洗手间在哪里？","Qǐngwèn xǐshǒujiān zài nǎlǐ?","Excuse me, where's the restroom?"],
+    ["扶梯","fútī","escalator","扶梯在你的左边。","Fútī zài nǐ de zuǒbiān.","The escalator is on your left."],
+    ["安全出口","ānquán chūkǒu","emergency exit","安全出口在走廊尽头。","Ānquán chūkǒu zài zǒuláng jìntóu.","The emergency exit is at the end of the hallway."],
+    ["东门","dōngmén","east gate","我们约在东门见。","Wǒmen yuē zài dōngmén jiàn.","Let's meet at the east gate."],
+    ["西门","xīmén","west gate","西门离地铁站更近。","Xīmén lí dìtiězhàn gèng jìn.","The west gate is closer to the subway station."],
+    ["南门","nánmén","south gate","从南门进去。","Cóng nánmén jìnqù.","Go in through the south gate."],
+    ["北门","běimén","north gate","北门现在关闭了。","Běimén xiànzài guānbì le.","The north gate is currently closed."],
+  ],
+  cuisine: [
+    ["拉面","lāmiàn","hand-pulled noodles","兰州拉面很有名。","Lánzhōu lāmiàn hěn yǒumíng.","Lanzhou hand-pulled noodles are very famous."],
+    ["米线","mǐxiàn","rice noodles","云南米线很好吃。","Yúnnán mǐxiàn hěn hǎochī.","Yunnan rice noodles are delicious."],
+    ["刀削面","dāoxiāomiàn","knife-cut noodles","山西的刀削面很特别。","Shānxī de dāoxiāomiàn hěn tèbié.","Shanxi's knife-cut noodles are quite unique."],
+    ["炸酱面","zhájiàngmiàn","noodles with soybean paste","北京炸酱面要拌一拌。","Běijīng zhájiàngmiàn yào bàn yi bàn.","You need to mix Beijing zhajiangmian before eating."],
+    ["米粉","mǐfěn","rice vermicelli","早上我喜欢吃米粉。","Zǎoshang wǒ xǐhuan chī mǐfěn.","I like to eat rice vermicelli in the morning."],
+    ["河粉","héfěn","flat rice noodles","河粉炒起来很香。","Héfěn chǎo qǐlái hěn xiāng.","Fried flat rice noodles smell great."],
+    ["热干面","règānmiàn","hot dry noodles","武汉热干面是当地特色。","Wǔhàn règānmiàn shì dāngdì tèsè.","Wuhan hot dry noodles are a local specialty."],
+    ["饺子","jiǎozi","dumplings","北方人过年会包饺子。","Běifāngrén guònián huì bāo jiǎozi.","Northerners make dumplings for the New Year."],
+    ["包子","bāozi","steamed stuffed bun","早餐吃两个包子。","Zǎocān chī liǎng gè bāozi.","I'll have two steamed buns for breakfast."],
+    ["馒头","mántou","steamed bun (plain)","北方人常吃馒头。","Běifāngrén cháng chī mántou.","Northerners often eat plain steamed buns."],
+    ["小笼包","xiǎolóngbāo","soup dumplings","上海的小笼包很出名。","Shànghǎi de xiǎolóngbāo hěn chūmíng.","Shanghai's soup dumplings are very famous."],
+    ["烤鸭","kǎoyā","roast duck","来北京一定要吃烤鸭。","Lái Běijīng yídìng yào chī kǎoyā.","You must try roast duck when you come to Beijing."],
+    ["麻婆豆腐","mápó dòufu","mapo tofu","麻婆豆腐有点麻辣。","Mápó dòufu yǒudiǎn málà.","Mapo tofu is a bit numbing-spicy."],
+    ["宫保鸡丁","gōngbǎo jīdīng","kung pao chicken","我们点一份宫保鸡丁吧。","Wǒmen diǎn yí fèn gōngbǎo jīdīng ba.","Let's order a kung pao chicken."],
+    ["糖醋里脊","tángcù lǐjǐ","sweet and sour pork","糖醋里脊又酸又甜。","Tángcù lǐjǐ yòu suān yòu tián.","Sweet and sour pork is both sour and sweet."],
+    ["炒饭","chǎofàn","fried rice","再来一份蛋炒饭。","Zài lái yí fèn dàn chǎofàn.","One more portion of egg fried rice, please."],
+    ["春卷","chūnjuǎn","spring roll","春卷炸得很脆。","Chūnjuǎn zhá de hěn cuì.","The spring rolls are fried nice and crispy."],
+    ["煎饼","jiānbing","savory crepe","路边摊有煎饼卖。","Lùbiān tān yǒu jiānbing mài.","There's a street stall selling savory crepes."],
+    ["烤串","kǎochuàn","skewers","晚上一起去吃烤串吧。","Wǎnshang yìqǐ qù chī kǎochuàn ba.","Let's go eat skewers together tonight."],
+    ["川菜","chuāncài","Sichuan cuisine","川菜以麻辣出名。","Chuāncài yǐ málà chūmíng.","Sichuan cuisine is famous for being numbing-spicy."],
+    ["粤菜","yuècài","Cantonese cuisine","粤菜口味比较清淡。","Yuècài kǒuwèi bǐjiào qīngdàn.","Cantonese cuisine tends to be lighter in flavor."],
+    ["湘菜","xiāngcài","Hunan cuisine","湘菜也很辣。","Xiāngcài yě hěn là.","Hunan cuisine is also very spicy."],
+    ["东北菜","dōngběicài","Northeastern cuisine","东北菜分量很大。","Dōngběicài fènliàng hěn dà.","Northeastern cuisine portions are very large."],
+    ["菜品","càipǐn","dishes / menu items","这里的菜品很丰富。","Zhèlǐ de càipǐn hěn fēngfù.","The dishes here are quite varied."],
+    ["分量","fènliàng","portion size","这份分量够两个人吃。","Zhè fèn fènliàng gòu liǎng gè rén chī.","This portion is enough for two people."],
+    ["辣度","làdù","spice level","可以选择辣度。","Kěyǐ xuǎnzé làdù.","You can choose the spice level."],
+    ["甜品","tiánpǐn","dessert","最后来点甜品吧。","Zuìhòu lái diǎn tiánpǐn ba.","Let's have some dessert at the end."],
+    ["凉菜","liángcài","cold dish","先上几个凉菜。","Xiān shàng jǐ gè liángcài.","Bring out a few cold dishes first."],
+    ["热菜","rècài","hot dish","热菜马上就好。","Rècài mǎshàng jiù hǎo.","The hot dishes will be ready soon."],
+    ["汤","tāng","soup","再点一个汤吧。","Zài diǎn yí gè tāng ba.","Let's order a soup too."],
+    ["小吃","xiǎochī","snack","这条街全是小吃。","Zhè tiáo jiē quán shì xiǎochī.","This street is full of snacks."],
+    ["夜市","yèshì","night market","夜市里小吃很多。","Yèshì lǐ xiǎochī hěn duō.","There are lots of snacks at the night market."],
+    ["地道","dìdao","authentic","这家很地道。","Zhè jiā hěn dìdao.","This place is very authentic."],
+    ["特产","tèchǎn","local specialty","这是本地特产。","Zhè shì běndì tèchǎn.","This is a local specialty."],
+    ["尝一下","cháng yíxià","to try a taste","你尝一下这个。","Nǐ cháng yíxià zhège.","Try a taste of this."],
+    ["推荐","tuījiàn","to recommend","服务员，有什么推荐吗？","Fúwùyuán, yǒu shénme tuījiàn ma?","Waiter, do you have any recommendations?"],
+    ["筷子","kuàizi","chopsticks","可以给我一双筷子吗？","Kěyǐ gěi wǒ yì shuāng kuàizi ma?","Could I have a pair of chopsticks?"],
+    ["勺子","sháozi","spoon","我需要一个勺子。","Wǒ xūyào yí gè sháozi.","I need a spoon."],
+    ["辣椒","làjiāo","chili pepper","这道菜放了很多辣椒。","Zhè dào cài fàng le hěn duō làjiāo.","This dish has a lot of chili peppers."],
+    ["醋","cù","vinegar","饺子要蘸醋吃。","Jiǎozi yào zhàn cù chī.","Dumplings are eaten dipped in vinegar."],
+    ["酱油","jiàngyóu","soy sauce","加一点酱油。","Jiā yìdiǎn jiàngyóu.","Add a bit of soy sauce."],
+    ["香菜","xiāngcài","cilantro","我不吃香菜。","Wǒ bù chī xiāngcài.","I don't eat cilantro."],
+  ],
 };
 
 const seedFor = (topicId) =>
@@ -1182,10 +1272,20 @@ export default function App() {
     });
   }, []);
 
-  const allTopics = [
+  const allTopicsUnordered = [
     ...CORE_TOPICS.filter((t) => !(state.hidden || []).includes(t.id)),
     ...(state.customTopics || []),
   ];
+  /* state.topicOrder holds ids in the user's chosen order (from drag-to-reorder).
+     Anything not yet in it (newly added topics) falls back to the end, in its
+     natural position, so new topics still show up without an explicit order entry. */
+  const allTopics = (() => {
+    const order = state.topicOrder || [];
+    const byId = new Map(allTopicsUnordered.map((t) => [t.id, t]));
+    const ordered = order.map((id) => byId.get(id)).filter(Boolean);
+    const remaining = allTopicsUnordered.filter((t) => !order.includes(t.id));
+    return [...ordered, ...remaining];
+  })();
   const topicById = (id) => allTopics.find((t) => t.id === id) || [...LIBRARY, ...CORE_TOPICS].find((t) => t.id === id) || CORE_TOPICS[0];
 
   /* Every topic's full word list ships baked into the app (see seedFor) —
@@ -1382,6 +1482,10 @@ export default function App() {
     setBanner(`${t.name} added to your line`);
   };
 
+  const reorderTopics = (orderedIds) => {
+    update((prev) => ({ ...prev, topicOrder: orderedIds }));
+  };
+
   const deleteTopic = (t) => {
     if (allTopics.length <= 1) { setBanner("Keep at least one topic."); return; }
     update((prev) => {
@@ -1539,7 +1643,7 @@ export default function App() {
         )}
         {screen === "home" && (
           <Home {...shared} allTopics={allTopics} onTopic={openTopic} onQuiz={startDailyQuiz} onDailyMix={buildDailyMix}
-            onDeleteTopic={deleteTopic} onDict={openDict}
+            onDeleteTopic={deleteTopic} onReorderTopics={reorderTopics} onDict={openDict}
             onMatch={() => { click(s.sound); setScreen("match"); }}
             onHelp={() => { click(s.sound); setSheet("help"); }}
             onAdd={() => { click(s.sound); setSheet("add"); }} />
@@ -2201,8 +2305,110 @@ function AddTopicSheet({ T, s, allTopics, onClose, onAdd }) {
 }
 
 /* ---------------- HOME ---------------- */
-function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyMix, onHelp, onAdd, onDeleteTopic, onDict, click }) {
+function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyMix, onHelp, onAdd, onDeleteTopic, onReorderTopics, onDict, click }) {
   const [editing, setEditing] = useState(false);
+
+  /* Long-press-and-drag reordering of the topic list (only while editing). `order`
+     is a local id array kept in sync with allTopics; it's mutated live as the
+     dragged row crosses other rows, then persisted via onReorderTopics on release. */
+  const [order, setOrder] = useState(() => allTopics.map((t) => t.id));
+  const [drag, setDrag] = useState(null); // { id, grabOffset, top, height }
+  const rowRefs = useRef(new Map());
+  const listRef = useRef(null);
+  const orderRef = useRef(order);
+  const dragRef = useRef(drag);
+  const pressRef = useRef({ timer: null, id: null, moved: false, startY: 0 });
+  useEffect(() => { orderRef.current = order; }, [order]);
+  useEffect(() => { dragRef.current = drag; }, [drag]);
+
+  useEffect(() => {
+    if (dragRef.current) return;
+    const ids = allTopics.map((t) => t.id);
+    setOrder((prev) => {
+      if (prev.length === ids.length && prev.every((id, i) => id === ids[i])) return prev;
+      const kept = prev.filter((id) => ids.includes(id));
+      const added = ids.filter((id) => !kept.includes(id));
+      return [...kept, ...added];
+    });
+  }, [allTopics.map((t) => t.id).join(",")]);
+
+  useEffect(() => {
+    document.body.style.touchAction = drag ? "none" : "";
+    return () => { document.body.style.touchAction = ""; };
+  }, [drag]);
+
+  useEffect(() => {
+    function onMove(e) {
+      const p = pressRef.current;
+      const y = e.clientY;
+      if (dragRef.current) {
+        const d = dragRef.current;
+        /* The dragged row is taken out of flow (position: absolute) so it doesn't
+           reserve space in the list — its top is just the pointer position minus
+           the offset where it was grabbed, relative to the list container. */
+        const containerRect = listRef.current ? listRef.current.getBoundingClientRect() : { top: 0 };
+        const newTop = (y - d.grabOffset) - containerRect.top;
+        setDrag({ ...d, top: newTop });
+        let closestId = null, bestDist = Infinity;
+        orderRef.current.forEach((id) => {
+          const el2 = rowRefs.current.get(id);
+          if (!el2) return;
+          const r = el2.getBoundingClientRect();
+          const dist = Math.abs(r.top + r.height / 2 - y);
+          if (dist < bestDist) { bestDist = dist; closestId = id; }
+        });
+        if (closestId && closestId !== d.id) {
+          setOrder((prev) => {
+            const from = prev.indexOf(d.id);
+            const to = prev.indexOf(closestId);
+            if (from === -1 || to === -1 || from === to) return prev;
+            const next = [...prev];
+            next.splice(from, 1);
+            next.splice(to, 0, d.id);
+            return next;
+          });
+        }
+      } else if (p.timer && !p.moved) {
+        if (Math.abs(y - p.startY) > 10) { p.moved = true; clearTimeout(p.timer); p.timer = null; }
+      }
+    }
+    function endPress() {
+      const p = pressRef.current;
+      if (p.timer) { clearTimeout(p.timer); p.timer = null; }
+      if (dragRef.current) {
+        setDrag(null);
+        onReorderTopics(orderRef.current);
+      }
+    }
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", endPress);
+    window.addEventListener("pointercancel", endPress);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", endPress);
+      window.removeEventListener("pointercancel", endPress);
+    };
+  }, [onReorderTopics]);
+
+  const startPress = (id, e) => {
+    if (!editing) return;
+    if (e.target.closest && e.target.closest("[data-no-drag]")) return;
+    const y = e.clientY;
+    const timer = setTimeout(() => {
+      pressRef.current.timer = null;
+      const el = rowRefs.current.get(id);
+      const containerRect = listRef.current ? listRef.current.getBoundingClientRect() : { top: 0 };
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        const grabOffset = y - rect.top;
+        setDrag({ id, grabOffset, top: rect.top - containerRect.top, height: rect.height });
+      }
+      if (navigator.vibrate) navigator.vibrate(10);
+    }, 320);
+    pressRef.current = { timer, id, moved: false, startY: y };
+  };
+
+  const orderedTopics = order.map((id) => allTopics.find((t) => t.id === id)).filter(Boolean);
   const cards = Object.values(state.cards);
   const learned = cards.filter((c) => !c.known && c.seen > 0).length;
   const mastered = cards.filter(isMastered).length;
@@ -2322,12 +2528,24 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
           {editing ? "Done" : "Edit"}
         </button>
       </div>
-      <div className="relative pl-[26px] mb-3">
-        {allTopics.map((t, i) => {
+      {editing && (
+        <div className="text-[11px] font-bold mb-2.5 pl-1" style={{ color: T.sub }}>
+          Long-press and drag a topic to reorder it
+        </div>
+      )}
+      <div className="relative pl-[26px] mb-3" ref={listRef}>
+        {orderedTopics.map((t, i) => {
           const st = statsFor(t.id);
-          const prevColor = i > 0 ? allTopics[i - 1].color : t.color;
+          const prevColor = i > 0 ? orderedTopics[i - 1].color : t.color;
+          const isDragging = drag && drag.id === t.id;
           return (
-            <div key={t.id} className="relative pb-3.5">
+            <div key={t.id}
+              ref={(el) => { if (el) rowRefs.current.set(t.id, el); else rowRefs.current.delete(t.id); }}
+              onPointerDown={(e) => startPress(t.id, e)}
+              className="relative pb-3.5"
+              style={isDragging
+                ? { position: "absolute", top: drag.top, left: 0, right: 0, height: drag.height, zIndex: 30 }
+                : undefined}>
               {i > 0 && (
                 <div className="absolute left-[-15px] w-[6px] rounded-full"
                   style={{ top: -18, height: 46, background: `linear-gradient(${prevColor}, ${t.color})` }} />
@@ -2338,7 +2556,11 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
               </div>
               <button onClick={() => { if (!editing) onTopic(t); }}
                 className={TOPIC_ROW_CLS}
-                style={{ background: T.card, border: `2px solid ${editing ? "#FF5A5F44" : T.line}`, boxShadow: `0 5px 0 ${t.color}45` }}>
+                style={{
+                  background: T.card, border: `2px solid ${editing ? "#FF5A5F44" : T.line}`,
+                  boxShadow: isDragging ? `0 10px 22px rgba(0,0,0,.28)` : `0 5px 0 ${t.color}45`,
+                  touchAction: editing ? "none" : "auto",
+                }}>
                 <div className="w-[46px] h-[46px] rounded-2xl flex items-center justify-center shrink-0" style={{ background: t.color + "1E" }}>
                   <I n={t.icon} size={24} color={t.color} sw={2.2} />
                 </div>
@@ -2369,6 +2591,7 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
                 )}
                 {editing
                   ? <div
+                      data-no-drag
                       onClick={(e) => {
                         e.stopPropagation(); click();
                         if (window.confirm(`Remove "${t.name}" from your line?\n\nWords you've already learned stay in your Word bank.`)) onDeleteTopic(t);
@@ -2390,7 +2613,7 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
         {/* add topic node */}
         <div className="relative">
           <div className="absolute left-[-15px] w-[6px] rounded-full"
-            style={{ top: -18, height: 46, background: `linear-gradient(${allTopics[allTopics.length - 1].color}, ${T.line})` }} />
+            style={{ top: -18, height: 46, background: `linear-gradient(${orderedTopics[orderedTopics.length - 1].color}, ${T.line})` }} />
           <div className="absolute left-[-26px] top-[14px] w-[28px] h-[28px] rounded-full flex items-center justify-center"
             style={{ background: T.bg, border: `5px dashed ${T.line}` }} />
           <button onClick={onAdd}
