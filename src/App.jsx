@@ -164,7 +164,7 @@ const SEED = {
     ["校招","xiàozhāo","campus recruitment","校招一般在秋天开始。","Xiàozhāo yìbān zài qiūtiān kāishǐ.","Campus recruitment usually starts in autumn."],
     ["社招","shèzhāo","experienced-hire recruitment","社招要求至少两年经验。","Shèzhāo yāoqiú zhìshǎo liǎng nián jīngyàn.","Experienced-hire recruitment requires at least two years' experience."],
     ["谈薪","tánxīn","to negotiate salary","我们可以谈薪吗？","Wǒmen kěyǐ tánxīn ma?","Can we negotiate the salary?"],
-    ["婉拒","wǎnjù","to politely decline","我婉拒了另一份offer。","Wǒ wǎnjù le lìng yí fèn offer.","I politely declined the other offer."],
+    ["婉拒","wǎnjù","to politely decline","我婉拒了另一份录用通知。","Wǒ wǎnjù le lìng yí fèn lùyòng tōngzhī.","I politely declined the other offer."],
     ["三方协议","sānfāng xiéyì","tripartite agreement","签三方协议前要仔细看条款。","Qiān sānfāng xiéyì qián yào zǐxì kàn tiáokuǎn.","Read the terms carefully before signing the tripartite agreement."],
     ["入职培训","rùzhí péixùn","onboarding training","入职培训会持续一周。","Rùzhí péixùn huì chíxù yì zhōu.","Onboarding training will last a week."],
     ["工作证","gōngzuòzhèng","work badge","别忘了带工作证。","Bié wàngle dài gōngzuòzhèng.","Don't forget to bring your work badge."],
@@ -176,7 +176,7 @@ const SEED = {
     ["职业规划","zhíyè guīhuà","career plan","面试官问了我的职业规划。","Miànshìguān wèn le wǒ de zhíyè guīhuà.","The interviewer asked about my career plan."],
     ["跳槽","tiàocáo","to switch jobs","他刚跳槽到一家新公司。","Tā gāng tiàocáo dào yì jiā xīn gōngsī.","He just switched to a new company."],
     ["裸辞","luǒcí","to quit without a new job lined up","我不建议裸辞。","Wǒ bú jiànyì luǒcí.","I don't recommend quitting without a new job lined up."],
-    ["offer比较","offer bǐjiào","comparing offers","我在做offer比较。","Wǒ zài zuò offer bǐjiào.","I'm comparing my offers."],
+    ["比较录用通知","bǐjiào lùyòng tōngzhī","comparing offers","我在比较几份录用通知。","Wǒ zài bǐjiào jǐ fèn lùyòng tōngzhī.","I'm comparing several offer letters."],
     ["笔试题","bǐshìtí","written test question","这道笔试题很难。","Zhè dào bǐshìtí hěn nán.","This written test question is hard."],
   ],
   tech: [
@@ -201,7 +201,7 @@ const SEED = {
     ["算法","suànfǎ","algorithm","推荐算法需要优化。","Tuījiàn suànfǎ xūyào yōuhuà.","The recommendation algorithm needs optimizing."],
     ["人工智能","réngōng zhìnéng","artificial intelligence","这个功能用了人工智能。","Zhège gōngnéng yòng le réngōng zhìnéng.","This feature uses artificial intelligence."],
     ["大数据","dàshùjù","big data","公司很重视大数据。","Gōngsī hěn zhòngshì dàshùjù.","The company values big data a lot."],
-    ["崩溃","bēngkuì","to crash","App又崩溃了。","App yòu bēngkuì le.","The app crashed again."],
+    ["崩溃","bēngkuì","to crash","应用又崩溃了。","Yìngyòng yòu bēngkuì le.","The app crashed again."],
     ["兼容","jiānróng","compatible","新版本不兼容旧数据。","Xīn bǎnběn bù jiānróng jiù shùjù.","The new version isn't compatible with old data."],
     ["优化","yōuhuà","to optimize","我们在优化加载速度。","Wǒmen zài yōuhuà jiāzài sùdù.","We're optimizing the loading speed."],
     ["部署","bùshǔ","to deploy","代码已经部署到线上。","Dàimǎ yǐjīng bùshǔ dào xiànshàng.","The code has been deployed to production."],
@@ -222,7 +222,7 @@ const SEED = {
     ["埋点","máidiǎn","tracking point","这里需要加一个埋点。","Zhèlǐ xūyào jiā yí gè máidiǎn.","We need to add a tracking point here."],
     ["日志","rìzhì","log","去看看服务器日志。","Qù kànkan fúwùqì rìzhì.","Go check the server logs."],
     ["排查","páichá","to troubleshoot","工程师在排查问题。","Gōngchéngshī zài páichá wèntí.","The engineer is troubleshooting the issue."],
-    ["复现","fùxiàn","to reproduce (a bug)","这个bug很难复现。","Zhège bug hěn nán fùxiàn.","This bug is hard to reproduce."],
+    ["复现","fùxiàn","to reproduce (a bug)","这个漏洞很难复现。","Zhège lòudòng hěn nán fùxiàn.","This bug is hard to reproduce."],
     ["用户反馈","yònghù fǎnkuì","user feedback","用户反馈说加载太慢。","Yònghù fǎnkuì shuō jiāzài tài màn.","User feedback says loading is too slow."],
     ["技术栈","jìshù zhàn","tech stack","我们的技术栈用的是这个框架。","Wǒmen de jìshù zhàn yòng de shì zhège kuàngjià.","Our tech stack uses this framework."],
     ["数据分析","shùjù fēnxī","data analysis","我们靠数据分析做决定。","Wǒmen kào shùjù fēnxī zuò juédìng.","We make decisions based on data analysis."],
@@ -2274,12 +2274,20 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
         </div>
         {/* daily goal — thin bar, just enough to protect the streak */}
         <div className="mt-4 relative">
-          <div className="flex justify-between items-center mb-1.5">
-            <span className="text-[11px] font-extrabold text-white opacity-90">
-              {goalPct >= 100 ? "Today's goal cleared — streak safe" : `${s.goal - state.todayCount} more cards today to keep the streak`}
-            </span>
-            <span className="text-[11px] font-black text-white opacity-90">{Math.min(state.todayCount, s.goal)}/{s.goal}</span>
-          </div>
+          {goalPct >= 100 ? (
+            <div className="flex items-center gap-2 mb-1.5 px-3 py-1.5 rounded-full w-fit"
+              style={{ background: "#1E9E5A", boxShadow: "0 2px 0 rgba(0,0,0,.15)" }}>
+              <I n="check" size={14} color="#fff" sw={3} />
+              <span className="text-[12px] font-black text-white">Today's goal cleared — streak safe</span>
+            </div>
+          ) : (
+            <div className="flex justify-between items-center mb-1.5">
+              <span className="text-[11px] font-extrabold text-white opacity-90">
+                {`${s.goal - state.todayCount} more cards today to keep the streak`}
+              </span>
+              <span className="text-[11px] font-black text-white opacity-90">{Math.min(state.todayCount, s.goal)}/{s.goal}</span>
+            </div>
+          )}
           <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.3)" }}>
             <div className="h-full rounded-full" style={{ width: goalPct + "%", background: "#fff", transition: "width .4s" }} />
           </div>
@@ -2597,8 +2605,12 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
   const accent = mode === "quiz" ? "#7048E8" : (topic?.color || "#6FA3D8");
   const wTopic = item ? topicById(item.word.topicId) : null;
 
+  /* Cache generated options per qIndex so navigating back to a previous
+     card shows the exact same choices instead of re-shuffling them. */
+  const optionsCacheRef = useRef({});
   const options = React.useMemo(() => {
     if (!item || item.type !== "quiz") return [];
+    if (optionsCacheRef.current[qIndex]) return optionsCacheRef.current[qIndex];
     const answerField = (item.variant === "zh2en" || item.variant === "audio") ? "en" : "hanzi";
     const learnedPool = Object.values(state.cards).filter((c) => c.seen > 0 && c[answerField]);
     const pool = [...learnedPool, ...seedFor(item.word.topicId).filter((c) => c[answerField])];
@@ -2619,7 +2631,9 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
       if (picks.length >= 3) break;
       if (!picks.includes(c)) picks.push(c);
     }
-    return shuffle([item.word, ...picks]);
+    const result = shuffle([item.word, ...picks]);
+    optionsCacheRef.current[qIndex] = result;
+    return result;
   }, [qIndex, item]);
 
   useEffect(() => {
@@ -2776,10 +2790,14 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
       </button>
     );
     const gap = w.sZh.replace(w.hanzi, "＿＿");
+    const spoken = w.sZh.replace(w.hanzi, "");
     return (
       <div>
         <div className="disp font-bold text-[22px] leading-relaxed">{gap}</div>
         <div className="text-[12.5px] font-bold mt-2" style={{ color: T.sub }}>“{w.sEn}”</div>
+        <div className="flex justify-center mt-3">
+          <SpeakBtn text={spoken} color={accent} T={T} label="Hear sentence" />
+        </div>
       </div>
     );
   };
