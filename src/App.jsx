@@ -1121,6 +1121,7 @@ export default function App() {
     recent: [],
   });
   const stateRef = useRef(state);
+  const scrollRef = useRef(null); // the page's own scroll container (see index.css: body no longer scrolls)
   const [authUser, setAuthUser] = useState(null); // { uid, name, email, photo }
   const profileRef = useRef(null); // holds the Firebase uid once signed in
   const lastPushedRef = useRef(null); // last payload we pushed, to ignore our own snapshot echo
@@ -1435,8 +1436,12 @@ export default function App() {
       if (next.todayDate !== t) { next.todayDate = t; next.todayCount = 0; }
       next.todayCount += 1;
       if (next.todayCount >= next.settings.goal && next.lastDay !== t) {
+        /* A gap of more than a day since the last streak day breaks the streak,
+           same rule applySave uses on load — recordAnswer can also be the first
+           thing to notice a missed day if the tab stayed open across midnight. */
+        const gap = next.lastDay ? (new Date(t) - new Date(next.lastDay)) / 86400000 : 0;
+        next.streak = gap > 1 ? 1 : (next.streak || 0) + 1;
         next.lastDay = t;
-        next.streak = (next.streak || 0) + 1;
         setTimeout(() => setBanner(`Day ${next.streak} streak locked in!`), 10);
       }
       return next;
@@ -1544,8 +1549,11 @@ export default function App() {
 
   const shared = { state, update, T, dark, s, click: () => click(s.sound), setScreen, setBanner, topicById, authUser };
 
+
   return (
-    <div className="min-h-screen w-full" style={{ background: T.bg, color: T.text }}>
+    <div ref={scrollRef} className="w-full" style={{
+      background: T.bg, color: T.text, height: "100%", overflowY: "auto", WebkitOverflowScrolling: "touch",
+    }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@400;700&family=Ma+Shan+Zheng&family=Long+Cang&family=Liu+Jian+Mao+Cao&family=Zhi+Mang+Xing&family=Space+Grotesk:wght@400;500;600;700&family=Nunito:wght@600;800&family=Quicksand:wght@500;700&family=Poppins:wght@400;600;700&family=Outfit:wght@400;600;700&family=Plus+Jakarta+Sans:wght@500;700&family=DM+Sans:wght@400;700&family=Figtree:wght@500;700&family=Manrope:wght@500;700&family=Fredoka:wght@400;600&family=Baloo+2:wght@500;700&display=swap');
         #bp, #bp * { font-family: var(--font-en, 'Space Grotesk'), var(--font-zh, 'ZCOOL XiaoWei'), system-ui, sans-serif; -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
@@ -1642,7 +1650,7 @@ export default function App() {
           <SignIn T={T} dark={dark} firebaseReady={firebaseReady} onGoogle={doSignIn} />
         )}
         {screen === "home" && (
-          <Home {...shared} allTopics={allTopics} onTopic={openTopic} onQuiz={startDailyQuiz} onDailyMix={buildDailyMix}
+          <Home {...shared} scrollRef={scrollRef} allTopics={allTopics} onTopic={openTopic} onQuiz={startDailyQuiz} onDailyMix={buildDailyMix}
             onDeleteTopic={deleteTopic} onReorderTopics={reorderTopics} onDict={openDict}
             onMatch={() => { click(s.sound); setScreen("match"); }}
             onHelp={() => { click(s.sound); setSheet("help"); }}
@@ -2305,19 +2313,21 @@ function AddTopicSheet({ T, s, allTopics, onClose, onAdd }) {
 }
 
 /* ---------------- HOME ---------------- */
-function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyMix, onHelp, onAdd, onDeleteTopic, onReorderTopics, onDict, click }) {
+function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyMix, onHelp, onAdd, onDeleteTopic, onReorderTopics, onDict, click, scrollRef }) {
   const [editing, setEditing] = useState(false);
 
   /* Long-press-and-drag reordering of the topic list (only while editing). `order`
      is a local id array kept in sync with allTopics; it's mutated live as the
      dragged row crosses other rows, then persisted via onReorderTopics on release. */
   const [order, setOrder] = useState(() => allTopics.map((t) => t.id));
-  const [drag, setDrag] = useState(null); // { id, grabOffset, top, height }
+  const [drag, setDrag] = useState(null); // { id, pointerId, grabOffset, top, height }
   const rowRefs = useRef(new Map());
   const listRef = useRef(null);
   const orderRef = useRef(order);
   const dragRef = useRef(drag);
-  const pressRef = useRef({ timer: null, id: null, moved: false, startY: 0 });
+  const pressRef = useRef({ timer: null, id: null, pointerId: null, moved: false, startY: 0 });
+  const lastYRef = useRef(0);
+  const autoScrollRef = useRef({ raf: null, speed: 0 });
   useEffect(() => { orderRef.current = order; }, [order]);
   useEffect(() => { dragRef.current = drag; }, [drag]);
 
@@ -2332,58 +2342,105 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
     });
   }, [allTopics.map((t) => t.id).join(",")]);
 
-  useEffect(() => {
-    document.body.style.touchAction = drag ? "none" : "";
-    return () => { document.body.style.touchAction = ""; };
-  }, [drag]);
+  /* Only the finger that's actually holding the topic is ever touchAction:none'd
+     (see the row style below) — every other pointer, including a second finger
+     used to scroll the list while the first one drags, is left alone by the
+     browser's native scrolling. */
+
+  function stopAutoScroll() {
+    const a = autoScrollRef.current;
+    if (a.raf) cancelAnimationFrame(a.raf);
+    a.raf = null;
+    a.speed = 0;
+  }
+
+  function updateDragPosition(y) {
+    const d = dragRef.current;
+    if (!d) return;
+    /* The dragged row is taken out of flow (position: absolute) so it doesn't
+       reserve space in the list — its top is just the pointer position minus
+       the offset where it was grabbed, relative to the list container. */
+    const containerRect = listRef.current ? listRef.current.getBoundingClientRect() : { top: 0 };
+    const newTop = (y - d.grabOffset) - containerRect.top;
+    setDrag((prev) => (prev ? { ...prev, top: newTop } : prev));
+    let closestId = null, bestDist = Infinity;
+    orderRef.current.forEach((id) => {
+      const el2 = rowRefs.current.get(id);
+      if (!el2) return;
+      const r = el2.getBoundingClientRect();
+      const dist = Math.abs(r.top + r.height / 2 - y);
+      if (dist < bestDist) { bestDist = dist; closestId = id; }
+    });
+    if (closestId && closestId !== d.id) {
+      setOrder((prev) => {
+        const from = prev.indexOf(d.id);
+        const to = prev.indexOf(closestId);
+        if (from === -1 || to === -1 || from === to) return prev;
+        const next = [...prev];
+        next.splice(from, 1);
+        next.splice(to, 0, d.id);
+        return next;
+      });
+    }
+  }
+
+  /* Auto-scroll the page while a dragged row is held near the top/bottom edge
+     of the viewport, so a topic can be dragged all the way to either end of a
+     list that's taller than the screen. Speed ramps up the closer the finger
+     gets to the edge; the drag keeps tracking the (stationary) finger each
+     frame since the page — and therefore the row's on-screen position — is
+     moving underneath it. */
+  function autoScrollTick() {
+    const a = autoScrollRef.current;
+    const scroller = scrollRef && scrollRef.current;
+    if (!dragRef.current || !a.speed || !scroller) { a.raf = null; return; }
+    scroller.scrollTop += a.speed;
+    updateDragPosition(lastYRef.current);
+    a.raf = requestAnimationFrame(autoScrollTick);
+  }
+
+  function setAutoScrollSpeed(y) {
+    const EDGE = 90, MAX = 16;
+    let speed = 0;
+    if (y < EDGE) speed = -MAX * (1 - y / EDGE);
+    else if (y > window.innerHeight - EDGE) speed = MAX * (1 - (window.innerHeight - y) / EDGE);
+    const a = autoScrollRef.current;
+    a.speed = speed;
+    if (speed && !a.raf) a.raf = requestAnimationFrame(autoScrollTick);
+  }
 
   useEffect(() => {
     function onMove(e) {
       const p = pressRef.current;
-      const y = e.clientY;
-      if (dragRef.current) {
-        const d = dragRef.current;
-        /* The dragged row is taken out of flow (position: absolute) so it doesn't
-           reserve space in the list — its top is just the pointer position minus
-           the offset where it was grabbed, relative to the list container. */
-        const containerRect = listRef.current ? listRef.current.getBoundingClientRect() : { top: 0 };
-        const newTop = (y - d.grabOffset) - containerRect.top;
-        setDrag({ ...d, top: newTop });
-        let closestId = null, bestDist = Infinity;
-        orderRef.current.forEach((id) => {
-          const el2 = rowRefs.current.get(id);
-          if (!el2) return;
-          const r = el2.getBoundingClientRect();
-          const dist = Math.abs(r.top + r.height / 2 - y);
-          if (dist < bestDist) { bestDist = dist; closestId = id; }
-        });
-        if (closestId && closestId !== d.id) {
-          setOrder((prev) => {
-            const from = prev.indexOf(d.id);
-            const to = prev.indexOf(closestId);
-            if (from === -1 || to === -1 || from === to) return prev;
-            const next = [...prev];
-            next.splice(from, 1);
-            next.splice(to, 0, d.id);
-            return next;
-          });
-        }
-      } else if (p.timer && !p.moved) {
-        if (Math.abs(y - p.startY) > 10) { p.moved = true; clearTimeout(p.timer); p.timer = null; }
+      const d = dragRef.current;
+      if (d) {
+        if (e.pointerId !== d.pointerId) return; // a different finger — let it scroll natively
+        const y = e.clientY;
+        lastYRef.current = y;
+        updateDragPosition(y);
+        setAutoScrollSpeed(y);
+      } else if (p.timer && !p.moved && e.pointerId === p.pointerId) {
+        if (Math.abs(e.clientY - p.startY) > 10) { p.moved = true; clearTimeout(p.timer); p.timer = null; }
       }
     }
-    function endPress() {
+    function endPress(e) {
       const p = pressRef.current;
-      if (p.timer) { clearTimeout(p.timer); p.timer = null; }
-      if (dragRef.current) {
+      const d = dragRef.current;
+      if (d) {
+        if (e.pointerId !== d.pointerId) return; // another finger lifted — the drag isn't done
+        stopAutoScroll();
         setDrag(null);
         onReorderTopics(orderRef.current);
+      } else if (p.timer && e.pointerId === p.pointerId) {
+        clearTimeout(p.timer);
+        p.timer = null;
       }
     }
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", endPress);
     window.addEventListener("pointercancel", endPress);
     return () => {
+      stopAutoScroll();
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", endPress);
       window.removeEventListener("pointercancel", endPress);
@@ -2395,6 +2452,7 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
     if (e.target.closest && e.target.closest("[data-no-drag]")) return;
     e.preventDefault(); // stop native text-selection/callout from starting on long-press
     const y = e.clientY;
+    const pointerId = e.pointerId;
     const timer = setTimeout(() => {
       pressRef.current.timer = null;
       const el = rowRefs.current.get(id);
@@ -2402,11 +2460,11 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
       if (el) {
         const rect = el.getBoundingClientRect();
         const grabOffset = y - rect.top;
-        setDrag({ id, grabOffset, top: rect.top - containerRect.top, height: rect.height });
+        setDrag({ id, pointerId, grabOffset, top: rect.top - containerRect.top, height: rect.height });
       }
       if (navigator.vibrate) navigator.vibrate(10);
     }, 320);
-    pressRef.current = { timer, id, moved: false, startY: y };
+    pressRef.current = { timer, id, pointerId, moved: false, startY: y };
   };
 
   const orderedTopics = order.map((id) => allTopics.find((t) => t.id === id)).filter(Boolean);
@@ -2564,7 +2622,7 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
                 style={{
                   background: T.card, border: `2px solid ${editing ? "#FF5A5F44" : T.line}`,
                   boxShadow: isDragging ? `0 10px 22px rgba(0,0,0,.28)` : `0 5px 0 ${t.color}45`,
-                  touchAction: editing ? "none" : "auto",
+                  touchAction: isDragging ? "none" : "auto",
                 }}>
                 <div className="w-[46px] h-[46px] rounded-2xl flex items-center justify-center shrink-0" style={{ background: t.color + "1E" }}>
                   <I n={t.icon} size={24} color={t.color} sw={2.2} />
@@ -2879,9 +2937,9 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
   const w = item.word;
   const variant = item.variant || "en2zh";
 
-  const next = () => {
+  const next = (q = queue) => {
     click();
-    if (qIndex + 1 >= queue.length) onFinish(); else setQIndex(qIndex + 1);
+    if (qIndex + 1 >= q.length) onFinish(); else setQIndex(qIndex + 1);
   };
 
   const choose = (opt) => {
@@ -2985,7 +3043,7 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
                 const hard = (w.sZh && w.sZh.includes(w.hanzi) && Math.random() < 0.5) ? "cloze" : "zh2en";
                 q.push({ type: "quiz", word: w, variant: hard });
                 setQueue(q);
-                next();
+                next(q);
               }}>Got it</Chunky>
             </>
           )}
@@ -3755,6 +3813,7 @@ function NotesList({ T, dark, click, notes, onOpen, onCreate, onTechStack }) {
 function NoteEditor({ note, T, dark, click, onBack, onSaveNote, onDeleteNote }) {
   const bodyRef = useRef(null);
   const saveTimer = useRef(null);
+  const pendingPatchRef = useRef({}); // fields queued for the next debounced save, merged across calls
   const [title, setTitle] = useState(note.title || "");
 
   useEffect(() => {
@@ -3763,13 +3822,18 @@ function NoteEditor({ note, T, dark, click, onBack, onSaveNote, onDeleteNote }) 
   }, [note.id]);
 
   const scheduleSave = (patch) => {
+    pendingPatchRef.current = { ...pendingPatchRef.current, ...patch };
     clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => onSaveNote(note.id, patch), 400);
+    saveTimer.current = setTimeout(() => {
+      onSaveNote(note.id, pendingPatchRef.current);
+      pendingPatchRef.current = {};
+    }, 400);
   };
 
   const finish = () => {
     clearTimeout(saveTimer.current);
-    onSaveNote(note.id, { title, html: bodyRef.current ? bodyRef.current.innerHTML : note.html });
+    onSaveNote(note.id, { ...pendingPatchRef.current, title, html: bodyRef.current ? bodyRef.current.innerHTML : note.html });
+    pendingPatchRef.current = {};
     onBack();
   };
 
