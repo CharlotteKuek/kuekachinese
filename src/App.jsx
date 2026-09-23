@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useLayoutEffect, useCallback, useRef } from "react";
 import {
   firebaseReady, signInWithGoogle, consumeRedirectResult, watchAuth, signOutUser,
   fetchCloudSave, writeCloudSave, watchCloudSave,
@@ -822,6 +822,80 @@ const seedFor = (topicId) =>
    ~30 to ~80 words/phrases/idioms depending on topic), not a flat number. */
 const targetFor = (topicId) => (SEED[topicId] || []).length || 30;
 
+/* ---------- keeping saved words in sync with the word lists ----------
+   A card is a snapshot of a SEED entry taken the moment you first met the
+   word, and it's then persisted forever. So when a SEED entry is corrected
+   after the fact — the interview set, for instance, used to leave the English
+   "offer" sitting inside the Chinese fields ("offer比较", "我婉拒了另一份offer。") —
+   the fix never reaches a save made before it. Every load therefore re-syncs
+   each card's *text* from SEED while leaving its *progress* untouched. */
+const TEXT_FIELDS = ["hanzi", "pinyin", "en", "sZh", "sPy", "sEn"];
+const normKey = (v) => (v || "").toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, " ").trim();
+
+/* Three ways in to each topic's bank: by hanzi for the common case, then by
+   English and by pinyin so a card still matches after the hanzi itself was
+   the thing that got corrected. */
+const SEED_INDEX = (() => {
+  const idx = {};
+  for (const topicId of Object.keys(SEED)) {
+    const byHanzi = new Map(), byEn = new Map(), byPy = new Map();
+    for (const w of seedFor(topicId)) {
+      byHanzi.set(w.hanzi, w);
+      if (!byEn.has(normKey(w.en))) byEn.set(normKey(w.en), w);
+      if (!byPy.has(normKey(w.pinyin))) byPy.set(normKey(w.pinyin), w);
+    }
+    idx[topicId] = { byHanzi, byEn, byPy };
+  }
+  return idx;
+})();
+
+/* Cards live in a map keyed by hanzi, so a card whose hanzi was corrected has
+   to be re-keyed — along with its entry in `flags`, where stars are kept.
+   Words that aren't from a built-in bank (older custom topics) are left alone. */
+function resyncSavedWords(saved) {
+  const cards = saved.cards || {};
+  const flags = saved.flags || {};
+  const nextCards = {};
+  const renamed = {};
+  let changed = false;
+
+  for (const card of Object.values(cards)) {
+    const idx = SEED_INDEX[card.topicId];
+    const fresh = idx && (
+      idx.byHanzi.get(card.hanzi) ||
+      idx.byEn.get(normKey(card.en)) ||
+      idx.byPy.get(normKey(card.pinyin))
+    );
+    if (!fresh) {
+      const prior = nextCards[card.hanzi];
+      nextCards[card.hanzi] = prior && (prior.seen || 0) >= (card.seen || 0) ? prior : card;
+      continue;
+    }
+    const merged = { ...card };
+    for (const f of TEXT_FIELDS) merged[f] = fresh[f];
+    if (card.hanzi !== fresh.hanzi) { renamed[card.hanzi] = fresh.hanzi; changed = true; }
+    else if (TEXT_FIELDS.some((f) => card[f] !== merged[f])) changed = true;
+    /* A re-key can collide with a card already saved under the corrected
+       hanzi; keep whichever one has more practice behind it. */
+    const prior = nextCards[merged.hanzi];
+    nextCards[merged.hanzi] = prior && (prior.seen || 0) >= (merged.seen || 0) ? prior : merged;
+  }
+
+  if (!changed) return saved;
+
+  const nextFlags = {};
+  for (const [hanzi, on] of Object.entries(flags)) {
+    if (on) nextFlags[renamed[hanzi] || hanzi] = true;
+  }
+  /* curriculum entries are just cached copies of a bank, so they're rebuilt
+     rather than patched. */
+  const nextCurriculum = { ...(saved.curriculum || {}) };
+  for (const topicId of Object.keys(nextCurriculum)) {
+    if (SEED_INDEX[topicId]) nextCurriculum[topicId] = seedFor(topicId);
+  }
+  return { ...saved, cards: nextCards, flags: nextFlags, curriculum: nextCurriculum };
+}
+
 /* ---------------- helpers ---------------- */
 const stripHtml = (html) => (html || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 /* Local-calendar-day helpers. Date.toISOString()/Date.now() are UTC-based,
@@ -878,6 +952,26 @@ const variantFor = (card) => {
   if (r < 0.5 && inSentence) return "cloze";
   if (r < 0.8) return "audio";
   return "en2zh";
+};
+
+/* A newly taught word always gets tested twice more in the same session: once
+   a few cards later (forced retrieval beats echo memory) and once at the very
+   end. Those two follow-ups are planned into the queue up front instead of
+   being spliced in the moment you tap "Got it" — otherwise the "cards left"
+   counter ticks *up* every time you learn something. Telling the app you
+   already know a word drops its reserved follow-ups again. */
+const withFollowUps = (items) => {
+  const out = [...items];
+  for (let i = 0; i < out.length; i++) {
+    const it = out[i];
+    if (it.type !== "learn") continue;
+    const w = it.word;
+    const hard = (w.sZh && w.sZh.includes(w.hanzi) && Math.random() < 0.5) ? "cloze" : "zh2en";
+    out.splice(Math.min(out.length, i + 3 + Math.floor(Math.random() * 3)), 0,
+      { type: "quiz", word: w, variant: "en2zh", followUpFor: w.hanzi });
+    out.push({ type: "quiz", word: w, variant: hard, followUpFor: w.hanzi });
+  }
+  return out;
 };
 
 /* ---------------- pinyin syllable splitter (for ruby text) ---------------- */
@@ -1143,7 +1237,8 @@ export default function App() {
 
   useEffect(() => { stateRef.current = state; }, [state]);
 
-  const applySave = (saved) => {
+  const applySave = (input) => {
+    const saved = resyncSavedWords(input);
     const t = todayStr();
     if (saved.lastDay && saved.lastDay !== t) {
       const gap = (new Date(t) - new Date(saved.lastDay)) / 86400000;
@@ -1348,7 +1443,7 @@ export default function App() {
       return;
     }
     setMode("learn");
-    setQueue(shuffle(items));
+    setQueue(withFollowUps(shuffle(items)));
     setQIndex(0);
     setSessionStats({ right: 0, wrong: 0, learned: 0 });
     setScreen("session");
@@ -1380,7 +1475,7 @@ export default function App() {
     }
     setMode("mixed");
     setActiveTopic(null);
-    setQueue(shuffle(items));
+    setQueue(withFollowUps(shuffle(items)));
     setQIndex(0);
     setSessionStats({ right: 0, wrong: 0, learned: 0 });
     setScreen("session");
@@ -1723,7 +1818,9 @@ export default function App() {
    ~18s round trip and snap to 100% the moment the words land. */
 /* ---------------- TOPIC DICTIONARY ---------------- */
 function Dictionary({ topic, state, T, dark, s, click, setScreen, toggleStar, onFlash }) {
-  const list = (state.curriculum || {})[topic.id] || [];
+  /* Always the live bank for a built-in topic — state.curriculum is only a
+     cache, and for custom topics it's the only copy there is. */
+  const list = seedFor(topic.id).length ? seedFor(topic.id) : ((state.curriculum || {})[topic.id] || []);
   const [openTier, setOpenTier] = useState({ 0: true, 1: true, 2: true });
 
   const statusOf = (hanzi) => {
@@ -2317,10 +2414,10 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
   const [editing, setEditing] = useState(false);
 
   /* Long-press-and-drag reordering of the topic list (only while editing). `order`
-     is a local id array kept in sync with allTopics; it's mutated live as the
+     is a local id array kept in sync with allTopics; it's resequenced live as the
      dragged row crosses other rows, then persisted via onReorderTopics on release. */
   const [order, setOrder] = useState(() => allTopics.map((t) => t.id));
-  const [drag, setDrag] = useState(null); // { id, pointerId, grabOffset, top, height }
+  const [drag, setDrag] = useState(null); // { id, pointerId, grabOffset, height }
   const rowRefs = useRef(new Map());
   const listRef = useRef(null);
   const orderRef = useRef(order);
@@ -2329,7 +2426,7 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
   const lastYRef = useRef(0);
   const autoScrollRef = useRef({ raf: null, speed: 0 });
   useEffect(() => { orderRef.current = order; }, [order]);
-  useEffect(() => { dragRef.current = drag; }, [drag]);
+  useEffect(() => { dragRef.current = drag; if (drag) paintDrag(); }, [drag]);
 
   useEffect(() => {
     if (dragRef.current) return;
@@ -2342,10 +2439,11 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
     });
   }, [allTopics.map((t) => t.id).join(",")]);
 
-  /* Only the finger that's actually holding the topic is ever touchAction:none'd
-     (see the row style below) — every other pointer, including a second finger
-     used to scroll the list while the first one drags, is left alone by the
-     browser's native scrolling. */
+  /* In edit mode the rows are touch-action:none, because a browser decides
+     "this gesture is a scroll" the moment your finger lands and will not hand
+     the gesture back once a long-press turns it into a drag — that's why the
+     page used to scroll instead of the topic moving. Scrolling the list while
+     editing is therefore done by hand below, from the same pointer stream. */
 
   function stopAutoScroll() {
     const a = autoScrollRef.current;
@@ -2354,48 +2452,64 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
     a.speed = 0;
   }
 
-  function updateDragPosition(y) {
+  /* The dragged row keeps its slot in the layout (so the list still shows a
+     gap where it came from) and is offset with a transform instead. The
+     offset is painted straight onto the node rather than kept in state: every
+     reorder changes the row's own layout position, and a value from the last
+     render would put it a whole row-height out until the next pointermove. */
+  function paintDrag() {
+    const d = dragRef.current;
+    const el = d && rowRefs.current.get(d.id);
+    const container = listRef.current;
+    if (!el || !container) return;
+    const layoutTop = container.getBoundingClientRect().top + el.offsetTop;
+    el.style.transform = `translateY(${(lastYRef.current - d.grabOffset) - layoutTop}px) scale(1.03)`;
+  }
+  useLayoutEffect(() => { paintDrag(); });
+
+  /* Drop slot = whichever other row's middle the floating row's middle is
+     now nearest. The dragged row has to be excluded from that search, or it
+     always wins (it's centred on your finger) and nothing ever reorders. */
+  function maybeReorder() {
     const d = dragRef.current;
     if (!d) return;
-    /* The dragged row is taken out of flow (position: absolute) so it doesn't
-       reserve space in the list — its top is just the pointer position minus
-       the offset where it was grabbed, relative to the list container. */
-    const containerRect = listRef.current ? listRef.current.getBoundingClientRect() : { top: 0 };
-    const newTop = (y - d.grabOffset) - containerRect.top;
-    setDrag((prev) => (prev ? { ...prev, top: newTop } : prev));
+    const centre = lastYRef.current - d.grabOffset + d.height / 2;
     let closestId = null, bestDist = Infinity;
     orderRef.current.forEach((id) => {
-      const el2 = rowRefs.current.get(id);
-      if (!el2) return;
-      const r = el2.getBoundingClientRect();
-      const dist = Math.abs(r.top + r.height / 2 - y);
+      if (id === d.id) return;
+      const el = rowRefs.current.get(id);
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const dist = Math.abs(r.top + r.height / 2 - centre);
       if (dist < bestDist) { bestDist = dist; closestId = id; }
     });
-    if (closestId && closestId !== d.id) {
-      setOrder((prev) => {
-        const from = prev.indexOf(d.id);
-        const to = prev.indexOf(closestId);
-        if (from === -1 || to === -1 || from === to) return prev;
-        const next = [...prev];
-        next.splice(from, 1);
-        next.splice(to, 0, d.id);
-        return next;
-      });
-    }
+    if (!closestId) return;
+    setOrder((prev) => {
+      const from = prev.indexOf(d.id);
+      const to = prev.indexOf(closestId);
+      if (from === -1 || to === -1 || from === to) return prev;
+      const next = [...prev];
+      next.splice(from, 1);
+      next.splice(to, 0, d.id);
+      return next;
+    });
   }
 
   /* Auto-scroll the page while a dragged row is held near the top/bottom edge
      of the viewport, so a topic can be dragged all the way to either end of a
      list that's taller than the screen. Speed ramps up the closer the finger
-     gets to the edge; the drag keeps tracking the (stationary) finger each
-     frame since the page — and therefore the row's on-screen position — is
+     gets to the edge; the row keeps tracking the (stationary) finger each
+     frame since the page — and therefore everything's on-screen position — is
      moving underneath it. */
   function autoScrollTick() {
     const a = autoScrollRef.current;
     const scroller = scrollRef && scrollRef.current;
     if (!dragRef.current || !a.speed || !scroller) { a.raf = null; return; }
+    const before = scroller.scrollTop;
     scroller.scrollTop += a.speed;
-    updateDragPosition(lastYRef.current);
+    if (scroller.scrollTop === before) { a.raf = null; return; } // hit the end
+    paintDrag();
+    maybeReorder();
     a.raf = requestAnimationFrame(autoScrollTick);
   }
 
@@ -2414,26 +2528,38 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
       const p = pressRef.current;
       const d = dragRef.current;
       if (d) {
-        if (e.pointerId !== d.pointerId) return; // a different finger — let it scroll natively
-        const y = e.clientY;
-        lastYRef.current = y;
-        updateDragPosition(y);
-        setAutoScrollSpeed(y);
-      } else if (p.timer && !p.moved && e.pointerId === p.pointerId) {
-        if (Math.abs(e.clientY - p.startY) > 10) { p.moved = true; clearTimeout(p.timer); p.timer = null; }
+        if (e.pointerId !== d.pointerId) return; // a different finger — ignore it
+        lastYRef.current = e.clientY;
+        paintDrag();
+        maybeReorder();
+        setAutoScrollSpeed(e.clientY);
+      } else if (p.down && e.pointerId === p.pointerId) {
+        /* Not dragging yet: stand in for the native scrolling that
+           touch-action:none turned off, so the list still scrolls in edit mode. */
+        if (!p.moved && Math.abs(e.clientY - p.startY) > 10) {
+          p.moved = true;
+          clearTimeout(p.timer);
+          p.timer = null;
+        }
+        const scroller = scrollRef && scrollRef.current;
+        if (p.moved && scroller) scroller.scrollTop -= e.clientY - p.lastY;
+        p.lastY = e.clientY;
       }
     }
     function endPress(e) {
       const p = pressRef.current;
       const d = dragRef.current;
-      if (d) {
-        if (e.pointerId !== d.pointerId) return; // another finger lifted — the drag isn't done
+      if (d && e.pointerId === d.pointerId) {
         stopAutoScroll();
+        const el = rowRefs.current.get(d.id);
+        if (el) el.style.transform = "";
+        dragRef.current = null; // see paintDrag's layout effect — must be sync
         setDrag(null);
         onReorderTopics(orderRef.current);
-      } else if (p.timer && e.pointerId === p.pointerId) {
+      }
+      if (e.pointerId === p.pointerId) {
         clearTimeout(p.timer);
-        p.timer = null;
+        pressRef.current = { timer: null, id: null, pointerId: null, moved: false, down: false, startY: 0, lastY: 0 };
       }
     }
     window.addEventListener("pointermove", onMove);
@@ -2447,8 +2573,19 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
     };
   }, [onReorderTopics]);
 
+  /* Leaving edit mode mid-drag would otherwise strand the row mid-air. */
+  useEffect(() => {
+    if (editing) return;
+    stopAutoScroll();
+    const d = dragRef.current;
+    const el = d && rowRefs.current.get(d.id);
+    if (el) el.style.transform = "";
+    dragRef.current = null;
+    if (d) setDrag(null);
+  }, [editing]);
+
   const startPress = (id, e) => {
-    if (!editing) return;
+    if (!editing || dragRef.current) return;
     if (e.target.closest && e.target.closest("[data-no-drag]")) return;
     e.preventDefault(); // stop native text-selection/callout from starting on long-press
     const y = e.clientY;
@@ -2456,15 +2593,13 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
     const timer = setTimeout(() => {
       pressRef.current.timer = null;
       const el = rowRefs.current.get(id);
-      const containerRect = listRef.current ? listRef.current.getBoundingClientRect() : { top: 0 };
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        const grabOffset = y - rect.top;
-        setDrag({ id, pointerId, grabOffset, top: rect.top - containerRect.top, height: rect.height });
-      }
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      lastYRef.current = pressRef.current.lastY;
+      setDrag({ id, pointerId, grabOffset: lastYRef.current - rect.top, height: rect.height });
       if (navigator.vibrate) navigator.vibrate(10);
     }, 320);
-    pressRef.current = { timer, id, pointerId, moved: false, startY: y };
+    pressRef.current = { timer, id, pointerId, moved: false, down: true, startY: y, lastY: y };
   };
 
   const orderedTopics = order.map((id) => allTopics.find((t) => t.id === id)).filter(Boolean);
@@ -2603,11 +2738,14 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
               onPointerDown={(e) => startPress(t.id, e)}
               className="relative pb-3.5"
               style={{
-                ...(isDragging ? { position: "absolute", top: drag.top, left: 0, right: 0, height: drag.height, zIndex: 30 } : null),
                 /* Long-pressing to start a drag otherwise triggers the browser's native
                    text-selection (and, on iOS, a copy/lookup callout) on the row's
-                   labels — this suppresses both while in edit mode. */
-                ...(editing ? { WebkitUserSelect: "none", userSelect: "none", WebkitTouchCallout: "none" } : null),
+                   labels, and the browser claims the gesture as a scroll before the
+                   long-press ever fires — edit mode suppresses all three. */
+                ...(editing ? { WebkitUserSelect: "none", userSelect: "none", WebkitTouchCallout: "none", touchAction: "none" } : null),
+                /* The row keeps its place in the flow while dragging (paintDrag moves
+                   it with a transform), so the list shows a gap at its drop slot. */
+                ...(isDragging ? { zIndex: 30, filter: "drop-shadow(0 12px 20px rgba(0,0,0,.3))" } : null),
               }}>
               {i > 0 && (
                 <div className="absolute left-[-15px] w-[6px] rounded-full"
@@ -2621,8 +2759,7 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
                 className={TOPIC_ROW_CLS}
                 style={{
                   background: T.card, border: `2px solid ${editing ? "#FF5A5F44" : T.line}`,
-                  boxShadow: isDragging ? `0 10px 22px rgba(0,0,0,.28)` : `0 5px 0 ${t.color}45`,
-                  touchAction: isDragging ? "none" : "auto",
+                  boxShadow: `0 5px 0 ${t.color}45`,
                 }}>
                 <div className="w-[46px] h-[46px] rounded-2xl flex items-center justify-center shrink-0" style={{ background: t.color + "1E" }}>
                   <I n={t.icon} size={24} color={t.color} sw={2.2} />
@@ -2891,6 +3028,7 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
   const accent = mode === "quiz" ? "#7048E8" : (topic?.color || "#6FA3D8");
   const wTopic = item ? topicById(item.word.topicId) : null;
 
+  const leftRef = useRef(Infinity); // monotonic "cards left" — see below
   /* Cache generated options per qIndex so navigating back to a previous
      card shows the exact same choices instead of re-shuffling them. */
   const optionsCacheRef = useRef({});
@@ -2932,8 +3070,18 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
     }
   }, [qIndex]);
 
+  /* Safety net: if anything ever walks qIndex past the end of the queue, land
+     on the Done screen rather than rendering a blank page with no way out. */
+  useEffect(() => { if (!item) onFinish(); }, [item]);
   if (!item) return null;
-  const left = queue.length - qIndex;
+
+  /* The card counter only ever counts down. The queue legitimately grows
+     mid-session (a missed word gets re-asked a few cards later), but a
+     counter that ticks *up* as you work reads like punishment, so what's
+     shown is the lowest "cards left" this session has reached so far. */
+  const rawLeft = Math.max(0, queue.length - qIndex);
+  const left = Math.min(leftRef.current, rawLeft);
+  leftRef.current = left;
   const w = item.word;
   const variant = item.variant || "en2zh";
 
@@ -3025,25 +3173,27 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
         </div>
         <div className="mt-6 flex gap-3">
           {answers[qIndex] === "learned" ? (
-            <Chunky color={accent} full onClick={next}>Next</Chunky>
+            <Chunky color={accent} full onClick={() => next()}>Next</Chunky>
           ) : (
             <>
-              <Ghost T={T} onClick={() => { click(); setAnswers((p) => ({ ...p, [qIndex]: "learned" })); markKnown(w); next(); }} style={{ flexShrink: 0 }}>Skip, I know it</Ghost>
+              <Ghost T={T} onClick={() => {
+                click();
+                setAnswers((p) => ({ ...p, [qIndex]: "learned" }));
+                markKnown(w);
+                /* No point testing a word you've just told me you know — drop the
+                   two follow-up cards withFollowUps reserved for it. */
+                const q = queue.filter((it, i) => i <= qIndex || it.followUpFor !== w.hanzi);
+                setQueue(q);
+                next(q);
+              }} style={{ flexShrink: 0 }}>Skip, I know it</Ghost>
               <Chunky color={accent} full onClick={() => {
                 chime(s.sound);
                 setAnswers((p) => ({ ...p, [qIndex]: "learned" }));
                 addCard(w);
                 setStats((p) => ({ ...p, learned: p.learned + 1 }));
-                const q = [...queue];
-                /* First test comes 3–5 cards later, not immediately —
-                   the delay forces real retrieval instead of echo memory. */
-                q.splice(Math.min(q.length, qIndex + 3 + Math.floor(Math.random() * 3)), 0,
-                  { type: "quiz", word: w, variant: "en2zh" });
-                /* Second, harder test lands at the very end of the session. */
-                const hard = (w.sZh && w.sZh.includes(w.hanzi) && Math.random() < 0.5) ? "cloze" : "zh2en";
-                q.push({ type: "quiz", word: w, variant: hard });
-                setQueue(q);
-                next(q);
+                /* The two tests for this word are already sitting in the queue
+                   (see withFollowUps), so learning it just moves you forward. */
+                next();
               }}>Got it</Chunky>
             </>
           )}
@@ -3183,7 +3333,7 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
             </div>
             {showTrans && <div className="text-[13px] font-bold mt-2.5" style={{ color: T.sub }}>{w.sEn}</div>}
           </div>
-          <div className="mt-4"><Chunky color={accent} full onClick={next}>Next</Chunky></div>
+          <div className="mt-4"><Chunky color={accent} full onClick={() => next()}>Next</Chunky></div>
         </div>
       )}
     </div>
