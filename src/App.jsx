@@ -438,7 +438,7 @@ const SEED = {
   ],
   housing: [
     ["租房","zūfáng","to rent a place","我在找租房。","Wǒ zài zhǎo zūfáng.","I'm looking for a place to rent."],
-    ["押金","yājīn","deposit","押金是一个月房租。","Yājīn shì yí gè yuè fángzū.","The deposit is one month's rent."],
+    ["押金","yājīn","deposit (refundable)","押金是一个月房租。","Yājīn shì yí gè yuè fángzū.","The deposit is one month's rent."],
     ["房东","fángdōng","landlord","房东人很好。","Fángdōng rén hěn hǎo.","The landlord is nice."],
     ["水电费","shuǐdiànfèi","utilities","水电费另算。","Shuǐdiànfèi lìng suàn.","Utilities are charged separately."],
     ["房租","fángzū","rent","这个月房租涨了。","Zhège yuè fángzū zhǎng le.","Rent went up this month."],
@@ -552,7 +552,7 @@ const SEED = {
     ["误会","wùhuì","misunderstanding","这是一个误会。","Zhè shì yí gè wùhuì.","This is a misunderstanding."],
     ["委婉","wěiwǎn","tactful / euphemistic","他委婉地拒绝了。","Tā wěiwǎn de jùjué le.","He declined tactfully."],
     ["直接","zhíjiē","direct / straightforward","有什么问题可以直接说。","Yǒu shénme wèntí kěyǐ zhíjiē shuō.","If there's a problem, just say it directly."],
-    ["客套","kètào","polite formalities","不用跟我客套。","Búyòng gēn wǒ kètào.","No need for formalities with me."],
+    ["客套","kètào","to stand on ceremony","不用跟我客套。","Búyòng gēn wǒ kètào.","No need for formalities with me."],
     ["升级","shēngjí","to escalate","这个问题需要升级处理。","Zhège wèntí xūyào shēngjí chǔlǐ.","This issue needs to be escalated."],
     ["汇报工作","huìbào gōngzuò","to report on work","我每周一汇报工作。","Wǒ měi zhōuyī huìbào gōngzuò.","I report on my work every Monday."],
     ["口头","kǒutóu","verbal","先口头同意，之后补合同。","Xiān kǒutóu tóngyì, zhīhòu bǔ hétong.","Verbal agreement first, contract to follow."],
@@ -670,7 +670,7 @@ const SEED = {
     ["客户关系","kèhù guānxi","customer relations","维护客户关系很重要。","Wéihù kèhù guānxi hěn zhòngyào.","Maintaining customer relations is important."],
     ["售后","shòuhòu","after-sales service","他们的售后服务很好。","Tāmen de shòuhòu fúwù hěn hǎo.","Their after-sales service is very good."],
     ["服务费","fúwùfèi","service fee","还需要支付服务费。","Hái xūyào zhīfù fúwùfèi.","A service fee also needs to be paid."],
-    ["定金","dìngjīn","deposit","请先付定金。","Qǐng xiān fù dìngjīn.","Please pay a deposit first."],
+    ["定金","dìngjīn","down payment","请先付定金。","Qǐng xiān fù dìngjīn.","Please pay a deposit first."],
     ["尾款","wěikuǎn","final payment","交货后付尾款。","Jiāohuò hòu fù wěikuǎn.","The final payment is due after delivery."],
     ["招标","zhāobiāo","to put out a tender","政府项目在招标。","Zhèngfǔ xiàngmù zài zhāobiāo.","The government project is out for tender."],
     ["投标","tóubiāo","to bid","我们决定参与投标。","Wǒmen juédìng cānyù tóubiāo.","We decided to submit a bid."],
@@ -705,7 +705,7 @@ const SEED = {
     ["主人","zhǔrén","host","主人很热情。","Zhǔrén hěn rèqíng.","The host is very warm and welcoming."],
     ["招待","zhāodài","to host / entertain","谢谢你的招待。","Xièxie nǐ de zhāodài.","Thank you for your hospitality."],
     ["热情","rèqíng","warm / enthusiastic","大家都很热情。","Dàjiā dōu hěn rèqíng.","Everyone was very warm and welcoming."],
-    ["客套话","kètàohuà","polite formalities","这不是客套话。","Zhè búshì kètàohuà.","This isn't just polite formality."],
+    ["客套话","kètàohuà","polite small talk","这不是客套话。","Zhè búshì kètàohuà.","This isn't just polite formality."],
     ["互相认识","hùxiāng rènshi","to get to know each other","我们互相认识一下吧。","Wǒmen hùxiāng rènshi yíxià ba.","Let's get to know each other."],
     ["名片","míngpiàn","business card","这是我的名片。","Zhè shì wǒ de míngpiàn.","This is my business card."],
     ["交换名片","jiāohuàn míngpiàn","to exchange business cards","我们交换一下名片吧。","Wǒmen jiāohuàn yíxià míngpiàn ba.","Let's exchange business cards."],
@@ -821,6 +821,9 @@ const seedFor = (topicId) =>
 /* Each topic's "mastered" target is its actual bank size (they range from
    ~30 to ~80 words/phrases/idioms depending on topic), not a flat number. */
 const targetFor = (topicId) => (SEED[topicId] || []).length || 30;
+/* Not every topic in LIBRARY has a word bank written for it yet. One that
+   doesn't can't be studied at all, so it must never be offered as "add me". */
+const hasBank = (topicId) => ((SEED[topicId] || []).length > 0);
 
 /* ---------- keeping saved words in sync with the word lists ----------
    A card is a snapshot of a SEED entry taken the moment you first met the
@@ -852,6 +855,24 @@ const SEED_INDEX = (() => {
 /* Cards live in a map keyed by hanzi, so a card whose hanzi was corrected has
    to be re-keyed — along with its entry in `flags`, where stars are kept.
    Words that aren't from a built-in bank (older custom topics) are left alone. */
+/* Until now a save only held "the last day the goal was hit" plus a running
+   count, so there was no way to draw a calendar. The days behind the current
+   streak are the one stretch the old shape can be trusted to imply, so the
+   first load reconstructs those and starts recording properly from there. */
+function backfillGoalDays(saved) {
+  if (Array.isArray(saved.goalDays)) return saved;
+  const days = [];
+  const end = saved.lastDay ? dayStrToNum(saved.lastDay) : NaN;
+  if (Number.isFinite(end)) {
+    for (let i = Math.max(1, saved.streak || 1) - 1; i >= 0; i--) days.push(dayNumToStr(end - i));
+  }
+  return {
+    ...saved,
+    goalDays: days,
+    bestStreak: Math.max(saved.bestStreak || 0, saved.streak || 0, longestRun(days)),
+  };
+}
+
 function resyncSavedWords(saved) {
   const cards = saved.cards || {};
   const flags = saved.flags || {};
@@ -881,17 +902,19 @@ function resyncSavedWords(saved) {
     nextCards[merged.hanzi] = prior && (prior.seen || 0) >= (merged.seen || 0) ? prior : merged;
   }
 
-  if (!changed) return saved;
+  const staleCurriculum = Object.keys(saved.curriculum || {}).some((id) => SEED_INDEX[id]);
+  if (!changed && !staleCurriculum) return saved;
 
   const nextFlags = {};
   for (const [hanzi, on] of Object.entries(flags)) {
     if (on) nextFlags[renamed[hanzi] || hanzi] = true;
   }
-  /* curriculum entries are just cached copies of a bank, so they're rebuilt
-     rather than patched. */
-  const nextCurriculum = { ...(saved.curriculum || {}) };
-  for (const topicId of Object.keys(nextCurriculum)) {
-    if (SEED_INDEX[topicId]) nextCurriculum[topicId] = seedFor(topicId);
+  /* A stored curriculum for a built-in topic is a stale copy of something the
+     app already ships, so it's dropped rather than patched. Custom topics
+     keep theirs — there it's the only copy of the list. */
+  const nextCurriculum = {};
+  for (const [topicId, list] of Object.entries(saved.curriculum || {})) {
+    if (!SEED_INDEX[topicId]) nextCurriculum[topicId] = list;
   }
   return { ...saved, cards: nextCards, flags: nextFlags, curriculum: nextCurriculum };
 }
@@ -908,6 +931,21 @@ const localDayShift = () => {
 };
 const todayStr = () => localDayShift().toISOString().slice(0, 10);
 const dayNum = () => Math.floor(localDayShift().getTime() / 86400000);
+/* dayNum() counts local calendar days, so n * 86400000 read back as UTC lands
+   on that same date — which makes the two representations interchangeable. */
+const dayNumToStr = (n) => new Date(n * 86400000).toISOString().slice(0, 10);
+const dayStrToNum = (d) => Math.floor(Date.parse(d + "T00:00:00Z") / 86400000);
+
+/* Longest run of consecutive days in a set of "YYYY-MM-DD" strings. */
+const longestRun = (dayStrings) => {
+  const nums = [...new Set(dayStrings)].map(dayStrToNum).filter(Number.isFinite).sort((a, b) => a - b);
+  let best = 0, run = 0;
+  nums.forEach((n, i) => {
+    run = i > 0 && n === nums[i - 1] + 1 ? run + 1 : 1;
+    if (run > best) best = run;
+  });
+  return best;
+};
 const INTERVALS = [0, 1, 2, 4, 8, 16];
 const MASTER_BOX = 4;
 const TOPIC_ROW_CLS = "bp-btn w-full text-left rounded-[22px] p-4 flex items-center gap-3.5";
@@ -1121,30 +1159,98 @@ function pickVoice() {
   if (!window.speechSynthesis) return null;
   const vs = window.speechSynthesis.getVoices().filter((v) => /^(zh|cmn)/i.test(v.lang || ""));
   if (!vs.length) return null;
+  /* An on-device voice starts talking the instant it's asked. A network one —
+     "Google 普通话" and friends, which is what Chrome and most Android devices
+     offer for Chinese — posts the text to a server and waits for audio back
+     before a sound comes out. That round trip is the pause between tapping
+     the speaker and hearing the word, on every single tap. So locality wins
+     over the name ranking below, even if the remote voice sounds nicer. */
+  const local = vs.filter((v) => v.localService !== false);
+  const pool = local.length ? local : vs;
   for (const p of PREFERRED) {
-    const m = vs.find((v) => (v.name || "").toLowerCase().includes(p.toLowerCase()));
+    const m = pool.find((v) => (v.name || "").toLowerCase().includes(p.toLowerCase()));
     if (m) { cachedVoice = m; return m; }
   }
-  const cn = vs.find((v) => /zh[-_]?CN|Hans/i.test(v.lang)) || vs[0];
-  cachedVoice = cn;
-  return cn;
+  cachedVoice = pool.find((v) => /zh[-_]?CN|Hans/i.test(v.lang)) || pool[0];
+  return cachedVoice;
+}
+
+/* The first utterance of a session pays for loading the voice, which is why
+   the very first word always lagged worst. Spending that on a silent one
+   during the first tap anywhere — a real user gesture, which is also what
+   iOS requires before it will speak on a timer at all — gets it out of the
+   way before the first word anyone actually asks for. */
+let speechWarmed = false;
+function warmSpeech() {
+  if (speechWarmed || !window.speechSynthesis) return;
+  speechWarmed = true;
+  try {
+    const u = new SpeechSynthesisUtterance("\u3002");
+    u.lang = "zh-CN";
+    u.volume = 0;
+    const v = pickVoice();
+    if (v) u.voice = v;
+    window.speechSynthesis.speak(u);
+  } catch (e) {}
 }
 
 if (typeof window !== "undefined" && window.speechSynthesis) {
   window.speechSynthesis.onvoiceschanged = () => { cachedVoice = null; pickVoice(); };
 }
 
+/* Playback speed lives at module scope because speak() is called from a dozen
+   places that have no business threading a setting through. App mirrors
+   settings.speed into it whenever that changes. */
+const SPEED_DEFAULT = 1.2;
+let speechRate = SPEED_DEFAULT;
+const setSpeechRate = (r) => {
+  const n = Number(r);
+  speechRate = Number.isFinite(n) ? Math.min(2, Math.max(0.6, n)) : SPEED_DEFAULT;
+};
+
 function speak(text, { slow = false } = {}) {
-  if (!window.speechSynthesis || !text) return;
-  window.speechSynthesis.cancel();
+  const synth = window.speechSynthesis;
+  if (!synth || !text) return;
+  /* cancel() is not free. On Chrome and Safari a cancel followed straight by
+     speak() makes the engine finish tearing the old utterance down before it
+     will start the new one, and that shows up as a delay on every tap — even
+     when there was nothing playing to interrupt. So only pay it when there
+     actually is something in the queue. */
+  if (synth.speaking || synth.pending) synth.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = "zh-CN";
-  u.rate = slow ? 0.72 : 1.0;   // natural pace, not sluggish
+  /* "Slower" is relative to your chosen pace, not a fixed crawl. */
+  u.rate = slow ? Math.max(0.5, speechRate * 0.65) : speechRate;
   u.pitch = 1.12;               // slightly brighter = more energetic
   u.volume = 1;
   const v = pickVoice();
+  /* Taking lang from the chosen voice rather than hard-coding zh-CN: a
+     zh-TW or zh-HK voice paired with a zh-CN lang makes some engines go
+     looking for a better match instead of just using the voice given. */
+  u.lang = v ? (v.lang || "zh-CN") : "zh-CN";
   if (v) u.voice = v;
-  window.speechSynthesis.speak(u);
+  speechWarmed = true;
+  synth.speak(u);
+}
+
+/* Which voice got picked, and whether it lives on the device. Surfaced in
+   Settings because a network voice is a wait before every word and there is
+   nothing the app can do about it beyond not choosing one. */
+function useVoiceInfo() {
+  const [info, setInfo] = useState(null);
+  useEffect(() => {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    const read = () => {
+      const v = pickVoice();
+      setInfo(v ? { name: v.name, local: v.localService !== false } : null);
+    };
+    read();
+    /* addEventListener rather than onvoiceschanged — that property is already
+       taken by the cache invalidator above, and assigning would clobber it. */
+    synth.addEventListener("voiceschanged", read);
+    return () => synth.removeEventListener("voiceschanged", read);
+  }, []);
+  return info;
 }
 
 /* ---------------- ruby text component ---------------- */
@@ -1211,7 +1317,8 @@ export default function App() {
   const [state, setState] = useState({
     streak: 0, lastDay: null, todayDate: todayStr(), todayCount: 0,
     cards: {}, topics: {}, customTopics: [], pool: {}, curriculum: {}, flags: {}, notes: [], onboarded: false,
-    settings: { burst: 10, dark: false, sound: true, goal: 10, szDate: "2027-01-01", fontZh: "ZCOOL XiaoWei", fontEn: "Space Grotesk" },
+    goalDays: [], bestStreak: 0,
+    settings: { burst: 10, dark: false, sound: true, goal: 10, szDate: "2027-01-01", speed: SPEED_DEFAULT, fontZh: "ZCOOL XiaoWei", fontEn: "Space Grotesk" },
     recent: [],
   });
   const stateRef = useRef(state);
@@ -1221,6 +1328,12 @@ export default function App() {
   const lastPushedRef = useRef(null); // last payload we pushed, to ignore our own snapshot echo
   const cloudSaveTimer = useRef(null);
   const pendingWriteRef = useRef(null); // { uid, payload } waiting on the debounce timer
+  /* False until we've actually seen what's in the cloud for this account.
+     Writes use merge:false (the whole save is one blob), so pushing before
+     we know what's up there would overwrite it with whatever this device
+     happens to hold — including nothing at all. */
+  const cloudLoadedRef = useRef(false);
+  const offlineEditsRef = useRef(false); // practised while the cloud was unreachable
   const [activeTopic, setActiveTopic] = useState(null);
   const [activeNoteId, setActiveNoteId] = useState(null);
   const [mode, setMode] = useState("learn");
@@ -1236,9 +1349,10 @@ export default function App() {
   const dark = s.dark;
 
   useEffect(() => { stateRef.current = state; }, [state]);
+  useEffect(() => { setSpeechRate(s.speed); }, [s.speed]);
 
   const applySave = (input) => {
-    const saved = resyncSavedWords(input);
+    const saved = backfillGoalDays(resyncSavedWords(input));
     const t = todayStr();
     if (saved.lastDay && saved.lastDay !== t) {
       const gap = (new Date(t) - new Date(saved.lastDay)) / 86400000;
@@ -1247,7 +1361,8 @@ export default function App() {
     if (saved.todayDate !== t) { saved.todayDate = t; saved.todayCount = 0; }
     setState((p) => {
       const base = { streak: 0, lastDay: null, todayDate: t, todayCount: 0, cards: {}, topics: {},
-        customTopics: [], pool: {}, curriculum: {}, flags: {}, notes: [], hidden: [], onboarded: false, recent: [], settings: p.settings };
+        customTopics: [], pool: {}, curriculum: {}, flags: {}, notes: [], hidden: [], onboarded: false,
+        goalDays: [], bestStreak: 0, recent: [], settings: p.settings };
       const merged = { ...base, ...saved, settings: { ...p.settings, ...(saved.settings || {}) } };
       merged.settings.goal = merged.settings.burst;
       stateRef.current = merged;
@@ -1279,21 +1394,33 @@ export default function App() {
       setAuthUser({ uid, name: user.displayName, email: user.email, photo: user.photoURL });
 
       // instant paint from this device's cache while the cloud fetch is in flight
+      let cached = null;
       try {
-        const cached = localStorage.getItem(keyFor(uid));
-        if (cached) applySave(JSON.parse(cached));
+        const raw = localStorage.getItem(keyFor(uid));
+        if (raw) { cached = JSON.parse(raw); applySave(cached); }
       } catch (e) {}
 
-      let cloud = null;
-      try { cloud = firebaseReady ? await fetchCloudSave(uid) : null; } catch (e) {}
+      let cloud = null, reachedCloud = !firebaseReady;
+      try {
+        cloud = firebaseReady ? await fetchCloudSave(uid) : null;
+        reachedCloud = true;
+      } catch (e) {}
+      cloudLoadedRef.current = reachedCloud;
 
       if (cloud && cloud.save) {
         const parsed = JSON.parse(cloud.save);
         lastPushedRef.current = cloud.save;
         const saved = applySave(parsed);
         if (!saved.onboarded) setSheet("help");
+      } else if (!reachedCloud) {
+        /* Couldn't reach Firestore — a flaky connection on launch, usually.
+           Carry on with this device's own copy and write nothing: treating a
+           failed read as "new account" would push an empty save over a real
+           one. The snapshot listener below lifts the block once it connects. */
+        if (!cached) applySave(readLocalSeed() || {});
+        setBanner("Offline — using this device's copy. It'll sync when you reconnect.");
       } else {
-        const seed = readLocalSeed();
+        const seed = readLocalSeed() || cached;
         const saved = applySave(seed || {});
         if (!seed) setSheet("help");
         if (firebaseReady) {
@@ -1308,6 +1435,20 @@ export default function App() {
 
       if (firebaseReady) {
         unsubSnap = watchCloudSave(uid, (data) => {
+          /* Reaching the listener at all means we now know what the cloud
+             holds (data === null = no save there), so writes are safe again. */
+          const wasBlocked = !cloudLoadedRef.current;
+          cloudLoadedRef.current = true;
+          if (wasBlocked && offlineEditsRef.current) {
+            /* We practised while offline. That work is newer than anything
+               up there, so it goes up rather than being overwritten by it. */
+            offlineEditsRef.current = false;
+            const payload = JSON.stringify(stateRef.current);
+            lastPushedRef.current = payload;
+            writeCloudSave(uid, { save: payload, updatedAt: Date.now() }).catch(() => {});
+            setBanner("Back online — your progress has been synced.");
+            return;
+          }
           if (!data || !data.save || data.save === lastPushedRef.current) return;
           try {
             lastPushedRef.current = data.save;
@@ -1318,7 +1459,14 @@ export default function App() {
     });
 
     pickVoice();
-    return () => { unsubAuth && unsubAuth(); if (unsubSnap) unsubSnap(); };
+    /* First real gesture of the session warms the speech engine (see
+       warmSpeech) so the first word tapped isn't the one that waits. */
+    window.addEventListener("pointerdown", warmSpeech, { once: true, passive: true });
+    return () => {
+      unsubAuth && unsubAuth();
+      if (unsubSnap) unsubSnap();
+      window.removeEventListener("pointerdown", warmSpeech);
+    };
   }, []);
 
   /* Sends whatever cloud write is currently waiting on the debounce timer,
@@ -1335,15 +1483,26 @@ export default function App() {
     writeCloudSave(uid, { save: payload, updatedAt: Date.now() }).catch(() => {});
   }, []);
 
+  /* Reopening the app the next morning should show today's goal, not last
+     night's. Nothing else notices the date change until you answer a card. */
+  const rollDay = useCallback(() => {
+    const t = todayStr();
+    if (stateRef.current.todayDate === t) return;
+    update((prev) => (prev.todayDate === t ? prev : { ...prev, todayDate: t, todayCount: 0 }));
+  }, [update]);
+
   useEffect(() => {
-    const onHide = () => { if (document.visibilityState === "hidden") flushCloudSave(); };
+    const onHide = () => {
+      if (document.visibilityState === "hidden") flushCloudSave();
+      else rollDay();
+    };
     document.addEventListener("visibilitychange", onHide);
     window.addEventListener("pagehide", flushCloudSave);
     return () => {
       document.removeEventListener("visibilitychange", onHide);
       window.removeEventListener("pagehide", flushCloudSave);
     };
-  }, [flushCloudSave]);
+  }, [flushCloudSave, rollDay]);
 
   /* functional update — avoids stale-state bugs on rapid taps */
   const update = useCallback((fn) => {
@@ -1352,7 +1511,8 @@ export default function App() {
       stateRef.current = next;
       if (profileRef.current) {
         try { localStorage.setItem(keyFor(profileRef.current), JSON.stringify(next)); } catch (e) {}
-        if (firebaseReady) {
+        if (firebaseReady && !cloudLoadedRef.current) offlineEditsRef.current = true;
+        if (firebaseReady && cloudLoadedRef.current) {
           clearTimeout(cloudSaveTimer.current);
           const uid = profileRef.current;
           const payload = JSON.stringify(next);
@@ -1396,7 +1556,10 @@ export default function App() {
     click(s.sound);
     setActiveTopic(topic);
     setScreen("dict");
-    if (!((stateRef.current.curriculum || {})[topic.id] || []).length) {
+    /* Built-in topics are read straight from SEED now, so there's nothing to
+       cache — copying all 647 entries into the save just made every sync
+       carry ~130KB of words the app already ships with. */
+    if (!hasBank(topic.id) && !((stateRef.current.curriculum || {})[topic.id] || []).length) {
       update((prev) => ({ ...prev, curriculum: { ...(prev.curriculum || {}), [topic.id]: seedFor(topic.id) } }));
     }
   };
@@ -1408,7 +1571,13 @@ export default function App() {
     const tState = stateRef.current.topics[topic.id] || {};
     if (!tState.triaged) {
       const words = availableWords(topic.id).slice(0, 10);
-      if (!words.length) { setBanner("You've already met every word in this topic! Check back once review words are due."); setActiveTopic(null); return; }
+      if (!words.length) {
+        setBanner(hasBank(topic.id)
+          ? "You've already met every word in this topic! Check back once review words are due."
+          : "This topic doesn't have a word list yet — nothing to learn here.");
+        setActiveTopic(null);
+        return;
+      }
       setQueue(words.map((w) => ({ type: "triage", word: w })));
       setQIndex(0);
       setScreen("triage");
@@ -1537,6 +1706,10 @@ export default function App() {
         const gap = next.lastDay ? (new Date(t) - new Date(next.lastDay)) / 86400000 : 0;
         next.streak = gap > 1 ? 1 : (next.streak || 0) + 1;
         next.lastDay = t;
+        /* Capped at roughly two years — long enough for any calendar the app
+           draws, short enough that the save doesn't grow without end. */
+        next.goalDays = [...(next.goalDays || []).filter((d) => d !== t), t].slice(-800);
+        next.bestStreak = Math.max(next.bestStreak || 0, next.streak);
         setTimeout(() => setBanner(`Day ${next.streak} streak locked in!`), 10);
       }
       return next;
@@ -1770,15 +1943,15 @@ export default function App() {
         )}
         {screen === "dict" && activeTopic && (
           <Dictionary {...shared} topic={activeTopic} toggleStar={toggleStar}
-            onFlash={(deck, mode) => { if (deck.length) { setFlash({ deck, mode }); setScreen("flash"); } else setBanner("Learn a few of these first."); }} />
+            onFlash={(deck, mode) => { if (deck.length) { setFlash({ deck, mode, from: "dict" }); setScreen("flash"); } else setBanner("Learn a few of these first."); }} />
         )}
         {screen === "match" && <Match {...shared} recordAnswer={recordAnswer} />}
         {screen === "flash" && flash && (
-          <Flashcards {...shared} deck={flash.deck} mode={flash.mode} />
+          <Flashcards {...shared} deck={flash.deck} mode={flash.mode} back={flash.from || "glossary"} />
         )}
         {screen === "glossary" && (
           <Glossary {...shared} toggleStar={toggleStar} removeCard={removeCard}
-            onFlash={(deck, mode) => { setFlash({ deck, mode }); setScreen("flash"); }} />
+            onFlash={(deck, mode) => { if (!deck.length) return; setFlash({ deck, mode, from: "glossary" }); setScreen("flash"); }} />
         )}
         {screen === "notes" && (
           <NotesList {...shared} notes={state.notes || []}
@@ -1923,7 +2096,7 @@ function Dictionary({ topic, state, T, dark, s, click, setScreen, toggleStar, on
                       <div className="disp font-bold text-[13px] w-6 text-center shrink-0 pt-1" style={{ color: T.sub }}>
                         {rank}
                       </div>
-                      <button onClick={() => { click(); speak(w.hanzi); }} className="text-left flex-1 min-w-0">
+                      <button onClick={() => { speak(w.hanzi); click(); }} className="text-left flex-1 min-w-0">
                         <Ruby zh={w.hanzi} pinyin={w.pinyin} size={21} pySize={10} color={topic.color} sub={T.text}
                           center={false} gapClass="gap-x-1 gap-y-0.5" />
                         <div className="text-[12.5px] font-bold mt-1" style={{ color: T.sub }}>{w.en}</div>
@@ -1942,7 +2115,7 @@ function Dictionary({ topic, state, T, dark, s, click, setScreen, toggleStar, on
                             style={{ background: T.chip, color: T.sub }}>not yet</span>
                         )}
                         <div className="flex items-center gap-0.5">
-                          <button onClick={() => { click(); speak(w.hanzi); }} className="p-1">
+                          <button onClick={() => { speak(w.hanzi); click(); }} className="p-1">
                             <I n="volume" size={15} color={T.sub} />
                           </button>
                           <button onClick={() => { click(); toggleStar(w.hanzi); }} className="p-1">
@@ -2050,7 +2223,15 @@ function LoadingOverlay({ T, expected = 18 }) {
 }
 
 function Banner({ text, onClose }) {
-  useEffect(() => { const t = setTimeout(onClose, 3400); return () => clearTimeout(t); }, [onClose]);
+  /* Keyed on the message, not on onClose — that arrow is rebuilt on every
+     App render, which kept restarting the timer and pinning the banner open
+     for as long as you kept tapping. */
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
+  useEffect(() => {
+    const t = setTimeout(() => closeRef.current(), 3400);
+    return () => clearTimeout(t);
+  }, [text]);
   return (
     <div className="bp-rise fixed top-3 left-1/2 -translate-x-1/2 z-[60] px-4 py-3 rounded-2xl font-extrabold text-sm shadow-xl flex items-center gap-2"
       style={{ background: "#2E4258", color: "#fff", maxWidth: "92vw" }}>
@@ -2134,7 +2315,7 @@ function HelpSheet({ T, onClose }) {
     { icon: "cards", color: "#6FA3D8", t: "Tap a topic", d: "Meet new words." },
     { icon: "target", color: "#7048E8", t: "It tests you", d: "Each answer = 1 card toward today's goal." },
     { icon: "timer", color: "#16C79A", t: "Mastered = 3 different days", d: "A word only counts as yours after you get it right on 3 separate days." },
-    { icon: "flame", color: "#FF7A45", t: "Hit the goal daily", d: "Miss a day and the streak resets to 0." },
+    { icon: "flame", color: "#FF7A45", t: "Hit the goal daily", d: "Miss a day and the streak resets to 0. The calendar on the home screen shows every day you cleared it, plus your longest run." },
   ];
   return (
     <div className="fixed inset-0 z-[55] flex items-end justify-center" style={{ background: "rgba(6,16,34,.5)" }} onClick={onClose}>
@@ -2375,7 +2556,11 @@ function TechStackSheet({ T, dark, click, onClose }) {
 
 /* ---------------- ADD TOPIC SHEET ---------------- */
 function AddTopicSheet({ T, s, allTopics, onClose, onAdd }) {
-  const library = [...CORE_TOPICS, ...LIBRARY].filter((t) => !allTopics.some((x) => x.id === t.id));
+  /* Only topics that have words behind them — LIBRARY still lists ideas whose
+     banks were never written, and adding one of those gives you a topic that
+     claims "30 words loaded" and then refuses to open. */
+  const library = [...CORE_TOPICS, ...LIBRARY]
+    .filter((t) => hasBank(t.id) && !allTopics.some((x) => x.id === t.id));
 
   return (
     <div className="fixed inset-0 z-[55] flex items-end justify-center" style={{ background: "rgba(6,16,34,.5)" }} onClick={onClose}>
@@ -2384,7 +2569,7 @@ function AddTopicSheet({ T, s, allTopics, onClose, onAdd }) {
         <div className="w-12 h-1.5 rounded-full mx-auto mb-4" style={{ background: T.line }} />
         <div className="disp font-bold text-[22px]">Add a topic</div>
         <div className="text-[12.5px] font-bold mb-5" style={{ color: T.sub }}>
-          {library.length ? "Pick a topic to add to your list" : "You've added every topic in the library!"}
+          {library.length ? "Pick a topic to add to your list" : "Every topic with a word list is already on your line."}
         </div>
 
         {library.length > 0 && (
@@ -2607,6 +2792,10 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
   const learned = cards.filter((c) => !c.known && c.seen > 0).length;
   const mastered = cards.filter(isMastered).length;
   const goalPct = Math.round((Math.min(state.todayCount, s.goal) / s.goal) * 100);
+  /* The streak locks the moment the goal is first hit. Raising the goal
+     afterwards used to make the banner start nagging again for a streak
+     that was already safe. */
+  const streakSafe = goalPct >= 100 || state.lastDay === todayStr();
   const recent = state.recent || [];
   const acc = recent.length >= 10 ? recent.reduce((a, b) => a + b, 0) / recent.length : null;
   const d = dayNum();
@@ -2623,10 +2812,14 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
     return { seen: c.length, mastered: m, target: targetFor(id), pct: Math.min(100, Math.round((progress / targetFor(id)) * 100)) };
   };
 
+  /* Every path below assumes at least one topic. deleteTopic won't let you go
+     below one, but an older or half-synced save can still arrive empty, and
+     an empty list here used to take the whole home screen down with it. */
+  const firstTopic = allTopics[0] || CORE_TOPICS[0];
   const focus = allTopics
     .map((t) => ({ t, ...statsFor(t.id) }))
     .filter((x) => x.pct < 100)
-    .sort((a, b) => b.mastered - a.mastered)[0] || { t: allTopics[0], ...statsFor(allTopics[0].id) };
+    .sort((a, b) => b.mastered - a.mastered)[0] || { t: firstTopic, ...statsFor(firstTopic.id) };
 
   return (
     <div className="pt-2">
@@ -2674,7 +2867,7 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
         </div>
         {/* daily goal — thin bar, just enough to protect the streak */}
         <div className="mt-4 relative">
-          {goalPct >= 100 ? (
+          {streakSafe ? (
             <div className="flex items-center gap-2 mb-1.5 px-3 py-1.5 rounded-full w-fit"
               style={{ background: "#1E9E5A", boxShadow: "0 2px 0 rgba(0,0,0,.15)" }}>
               <I n="check" size={14} color="#fff" sw={3} />
@@ -2693,6 +2886,8 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
           </div>
         </div>
       </div>
+
+      <StreakGrid state={state} T={T} s={s} />
 
       {/* quick path to today's goal — mixes every topic you've started so you don't have to pick one */}
       <button onClick={onDailyMix}
@@ -2772,7 +2967,8 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
                     )}
                   </div>
                   <div className="text-[11.5px] font-bold mt-0.5" style={{ color: T.sub }}>
-                    {st.seen === 0 ? `${st.target} words loaded · not started yet`
+                    {!hasBank(t.id) ? "No word list for this topic yet"
+                      : st.seen === 0 ? `${st.target} words loaded · not started yet`
                       : st.pct >= 100 ? `Complete — all ${st.target} mastered`
                       : `${st.mastered} / ${st.target} mastered · ${st.seen} seen`}
                   </div>
@@ -2813,7 +3009,7 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
         {/* add topic node */}
         <div className="relative">
           <div className="absolute left-[-15px] w-[6px] rounded-full"
-            style={{ top: -18, height: 46, background: `linear-gradient(${orderedTopics[orderedTopics.length - 1].color}, ${T.line})` }} />
+            style={{ top: -18, height: 46, background: `linear-gradient(${(orderedTopics[orderedTopics.length - 1] || firstTopic).color}, ${T.line})` }} />
           <div className="absolute left-[-26px] top-[14px] w-[28px] h-[28px] rounded-full flex items-center justify-center"
             style={{ background: T.bg, border: `5px dashed ${T.line}` }} />
           <button onClick={onAdd}
@@ -2871,8 +3067,14 @@ function Home({ state, T, dark, s, allTopics, onTopic, onQuiz, onMatch, onDailyM
 }
 
 function ShenzhenCard({ T, s, mastered, dark }) {
+  /* It's a live clock down to the minute, so it needs its own heartbeat —
+     otherwise it freezes at whatever the last render happened to compute. */
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 30000);
+    return () => clearInterval(id);
+  }, []);
   const target = new Date((s.szDate || "2027-01-01") + "T00:00:00");
-  const now = new Date();
   const ms = Math.max(0, target - now);
   const days = Math.floor(ms / 86400000);
   const hrs = Math.floor((ms % 86400000) / 3600000);
@@ -2921,6 +3123,136 @@ function ShenzhenCard({ T, s, mastered, dark }) {
             : <>Master <b style={{ color: T.text }}>~{perDay}/day</b> to land with {GOAL} words ({mastered} done)</>}
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ---------------- STREAK CALENDAR ---------------- */
+/* A day counts as done only once it crossed that day's goal, which is exactly
+   what state.goalDays records — so this is a calendar of real finishes, not of
+   days the app happened to be opened. */
+function StreakGrid({ state, T, s }) {
+  const WEEKS = 22;
+  /* The full 22 weeks don't fit a narrow phone, so the strip scrolls — and it
+     has to open on the newest week, not on May. */
+  const scrollerRef = useRef(null);
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (el) el.scrollLeft = el.scrollWidth;
+  }, []);
+  const done = new Set(state.goalDays || []);
+  const todayN = dayNum();
+  const todayS = dayNumToStr(todayN);
+
+  /* Columns are weeks, rows are weekdays, Monday at the top. The grid ends
+     with the week containing today so the newest column is always the last. */
+  const mondayIdx = (new Date(todayN * 86400000).getUTCDay() + 6) % 7;
+  const lastCell = todayN + (6 - mondayIdx);
+  const firstCell = lastCell - (WEEKS * 7 - 1);
+
+  const weeks = Array.from({ length: WEEKS }, (_, w) =>
+    Array.from({ length: 7 }, (_, r) => firstCell + w * 7 + r));
+
+  /* One label per month, over the first column that month appears in. */
+  const monthLabels = weeks.map((col, w) => {
+    const d = new Date(col[0] * 86400000);
+    const prev = w > 0 ? new Date(weeks[w - 1][0] * 86400000) : null;
+    if (prev && prev.getUTCMonth() === d.getUTCMonth()) return null;
+    return d.toLocaleDateString(undefined, { month: "short", timeZone: "UTC" });
+  });
+
+  const streak = state.streak || 0;
+  /* Recomputed from the calendar rather than trusted blindly, so an older
+     save or a capped history can't leave a wrong number on screen. */
+  const best = Math.max(state.bestStreak || 0, streak, longestRun(state.goalDays || []));
+  const total = done.size;
+  const last30 = Array.from({ length: 30 }, (_, i) => dayNumToStr(todayN - i)).filter((d) => done.has(d)).length;
+
+  const CELL = 13, GAP = 3.5;
+  const flame = "#FF7A45";
+
+  const stats = [
+    ["flame", streak, "day streak", flame],
+    ["trend", best, "longest ever", "#7048E8"],
+    ["calendar", total, total === 1 ? "day cleared" : "days cleared", "#16C79A"],
+  ];
+
+  return (
+    <div className="rounded-[30px] p-4 mb-6" style={{ background: T.card, border: `2px solid ${T.line}`, boxShadow: `0 5px 0 ${T.line}` }}>
+      <div className="flex items-end justify-between mb-3.5">
+        <div>
+          <div className="disp font-bold text-[17px] leading-none">Your streak</div>
+          <div className="text-[11.5px] font-bold mt-1.5" style={{ color: T.sub }}>
+            Every day you hit the goal · {last30} of the last 30
+          </div>
+        </div>
+        <I n="flame" size={22} color={streak > 0 ? flame : T.sub} fill={streak > 0 ? flame : "none"} />
+      </div>
+
+      <div className="grid grid-cols-3 gap-2 mb-4">
+        {stats.map(([icon, value, label, color]) => (
+          <div key={label} className="rounded-[22px] py-2.5 text-center" style={{ background: color + "14", border: `2px solid ${color}2E` }}>
+            <div className="disp font-bold text-[21px] leading-none flex items-center justify-center gap-1" style={{ color }}>
+              <I n={icon} size={15} color={color} />{value}
+            </div>
+            <div className="text-[10px] font-extrabold mt-1" style={{ color: T.sub }}>{label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* the calendar — horizontally scrollable on narrow screens, newest week last */}
+      <div ref={scrollerRef} className="overflow-x-auto -mx-1 px-1" style={{ WebkitOverflowScrolling: "touch" }}>
+        <div className="inline-flex flex-col" style={{ minWidth: "100%" }}>
+          <div className="flex" style={{ gap: GAP, marginLeft: 16 }}>
+            {monthLabels.map((m, w) => (
+              <div key={w} className="text-[9px] font-black shrink-0"
+                style={{ width: CELL, color: T.sub, whiteSpace: "nowrap", opacity: m ? 0.8 : 0 }}>
+                {m || "·"}
+              </div>
+            ))}
+          </div>
+          <div className="flex mt-1" style={{ gap: GAP }}>
+            <div className="flex flex-col shrink-0" style={{ gap: GAP, width: 16 - GAP }}>
+              {["M", "", "W", "", "F", "", ""].map((d, i) => (
+                <div key={i} className="text-[9px] font-black leading-none flex items-center"
+                  style={{ height: CELL, color: T.sub, opacity: 0.75 }}>{d}</div>
+              ))}
+            </div>
+            {weeks.map((col, w) => (
+              <div key={w} className="flex flex-col shrink-0" style={{ gap: GAP }}>
+                {col.map((n) => {
+                  const dStr = dayNumToStr(n);
+                  const future = n > todayN;
+                  const hit = done.has(dStr);
+                  const isToday = dStr === todayS;
+                  return (
+                    <div key={n} title={`${new Date(n * 86400000).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" })}${future ? "" : hit ? " · goal cleared" : " · missed"}`}
+                      style={{
+                        width: CELL, height: CELL, borderRadius: 4,
+                        background: future ? "transparent" : hit ? flame : T.chip,
+                        border: isToday ? `1.5px solid ${hit ? "#C2410C" : T.sub}` : future ? `1px dashed ${T.line}` : "none",
+                        opacity: future ? 0.5 : 1,
+                      }} />
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-end gap-1.5 mt-3">
+        <span className="text-[9.5px] font-extrabold" style={{ color: T.sub }}>missed</span>
+        <div style={{ width: 10, height: 10, borderRadius: 3, background: T.chip }} />
+        <div style={{ width: 10, height: 10, borderRadius: 3, background: flame }} />
+        <span className="text-[9.5px] font-extrabold" style={{ color: T.sub }}>cleared</span>
+      </div>
+
+      {total === 0 && (
+        <div className="text-[11.5px] font-bold mt-3 pt-3 text-center" style={{ color: T.sub, borderTop: `2px dashed ${T.line}` }}>
+          Finish {s.goal} cards today and your first square lights up.
+        </div>
+      )}
     </div>
   );
 }
@@ -3042,6 +3374,9 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
     const distinct = pool.filter((c) => {
       const k = c[answerField];
       if (seen.has(k) || k === item.word[answerField]) return false;
+      /* A distractor that reads identically to the prompt makes the question
+         unanswerable — two words can share an English gloss. */
+      if (c.en === item.word.en || c.hanzi === item.word.hanzi) return false;
       seen.add(k); return true;
     });
     const sameTopic = distinct.filter((c) => c.topicId === item.word.topicId);
@@ -3269,9 +3604,9 @@ function Session({ topic, mode, queue, setQueue, qIndex, setQIndex, stats, setSt
             <button key={val}
               onClick={() => {
                 if (picked === null) { choose(o); return; }
+                if (o.hanzi) speak(o.hanzi);
                 click();
                 setRevealed((r) => (r === val ? null : val));
-                if (o.hanzi) speak(o.hanzi);
               }}
               className="bp-btn rounded-[26px] py-3.5 px-3 flex items-center justify-center relative"
               style={{ background: bg, border: `2px solid ${bd}`, boxShadow: `0 5px 0 ${shadow}`, color: T.text, minHeight: 64 }}>
@@ -3354,7 +3689,12 @@ function Match({ state, T, s, click, setScreen, recordAnswer }) {
   const deal = () => {
     const learned = Object.values(state.cards).filter((c) => !c.known && c.seen > 0);
     if (learned.length < 5) { setPairs({ locked: true, need: 5 - learned.length }); return; }
-    const chosen = shuffle(learned).slice(0, 5);
+    /* Two words sharing an English gloss would put two identical tiles on the
+       right; solving one greys out both, stranding the other word and leaving
+       the board impossible to clear. One word per meaning per board. */
+    const seenEn = new Set();
+    const chosen = shuffle(learned).filter((c) => !seenEn.has(c.en) && seenEn.add(c.en)).slice(0, 5);
+    if (chosen.length < 5) { setPairs({ locked: true, need: 5 - chosen.length }); return; }
     setPairs({ words: chosen, left: shuffle(chosen.map((c) => c.hanzi)), right: shuffle(chosen.map((c) => c.en)) });
     setSolved([]); setMisses({}); setDoneAt(null); setStartAt(Date.now());
     setLeftPick(null); setRightPick(null);
@@ -3376,7 +3716,7 @@ function Match({ state, T, s, click, setScreen, recordAnswer }) {
     } else {
       buzz(s.sound);
       setMisses((m) => ({ ...m, [leftPick]: true }));
-      setWrongFlash(leftPick + rightPick);
+      setWrongFlash([leftPick, rightPick]);
       setTimeout(() => { setLeftPick(null); setRightPick(null); setWrongFlash(null); }, 450);
     }
   }, [leftPick, rightPick]);
@@ -3404,7 +3744,7 @@ function Match({ state, T, s, click, setScreen, recordAnswer }) {
       ? solved.includes(val)
       : solved.some((h) => pairs.words.find((w) => w.hanzi === h)?.en === val);
     const isPicked = side === "left" ? leftPick === val : rightPick === val;
-    const flashing = wrongFlash && wrongFlash.includes(val);
+    const flashing = !!wrongFlash && wrongFlash.includes(val);
     let bg = T.card, bd = T.line;
     if (isSolved) { bg = "#16C79A1A"; bd = "#16C79A55"; }
     else if (flashing) { bg = "#FF5A5F1F"; bd = "#FF5A5F"; }
@@ -3573,9 +3913,12 @@ function Glossary({ state, T, dark, s, toggleStar, removeCard, click, topicById,
     ["Trouble", "trouble", "#FF5A5F"], ["Starred", "starred", "#E8890C"],
   ];
 
-  const selCount = Object.values(selected).filter(Boolean).length;
+  /* Counted over what's actually on screen: picking words and then changing
+     the filter used to leave the button promising a deck it wouldn't send. */
+  const picked = filtered.filter((c) => selected[c.hanzi]);
+  const selCount = picked.length;
   const startFlash = () => {
-    const deck = selCount > 0 ? filtered.filter((c) => selected[c.hanzi]) : filtered;
+    const deck = selCount > 0 ? picked : filtered;
     if (deck.length === 0) return;
     onFlash(deck, view === "all" ? "hanzi" : view);
   };
@@ -3750,8 +4093,8 @@ function Glossary({ state, T, dark, s, toggleStar, removeCard, click, topicById,
                       )}
                       <button
                         onClick={() => {
+                          if (view === "all") { speak(c.hanzi); click(); return; }
                           click();
-                          if (view === "all") { speak(c.hanzi); return; }
                           setRevealed((p) => ({ ...p, [c.hanzi]: !p[c.hanzi] }));
                         }}
                         className="text-left flex-1 min-w-0">
@@ -3781,7 +4124,7 @@ function Glossary({ state, T, dark, s, toggleStar, removeCard, click, topicById,
                         </div>
                       </button>
                       {view !== "all" && (
-                        <button onClick={() => { click(); speak(c.hanzi); }} className="p-1.5">
+                        <button onClick={() => { speak(c.hanzi); click(); }} className="p-1.5">
                           <I n="volume" size={17} color={T.sub} />
                         </button>
                       )}
@@ -3809,7 +4152,7 @@ function Glossary({ state, T, dark, s, toggleStar, removeCard, click, topicById,
 }
 
 /* ---------------- FLASHCARDS ---------------- */
-function Flashcards({ deck, mode, T, s, click, setScreen, topicById, dark }) {
+function Flashcards({ deck, mode, back = "glossary", T, s, click, setScreen, topicById, dark }) {
   const [order] = useState(() => shuffle(deck));
   const [i, setI] = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -3818,6 +4161,8 @@ function Flashcards({ deck, mode, T, s, click, setScreen, topicById, dark }) {
   const c = order[i];
   useEffect(() => { setFlipped(false); }, [i]);
   useEffect(() => { if (done) fanfare(s.sound); }, [done]);
+  /* An empty deck would render nothing at all, on a screen with no nav bar. */
+  useEffect(() => { if (!order.length) setScreen(back); }, [order.length]);
 
   if (!c) return null;
   const t = topicById(c.topicId);
@@ -3838,7 +4183,7 @@ function Flashcards({ deck, mode, T, s, click, setScreen, topicById, dark }) {
           <Chunky color="#7048E8" full onClick={() => { click(); setI(0); setFlipped(false); setDone(false); }}>
             Run it again
           </Chunky>
-          <Ghost T={T} onClick={() => { click(); setScreen("glossary"); }} style={{ width: "100%" }}>Back to word bank</Ghost>
+          <Ghost T={T} onClick={() => { click(); setScreen(back); }} style={{ width: "100%" }}>{back === "dict" ? "Back to the word list" : "Back to word bank"}</Ghost>
         </div>
         <About T={T} dark={dark} />
       </div>
@@ -3855,7 +4200,7 @@ function Flashcards({ deck, mode, T, s, click, setScreen, topicById, dark }) {
     <div className="pt-6">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
-          <button onClick={() => { click(); setScreen("glossary"); }} className="bp-btn p-2.5 rounded-xl"
+          <button onClick={() => { click(); setScreen(back); }} className="bp-btn p-2.5 rounded-xl"
             style={{ background: T.card, border: `2px solid ${T.line}`, boxShadow: `0 3px 0 ${T.line}` }}>
             <I n="x" size={19} color={T.sub} />
           </button>
@@ -3873,9 +4218,8 @@ function Flashcards({ deck, mode, T, s, click, setScreen, topicById, dark }) {
 
       <button
         onClick={() => {
-          click();
-          if (!flipped) { setFlipped(true); if (mode !== "en") speak(c.hanzi); }
-          else advance();
+          if (!flipped) { if (mode !== "en") speak(c.hanzi); click(); setFlipped(true); }
+          else { click(); advance(); }
         }}
         className="w-full rounded-[34px] p-7 mb-5 text-center bp-pop relative overflow-hidden"
         style={{ background: T.card, border: `2px solid ${T.line}`, boxShadow: `0 7px 0 ${t.color}40`, minHeight: 260 }}>
@@ -4043,6 +4387,7 @@ function NoteEditor({ note, T, dark, click, onBack, onSaveNote, onDeleteNote }) 
 /* ---------------- SETTINGS ---------------- */
 function SettingsScreen({ state, update, T, dark, s, click, setBanner, onHelp, authUser, onSignOut }) {
   const set = (patch) => update((prev) => ({ ...prev, settings: { ...prev.settings, ...patch } }));
+  const voice = useVoiceInfo();
   const Seg = ({ options, value, onPick }) => (
     <div className="flex gap-2.5">
       {options.map(([label, v]) => {
@@ -4088,6 +4433,27 @@ function SettingsScreen({ state, update, T, dark, s, click, setBanner, onHelp, a
       </Row>
       <Row label="Sound">
         <Seg options={[["On", true], ["Off", false]]} value={s.sound} onPick={(v) => set({ sound: v })} />
+      </Row>
+      <Row label="Speaking speed" hint="How fast the Chinese is read out. The “Slower” button on a card is always a notch below whatever you pick here.">
+        <Seg
+          options={[["Relaxed", 0.9], ["Normal", 1.2], ["Brisk", 1.45], ["Fast", 1.75]]}
+          value={s.speed ?? SPEED_DEFAULT}
+          onPick={(v) => { set({ speed: v }); setSpeechRate(v); speak("我们开始学中文吧"); }} />
+        <div className="text-[11.5px] font-bold mt-2.5" style={{ color: T.sub }}>
+          Tap a speed to hear it. Your device's own Chinese voice does the reading, so the
+          very top end depends on the voice.
+        </div>
+        {voice && (
+          <div className="flex items-start gap-2 mt-2.5 pt-2.5" style={{ borderTop: `2px dashed ${T.line}` }}>
+            <I n={voice.local ? "bolt" : "globe"} size={14} color={voice.local ? "#0CA678" : "#E8890C"} />
+            <div className="text-[11px] font-bold leading-snug" style={{ color: T.sub }}>
+              Voice: <b style={{ color: T.text }}>{voice.name}</b>{" · "}
+              {voice.local
+                ? <span style={{ color: "#0CA678" }}>on your device, so it plays instantly</span>
+                : <span style={{ color: "#E8890C" }}>fetched over the network, which is why there's a pause before each word. Installing a Chinese voice in your system settings removes it.</span>}
+            </div>
+          </div>
+        )}
       </Row>
       <Row label="Chinese font" hint="Used for all hanzi, headings and numbers. Every sample is drawn in its own font.">
         <div className="grid grid-cols-2 gap-2.5">
@@ -4186,10 +4552,15 @@ function SettingsScreen({ state, update, T, dark, s, click, setBanner, onHelp, a
       </Row>
       <Row label="Danger zone">
         <button onClick={() => {
-          if (window.confirm("Erase all progress, streak and words?")) {
-            update(() => ({
+          if (window.confirm("Erase all progress, streak and words?\n\nYour notes and settings are kept.")) {
+            /* update() replaces the whole state object, so anything not named
+               here is destroyed — notes included, which this button never
+               promised to touch. */
+            update((prev) => ({
               streak: 0, lastDay: null, todayDate: todayStr(), todayCount: 0, cards: {}, topics: {},
-              customTopics: [], pool: {}, curriculum: {}, flags: {}, hidden: [], onboarded: true, settings: s, recent: [],
+              customTopics: [], pool: {}, curriculum: {}, flags: {}, hidden: [], topicOrder: [],
+              goalDays: [], bestStreak: 0,
+              onboarded: true, settings: s, recent: [], notes: prev.notes || [],
             }));
             setBanner("Progress cleared.");
           }

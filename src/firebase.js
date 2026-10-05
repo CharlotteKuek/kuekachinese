@@ -73,8 +73,11 @@ export async function fetchCloudSave(uid) {
   return snap.exists() ? snap.data() : null;
 }
 
+/* Calls back with the document's data, or null when the account genuinely has
+   no save yet. The caller needs to tell those two apart from "couldn't reach
+   Firestore", which never reaches the callback at all. */
 export function watchCloudSave(uid, cb) {
-  return onSnapshot(doc(db, "users", uid), (snap) => { if (snap.exists()) cb(snap.data()); }, () => {});
+  return onSnapshot(doc(db, "users", uid), (snap) => cb(snap.exists() ? snap.data() : null), () => {});
 }
 
 export async function writeCloudSave(uid, payload) {
