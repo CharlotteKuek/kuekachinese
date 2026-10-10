@@ -1483,27 +1483,6 @@ export default function App() {
     writeCloudSave(uid, { save: payload, updatedAt: Date.now() }).catch(() => {});
   }, []);
 
-  /* Reopening the app the next morning should show today's goal, not last
-     night's. Nothing else notices the date change until you answer a card. */
-  const rollDay = useCallback(() => {
-    const t = todayStr();
-    if (stateRef.current.todayDate === t) return;
-    update((prev) => (prev.todayDate === t ? prev : { ...prev, todayDate: t, todayCount: 0 }));
-  }, [update]);
-
-  useEffect(() => {
-    const onHide = () => {
-      if (document.visibilityState === "hidden") flushCloudSave();
-      else rollDay();
-    };
-    document.addEventListener("visibilitychange", onHide);
-    window.addEventListener("pagehide", flushCloudSave);
-    return () => {
-      document.removeEventListener("visibilitychange", onHide);
-      window.removeEventListener("pagehide", flushCloudSave);
-    };
-  }, [flushCloudSave, rollDay]);
-
   /* functional update — avoids stale-state bugs on rapid taps */
   const update = useCallback((fn) => {
     setState((prev) => {
@@ -1527,6 +1506,27 @@ export default function App() {
       return next;
     });
   }, []);
+
+  /* Reopening the app the next morning should show today's goal, not last
+     night's. Nothing else notices the date change until you answer a card. */
+  const rollDay = useCallback(() => {
+    const t = todayStr();
+    if (stateRef.current.todayDate === t) return;
+    update((prev) => (prev.todayDate === t ? prev : { ...prev, todayDate: t, todayCount: 0 }));
+  }, [update]);
+
+  useEffect(() => {
+    const onHide = () => {
+      if (document.visibilityState === "hidden") flushCloudSave();
+      else rollDay();
+    };
+    document.addEventListener("visibilitychange", onHide);
+    window.addEventListener("pagehide", flushCloudSave);
+    return () => {
+      document.removeEventListener("visibilitychange", onHide);
+      window.removeEventListener("pagehide", flushCloudSave);
+    };
+  }, [flushCloudSave, rollDay]);
 
   const allTopicsUnordered = [
     ...CORE_TOPICS.filter((t) => !(state.hidden || []).includes(t.id)),
