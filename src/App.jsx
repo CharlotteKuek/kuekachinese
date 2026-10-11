@@ -1317,7 +1317,7 @@ export default function App() {
   const [state, setState] = useState({
     streak: 0, lastDay: null, todayDate: todayStr(), todayCount: 0,
     cards: {}, topics: {}, customTopics: [], pool: {}, curriculum: {}, flags: {}, notes: [], onboarded: false,
-    goalDays: [], bestStreak: 0,
+    goalDays: [], bestStreak: 0, dayLog: {},
     settings: { burst: 10, dark: false, sound: true, goal: 10, szDate: "2027-01-01", speed: SPEED_DEFAULT, fontZh: "ZCOOL XiaoWei", fontEn: "Space Grotesk" },
     recent: [],
   });
@@ -1362,7 +1362,7 @@ export default function App() {
     setState((p) => {
       const base = { streak: 0, lastDay: null, todayDate: t, todayCount: 0, cards: {}, topics: {},
         customTopics: [], pool: {}, curriculum: {}, flags: {}, notes: [], hidden: [], onboarded: false,
-        goalDays: [], bestStreak: 0, recent: [], settings: p.settings };
+        goalDays: [], bestStreak: 0, dayLog: {}, recent: [], settings: p.settings };
       const merged = { ...base, ...saved, settings: { ...p.settings, ...(saved.settings || {}) } };
       merged.settings.goal = merged.settings.burst;
       stateRef.current = merged;
@@ -1699,6 +1699,16 @@ export default function App() {
       const t = todayStr();
       if (next.todayDate !== t) { next.todayDate = t; next.todayCount = 0; }
       next.todayCount += 1;
+      /* A per-day tally, which is what shades the calendar. todayCount is
+         already the running total for today, so writing it straight in keeps
+         the two from ever drifting apart. Trimmed to the last ~400 days, and
+         only once it has actually grown past that, so the common path stays
+         a single key write. */
+      next.dayLog = { ...(next.dayLog || {}), [t]: next.todayCount };
+      const logged = Object.keys(next.dayLog);
+      if (logged.length > 420) {
+        next.dayLog = Object.fromEntries(logged.sort().slice(-400).map((k) => [k, next.dayLog[k]]));
+      }
       if (next.todayCount >= next.settings.goal && next.lastDay !== t) {
         /* A gap of more than a day since the last streak day breaks the streak,
            same rule applySave uses on load — recordAnswer can also be the first
@@ -3141,6 +3151,7 @@ function StreakGrid({ state, T, s }) {
     if (el) el.scrollLeft = el.scrollWidth;
   }, []);
   const done = new Set(state.goalDays || []);
+  const log = state.dayLog || {}; // "YYYY-MM-DD" -> cards answered that day
   const todayN = dayNum();
   const todayS = dayNumToStr(todayN);
 
@@ -3171,6 +3182,29 @@ function StreakGrid({ state, T, s }) {
   const CELL = 13, GAP = 3.5;
   const flame = "#FF7A45";
 
+  /* Intensity is measured against your own daily goal rather than against
+     your single best day ever — a 60-card Sunday shouldn't make every
+     ordinary day look like a failure. Five steps: nothing, started but short
+     of the goal, goal cleared, double, triple or more. */
+  const LEVELS = [
+    { bg: T.chip, label: "none" },
+    { bg: "rgba(255,122,69,.28)", label: "a start" },
+    { bg: "rgba(255,122,69,.62)", label: "goal" },
+    { bg: flame, label: "double" },
+    { bg: "#D9480F", label: "triple+" },
+  ];
+  const goal = Math.max(1, s.goal || 10);
+  const levelFor = (count, cleared) => {
+    /* Days recorded before per-day counts existed only know "cleared", so
+       they sit at the goal step rather than pretending to a volume. */
+    if (count == null) return cleared ? 2 : 0;
+    if (count <= 0) return cleared ? 2 : 0;
+    if (count < goal) return 1;
+    if (count < goal * 2) return 2;
+    if (count < goal * 3) return 3;
+    return 4;
+  };
+
   const stats = [
     ["flame", streak, "day streak", flame],
     ["trend", best, "longest ever", "#7048E8"],
@@ -3183,7 +3217,7 @@ function StreakGrid({ state, T, s }) {
         <div>
           <div className="disp font-bold text-[17px] leading-none">Your streak</div>
           <div className="text-[11.5px] font-bold mt-1.5" style={{ color: T.sub }}>
-            Every day you hit the goal · {last30} of the last 30
+            Deeper orange = more cards · {last30} of the last 30 cleared
           </div>
         </div>
         <I n="flame" size={22} color={streak > 0 ? flame : T.sub} fill={streak > 0 ? flame : "none"} />
@@ -3224,13 +3258,18 @@ function StreakGrid({ state, T, s }) {
                   const dStr = dayNumToStr(n);
                   const future = n > todayN;
                   const hit = done.has(dStr);
-                  const isToday = dStr === todayS;
+                  const count = log[dStr];
+                  const lvl = future ? 0 : levelFor(count, hit);
+                  const date = new Date(n * 86400000).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+                  const detail = future ? ""
+                    : count != null ? ` · ${count} card${count === 1 ? "" : "s"}${hit ? ", goal cleared" : ""}`
+                    : hit ? " · goal cleared" : " · nothing";
                   return (
-                    <div key={n} title={`${new Date(n * 86400000).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" })}${future ? "" : hit ? " · goal cleared" : " · missed"}`}
+                    <div key={n} title={date + detail}
                       style={{
                         width: CELL, height: CELL, borderRadius: 4,
-                        background: future ? "transparent" : hit ? flame : T.chip,
-                        border: isToday ? `1.5px solid ${hit ? "#C2410C" : T.sub}` : future ? `1px dashed ${T.line}` : "none",
+                        background: future ? "transparent" : LEVELS[lvl].bg,
+                        border: dStr === todayS ? `1.5px solid ${lvl >= 3 ? "#7C2D12" : lvl >= 1 ? "#C2410C" : T.sub}` : future ? `1px dashed ${T.line}` : "none",
                         opacity: future ? 0.5 : 1,
                       }} />
                   );
@@ -3242,15 +3281,18 @@ function StreakGrid({ state, T, s }) {
       </div>
 
       <div className="flex items-center justify-end gap-1.5 mt-3">
-        <span className="text-[9.5px] font-extrabold" style={{ color: T.sub }}>missed</span>
-        <div style={{ width: 10, height: 10, borderRadius: 3, background: T.chip }} />
-        <div style={{ width: 10, height: 10, borderRadius: 3, background: flame }} />
-        <span className="text-[9.5px] font-extrabold" style={{ color: T.sub }}>cleared</span>
+        <span className="text-[9.5px] font-extrabold" style={{ color: T.sub }}>less</span>
+        {LEVELS.map((l) => (
+          <div key={l.label} title={l.label}
+            style={{ width: 10, height: 10, borderRadius: 3, background: l.bg }} />
+        ))}
+        <span className="text-[9.5px] font-extrabold" style={{ color: T.sub }}>more</span>
       </div>
 
       {total === 0 && (
         <div className="text-[11.5px] font-bold mt-3 pt-3 text-center" style={{ color: T.sub, borderTop: `2px dashed ${T.line}` }}>
-          Finish {s.goal} cards today and your first square lights up.
+          Finish {s.goal} cards today and your first square lights up — the more
+          you do, the deeper it goes.
         </div>
       )}
     </div>
@@ -4559,7 +4601,7 @@ function SettingsScreen({ state, update, T, dark, s, click, setBanner, onHelp, a
             update((prev) => ({
               streak: 0, lastDay: null, todayDate: todayStr(), todayCount: 0, cards: {}, topics: {},
               customTopics: [], pool: {}, curriculum: {}, flags: {}, hidden: [], topicOrder: [],
-              goalDays: [], bestStreak: 0,
+              goalDays: [], bestStreak: 0, dayLog: {},
               onboarded: true, settings: s, recent: [], notes: prev.notes || [],
             }));
             setBanner("Progress cleared.");
